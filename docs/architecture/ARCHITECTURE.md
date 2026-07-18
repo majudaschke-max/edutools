@@ -91,6 +91,11 @@ Eine App darf zunächst eigenständig entstehen und verwendet den Core dort, wo 
 - Motivation besitzt einen getrennten, versionierten State. Die Lernserie wird
   nur durch vollständig abgeschlossene Sessions an lokalen Kalendertagen
   fortgeschrieben und beeinflusst weder Learning State noch Scheduler.
+- Öffentliche Pages-Learner dürfen nach ADR-018 einen buildgenerierten,
+  statischen Mehrkurs-Katalog verwenden. Stabile `publicationId`-Direktlinks
+  wählen ausschließlich explizit freigegebene Kurse; Course Schema,
+  Author-Kursbibliothek und der private Einzelkurs-SCORM-Kanal bleiben davon
+  getrennt.
 
 ## Abgrenzung
 

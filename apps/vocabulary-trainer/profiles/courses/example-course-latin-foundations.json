@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "id": "neutral-latin-foundations-course",
+  "appType": "vocabulary",
+  "contentVersion": 1,
+  "sourceType": "bundled",
+  "editable": false,
+  "title": "Latein – Grundlagen",
+  "subtitle": "Neutrale lateinische Grundwörter",
+  "description": "Frei zusammengestellte Grundwörter ohne Verbindung zu einem Lehrwerk oder Verlag.",
+  "schoolType": "",
+  "gradeLevel": "",
+  "createdAt": "2026-01-01T00:00:00.000Z",
+  "updatedAt": "2026-01-01T00:00:00.000Z",
+  "languages": {
+    "source": { "code": "la", "label": "Latein", "speechLocale": "la-VA" },
+    "target": { "code": "de", "label": "Deutsch", "speechLocale": "de-DE" }
+  },
+  "pronunciation": { "enabled": false, "rate": 0.9, "pitch": 1, "volume": 1 },
+  "archived": false,
+  "units": [
+    {
+      "id": "neutral-latin-unit-1",
+      "title": "Menschen und Orte",
+      "description": "",
+      "order": 1,
+      "released": true,
+      "current": true,
+      "archived": false,
+      "words": [
+        {
+          "id": "neutral-latin-word-001",
+          "source": "amicus",
+          "targets": ["Freund"],
+          "phonetic": "",
+          "hint": "Substantiv der o-Deklination; Genitiv: amici.",
+          "example": "Amicus in foro stat.",
+          "tags": ["noun"],
+          "archived": false
+        },
+        {
+          "id": "neutral-latin-word-002",
+          "source": "via",
+          "targets": ["Weg", "Straße"],
+          "phonetic": "",
+          "hint": "Substantiv der a-Deklination; Genitiv: viae.",
+          "example": "Via ad villam ducit.",
+          "tags": ["noun"],
+          "archived": false
+        },
+        {
+          "id": "neutral-latin-word-003",
+          "source": "videre",
+          "targets": ["sehen"],
+          "phonetic": "",
+          "hint": "Wichtige Stammformen: video, vidi, visum.",
+          "example": "Puer villam videt.",
+          "tags": ["verb"],
+          "archived": false
+        },
+        {
+          "id": "neutral-latin-word-004",
+          "source": "magnus",
+          "targets": ["groß"],
+          "phonetic": "",
+          "hint": "Adjektiv der a-/o-Deklination.",
+          "example": "In foro magna statua est.",
+          "tags": ["adjective"],
+          "archived": false
+        }
+      ]
+    }
+  ]
+}

@@ -44,6 +44,7 @@ const ROUTE_TITLES = Object.freeze({
   "/progress": "Mein Fortschritt",
   "/units": "Alle Lernpakete",
   "/settings": "Einstellungen",
+  "/course-select": "Browser-Kurs auswählen",
   "/courses": "Kursbibliothek",
   "/course-builder": "Kurs bearbeiten",
   "/unavailable": "Funktion nicht verfügbar",
@@ -69,21 +70,38 @@ export async function initializeApp(appRoot = document.querySelector("[data-voca
   runtimeState?.motivationUi?.destroy();
   runtimeState?.courseRuntime?.destroy();
   runtimeState?.delivery?.destroy();
+  runtimeState = null;
   appRoot.setAttribute("aria-busy", "true");
   const courseLiveRegion = appRoot.querySelector("[data-course-live]");
   if (courseLiveRegion) courseLiveRegion.textContent = "";
 
   try {
     const deploymentProfile = await loadDeploymentProfile();
-    const delivery = await createDeliveryRuntime({ appRoot, deploymentProfile });
     const capabilities = createDeploymentCapabilities(deploymentProfile);
     configureStorageNamespace(deploymentProfile.deploymentId);
     applyDeploymentMetadata(appRoot.ownerDocument, deploymentProfile);
     applyCapabilityVisibility(appRoot, capabilities);
-    const deploymentContext = await loadDeploymentCourseContext(
-      deploymentProfile,
-      capabilities,
-    );
+    let deploymentContext = null;
+    /* build:catalog:start */
+    if (capabilities.hasPublishedCourseCatalog()) {
+      const catalogResult = await preparePublishedCourseCatalog({
+        appRoot,
+        deploymentProfile,
+      });
+      if (!catalogResult.context) {
+        appRoot.setAttribute("aria-busy", "false");
+        return catalogResult;
+      }
+      deploymentContext = catalogResult.context;
+    }
+    /* build:catalog:end */
+    if (!deploymentContext) {
+      deploymentContext = await loadDeploymentCourseContext(
+        deploymentProfile,
+        capabilities,
+      );
+    }
+    const delivery = await createDeliveryRuntime({ appRoot, deploymentProfile });
     const {
       courseConfig,
       vocabularyData,
@@ -122,6 +140,8 @@ export async function initializeApp(appRoot = document.querySelector("[data-voca
       unitSelection: null,
       deploymentProfile,
       delivery,
+      publishedCourseCatalog: deploymentContext.publishedCourseCatalog ?? null,
+      publication: deploymentContext.publication ?? null,
     };
     if (capabilities.hasMotivation()) {
       runtimeState.motivation = await createDeploymentMotivation(courseConfig);
@@ -240,6 +260,119 @@ async function loadDeploymentCourseContext(profile, capabilities) {
   const { loadPublishedCourseContext } = await import("./runtime/published-course.js");
   return loadPublishedCourseContext(profile);
 }
+
+/* build:catalog:start */
+async function preparePublishedCourseCatalog({ appRoot, deploymentProfile }) {
+  const [{
+    createPublishedCourseSelectionUrl,
+    createPublishedCourseUrl,
+    getRequestedPublicationId,
+    loadLastPublishedCourseId,
+    loadPublishedCatalogCourseContext,
+    loadPublishedCourseCatalog,
+    saveLastPublishedCourseId,
+  }, {
+    renderPublishedCourseLibrary,
+  }] = await Promise.all([
+    import("./runtime/published-course-catalog.js"),
+    import("./views/published-course-library-view.js"),
+  ]);
+  const catalog = await loadPublishedCourseCatalog(deploymentProfile);
+  const documentRoot = appRoot.ownerDocument;
+  const currentUrl = documentRoot.defaultView?.location?.href ?? documentRoot.baseURI;
+  const requested = getRequestedPublicationId(documentRoot.defaultView?.location);
+  const selected = requested.publicationId
+    ? catalog.courses.find((course) => course.publicationId === requested.publicationId)
+    : null;
+  const errorMessage = requested.explicit && !selected
+    ? "Dieser Browser-Kurs ist nicht verfügbar. Wähle einen vorhandenen Kurs aus."
+    : "";
+  renderPublishedCourseLibrary(
+    documentRoot.querySelector("[data-published-course-library]"),
+    catalog,
+    {
+      errorMessage,
+      lastPublicationId: loadLastPublishedCourseId(),
+      createCourseUrl: (publicationId) => createPublishedCourseUrl(
+        currentUrl,
+        publicationId,
+      ),
+    },
+  );
+  const switchLink = documentRoot.querySelector("[data-published-course-switch]");
+  if (switchLink) {
+    switchLink.href = createPublishedCourseSelectionUrl(currentUrl);
+    switchLink.hidden = false;
+  }
+
+  if (!selected) {
+    showPublishedCourseSelection(appRoot, deploymentProfile);
+    return Object.freeze({ context: null, catalog, errorMessage });
+  }
+
+  try {
+    const context = await loadPublishedCatalogCourseContext(
+      deploymentProfile,
+      catalog,
+      selected.publicationId,
+    );
+    saveLastPublishedCourseId(selected.publicationId);
+    return Object.freeze({
+      context: Object.freeze({
+        ...context,
+        publishedCourseCatalog: catalog,
+      }),
+      catalog,
+      errorMessage: "",
+    });
+  } catch (error) {
+    console.error(`Browser-Kurs „${selected.publicationId}“ konnte nicht geladen werden.`, error);
+    const message = "Dieser Browser-Kurs konnte nicht geladen werden. Wähle einen anderen Kurs aus.";
+    renderPublishedCourseLibrary(
+      documentRoot.querySelector("[data-published-course-library]"),
+      catalog,
+      {
+        errorMessage: message,
+        lastPublicationId: loadLastPublishedCourseId(),
+        createCourseUrl: (publicationId) => createPublishedCourseUrl(
+          currentUrl,
+          publicationId,
+        ),
+      },
+    );
+    showPublishedCourseSelection(appRoot, deploymentProfile);
+    return Object.freeze({ context: null, catalog, errorMessage: message });
+  }
+}
+
+function showPublishedCourseSelection(appRoot, deploymentProfile) {
+  const documentRoot = appRoot.ownerDocument;
+  const view = appRoot.querySelector('[data-route-view="/course-select"]');
+  appRoot.querySelectorAll("[data-route-view]").forEach((candidate) => {
+    candidate.hidden = candidate !== view;
+  });
+  const heading = view?.querySelector("h1");
+  if (heading?.id) appRoot.setAttribute("aria-labelledby", heading.id);
+  const courseTitle = documentRoot.querySelector("[data-dashboard-course-title]");
+  const currentUnit = documentRoot.querySelector("[data-dashboard-current-unit]");
+  const courseLabel = documentRoot.querySelector("[data-dashboard-course-label]");
+  if (courseTitle) courseTitle.textContent = "Browser-Kurse";
+  if (currentUnit) currentUnit.textContent = "Kurs auswählen";
+  if (courseLabel) courseLabel.setAttribute("aria-label", "Browser-Kurs auswählen");
+  documentRoot.querySelector(".app-nav")?.setAttribute("hidden", "");
+  documentRoot.querySelector("[data-header-action]")?.setAttribute("hidden", "");
+  const location = documentRoot.defaultView?.location;
+  if (location?.hash !== "#/course-select") {
+    documentRoot.defaultView?.history?.replaceState?.(
+      documentRoot.defaultView.history.state ?? null,
+      "",
+      `${location?.pathname ?? ""}${location?.search ?? ""}#/course-select`,
+    );
+  }
+  documentRoot.title = `Browser-Kurs auswählen – ${deploymentProfile.app.title}`;
+  Promise.resolve().then(() => appRoot.focus());
+}
+/* build:catalog:end */
 
 async function createDeploymentMotivation(courseConfig) {
   const [configModule, controllerModule, serviceModule, storageModule] = await Promise.all([
@@ -460,6 +593,7 @@ function applyCapabilityVisibility(appRoot, capabilities) {
     motivation: capabilities.hasMotivation(),
     pronunciation: capabilities.hasPronunciation(),
     speed: capabilities.hasSpeedChallenge(),
+    "course-catalog": capabilities.hasPublishedCourseCatalog(),
   };
   for (const [name, visible] of Object.entries(visibility)) {
     appRoot.ownerDocument.querySelectorAll(`[data-feature-capability="${name}"]`)

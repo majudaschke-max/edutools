@@ -1,5 +1,7 @@
 // @ts-check
 
+import { createCourseStorageKey } from "./storage.js";
+
 export const LEARNING_SCOPE_ALL = "all";
 export const LEARNING_SCOPE_MULTIPLE = "multiple-packages";
 export const LEARNING_SCOPE_PACKAGE_PREFIX = "package:";
@@ -84,12 +86,22 @@ export function formatLearningScope(options, value, selectedPackageIds = []) {
 }
 
 function storageKey(courseId) {
+  return createCourseStorageKey(String(courseId ?? "course"), "learning-scope");
+}
+
+function legacyStorageKey(courseId) {
   return `edutools:learning-scope:${String(courseId ?? "course")}`;
 }
 
 export function loadLearningScope(courseId, storage = globalThis.localStorage) {
   try {
-    const value = JSON.parse(storage?.getItem?.(storageKey(courseId)) ?? "null");
+    const currentKey = storageKey(courseId);
+    let serialized = storage?.getItem?.(currentKey) ?? null;
+    if (serialized === null) {
+      serialized = storage?.getItem?.(legacyStorageKey(courseId)) ?? null;
+      if (serialized !== null) storage?.setItem?.(currentKey, serialized);
+    }
+    const value = JSON.parse(serialized ?? "null");
     if (!value || typeof value !== "object") return null;
     return {
       value: typeof value.value === "string" ? value.value : LEARNING_SCOPE_ALL,

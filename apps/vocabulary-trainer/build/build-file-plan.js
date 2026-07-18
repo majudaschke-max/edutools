@@ -45,8 +45,17 @@ const LEARNER_RUNTIME_FILES = [
   "runtime/published-course.js",
 ];
 
+const LEARNER_ONLY_CATALOG_FILES = new Set([
+  "runtime/published-course-catalog.js",
+  "views/published-course-library-view.js",
+]);
+
 function isDisabledBookCaptureFile(file) {
   return file.startsWith("ocr/") || file.startsWith("author/image-import/");
+}
+
+function isLearnerOnlyCatalogFile(file) {
+  return LEARNER_ONLY_CATALOG_FILES.has(file);
 }
 
 /** Positive profile plan. Disabled experimental capture code stays in source only. */
@@ -56,6 +65,7 @@ export async function createBuildFilePlan({ repositoryRoot, profile }) {
   if (profile.mode === "author") {
     relativeFiles = (await walkFiles(sourceRoot)).filter((file) => (
       !isDisabledBookCaptureFile(file)
+      && !isLearnerOnlyCatalogFile(file)
     ));
   } else {
     relativeFiles = [
@@ -94,6 +104,12 @@ export async function createBuildFilePlan({ repositoryRoot, profile }) {
       relativeFiles.push(
         ...await filesInDirectory(sourceRoot, "speed"),
         "views/speed-view.js",
+      );
+    }
+    if (profile.courseCatalog) {
+      relativeFiles.push(
+        "runtime/published-course-catalog.js",
+        "views/published-course-library-view.js",
       );
     }
   }

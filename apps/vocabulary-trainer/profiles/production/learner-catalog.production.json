@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "profileId": "vocabulary-learner-catalog",
+  "mode": "learner",
+  "deploymentId": "vocabulary-learner",
+  "app": {
+    "title": "EduTools – Vocabulary Trainer",
+    "shortTitle": "EduTools – Vocabulary Trainer",
+    "description": "Statischer Vocabulary Trainer mit mehreren bewusst veröffentlichten, lehrwerksunabhängigen Sprachkursen",
+    "language": "de",
+    "defaultRoute": "#/dashboard"
+  },
+  "courseCatalog": {
+    "entries": [
+      {
+        "publicationId": "english-everyday",
+        "file": "./apps/vocabulary-trainer/profiles/courses/example-course.json"
+      },
+      {
+        "publicationId": "english-advanced",
+        "file": "./apps/vocabulary-trainer/profiles/courses/example-course-english-advanced.json"
+      },
+      {
+        "publicationId": "latin-foundations",
+        "file": "./apps/vocabulary-trainer/profiles/courses/example-course-latin-foundations.json"
+      }
+    ]
+  },
+  "features": {
+    "motivation": true,
+    "pronunciation": true,
+    "speedChallenge": true,
+    "courseLibrary": false,
+    "courseBuilder": false,
+    "importExport": false,
+    "bookCapture": false
+  },
+  "output": {
+    "directory": "./dist/vocabulary-trainer/production/learner-catalog",
+    "basePath": "./"
+  }
+}

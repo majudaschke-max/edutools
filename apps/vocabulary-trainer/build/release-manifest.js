@@ -22,14 +22,18 @@ async function fileEntries(releaseRoot) {
 }
 
 export async function createReleaseManifest(releaseRoot, deployment, builds) {
-  const profiles = builds.map((build) => ({
-    profileId: build.profile.profileId,
-    deploymentId: build.profile.deploymentId,
-    mode: build.profile.mode,
-    mountPath: build.mountPath,
-    courseId: build.courseId,
-    buildHash: build.manifest.buildHash,
-  })).sort((left, right) => left.mountPath.localeCompare(right.mountPath));
+  const profiles = builds.map((build) => {
+    const entry = {
+      profileId: build.profile.profileId,
+      deploymentId: build.profile.deploymentId,
+      mode: build.profile.mode,
+      mountPath: build.mountPath,
+      courseId: build.courseId,
+      buildHash: build.manifest.buildHash,
+    };
+    if (build.courseIds?.length) entry.courseIds = build.courseIds;
+    return entry;
+  }).sort((left, right) => left.mountPath.localeCompare(right.mountPath));
   const files = await fileEntries(releaseRoot);
   const core = {
     schemaVersion: 1,

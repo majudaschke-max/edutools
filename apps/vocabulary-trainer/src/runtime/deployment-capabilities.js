@@ -2,6 +2,7 @@ const AUTHOR_MODE = "author";
 const LEARNER_MODE = "learner";
 
 const AUTHOR_ROUTES = new Set(["/courses", "/course-builder"]);
+const PUBLISHED_COURSE_ROUTE = "/course-select";
 
 /**
  * Resolves every deployment-dependent decision in one place. Views and
@@ -15,13 +16,15 @@ export function createDeploymentCapabilities(profile) {
 
   const features = profile.features ?? {};
   const author = mode === AUTHOR_MODE;
+  const publishedCourseCatalog = !author && profile.courseCatalog != null;
   const values = Object.freeze({
     manageCourses: author && features.courseLibrary === true,
     buildCourses: author && features.courseBuilder === true,
     importCourses: author && features.importExport === true,
     exportCourses: author && features.importExport === true,
     switchCourses: author && features.courseLibrary === true,
-    fixedCourse: !author,
+    fixedCourse: !author && !publishedCourseCatalog,
+    publishedCourseCatalog,
     motivation: features.motivation === true,
     pronunciation: features.pronunciation === true,
     speedChallenge: features.speedChallenge === true,
@@ -30,6 +33,7 @@ export function createDeploymentCapabilities(profile) {
 
   function isRouteAvailable(route) {
     if (AUTHOR_ROUTES.has(route)) return values.manageCourses;
+    if (route === PUBLISHED_COURSE_ROUTE) return values.publishedCourseCatalog;
     if (route === "/speed") return values.speedChallenge;
     return true;
   }
@@ -41,6 +45,7 @@ export function createDeploymentCapabilities(profile) {
     canExportCourses: () => values.exportCourses,
     canSwitchCourses: () => values.switchCourses,
     hasFixedCourse: () => values.fixedCourse,
+    hasPublishedCourseCatalog: () => values.publishedCourseCatalog,
     hasMotivation: () => values.motivation,
     hasPronunciation: () => values.pronunciation,
     hasSpeedChallenge: () => values.speedChallenge,

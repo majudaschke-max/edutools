@@ -275,3 +275,54 @@
   opacity: 0.72;
   pointer-events: none;
 }
+
+.course__switch {
+  color: var(--color-primary-strong);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  text-underline-offset: 0.18em;
+}
+
+.app-header [hidden] {
+  display: none !important;
+}
+
+.published-course-selection {
+  max-width: 64rem;
+  margin-inline: auto;
+}
+
+.published-course-library {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+  gap: var(--space-5);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.published-course-library__item,
+.published-course-card {
+  min-width: 0;
+}
+
+.published-course-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  height: 100%;
+  gap: var(--space-3);
+}
+
+.published-course-card .button {
+  margin-top: auto;
+}
+
+.published-course-card__languages {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.published-course-library__error {
+  margin-block-end: var(--space-5);
+}

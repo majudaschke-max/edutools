@@ -23,10 +23,27 @@ export async function runReleaseSmokeTests(releaseRoot, deployment) {
   const learner = deployment.entries.find((entry) => entry.profile.mode === "learner");
   const mounted = (entry, file = "") => `/${entry.mountPath ? `${entry.mountPath}/` : ""}${file}`;
   try {
+    const learnerCourseChecks = learner.profile.courseCatalog
+      ? [
+        [mounted(learner, "data/courses/index.json"), {
+          status: 200,
+          type: "application/json",
+          contains: learner.profile.courseCatalog.entries[0].publicationId,
+        }],
+        ...learner.profile.courseCatalog.entries.map((entry) => [
+          mounted(learner, `data/courses/${entry.publicationId}.json`),
+          { status: 200, type: "application/json", contains: "\"id\"" },
+        ]),
+      ]
+      : [[mounted(learner, "data/course.json"), {
+        status: 200,
+        type: "application/json",
+        contains: learner.course.id,
+      }]];
     const checks = [
       ["/", { status: 200, type: "text/html", contains: "data-vocabulary-app" }],
       [mounted(learner, "runtime/deployment-profile.json"), { status: 200, type: "application/json", contains: learner.profile.deploymentId }],
-      [mounted(learner, "data/course.json"), { status: 200, type: "application/json", contains: learner.course.id }],
+      ...learnerCourseChecks,
       [mounted(learner, "design-system/css/tokens.css"), { status: 200, type: "text/css" }],
       [mounted(learner, "design-system/css/brand-core.css"), { status: 200, type: "text/css" }],
       [mounted(learner, "design-system/css/themes/vocabulary.css"), { status: 200, type: "text/css" }],

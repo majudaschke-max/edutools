@@ -38,9 +38,26 @@ export function validateRuntimeDeploymentProfile(input) {
   if (!/^#\/[a-z0-9-]+$/i.test(defaultRoute)) {
     throw new TypeError("Laufzeitprofil: app.defaultRoute ist ungültig.");
   }
+  let course = null;
+  let courseCatalog = null;
   if (input.mode === "learner") {
-    requireText(input.course?.id, "course.id");
-    requireText(input.course?.file, "course.file");
+    const hasCourse = input.course != null;
+    const hasCatalog = input.courseCatalog != null;
+    if (hasCourse === hasCatalog) {
+      throw new TypeError("Laufzeitprofil: Genau course oder courseCatalog muss angegeben sein.");
+    }
+    if (hasCourse) {
+      course = Object.freeze({
+        id: requireText(input.course?.id, "course.id"),
+        file: requireText(input.course?.file, "course.file"),
+      });
+    } else {
+      courseCatalog = Object.freeze({
+        file: requireText(input.courseCatalog?.file, "courseCatalog.file"),
+      });
+    }
+  } else if (input.course != null || input.courseCatalog != null) {
+    throw new TypeError("Laufzeitprofil: Author-Profile dürfen keinen veröffentlichten Kurs enthalten.");
   }
   const deliveryType = input.delivery?.type ?? "standalone";
   if (!new Set(["standalone", "scorm12"]).has(deliveryType)) {
@@ -64,9 +81,8 @@ export function validateRuntimeDeploymentProfile(input) {
     buildHash,
     mode: input.mode,
     app: Object.freeze({ title, shortTitle, description, language, defaultRoute }),
-    course: input.mode === "learner"
-      ? Object.freeze({ id: input.course.id.trim(), file: input.course.file.trim() })
-      : null,
+    course,
+    courseCatalog,
     features: Object.freeze({
       motivation: input.features?.motivation === true,
       pronunciation: input.features?.pronunciation === true,

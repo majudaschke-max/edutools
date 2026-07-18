@@ -493,6 +493,29 @@ export function createCourseRuntime(options) {
       const status = appRoot.querySelector("[data-course-export-status]");
       try { exportCourse(snapshot.draft, status); } catch { /* UI was updated above. */ }
       return;
+    } else if (action === "export-browser") {
+      const confirmation = appRoot.querySelector("[data-browser-publication-confirm]");
+      const status = appRoot.querySelector("[data-browser-publication-status]");
+      if (!confirmation?.checked) {
+        if (status) {
+          status.hidden = false;
+          status.className = "session-error course-export-status";
+          status.textContent = "Bestätige zuerst, dass der Kurs öffentlich bereitgestellt werden darf.";
+        }
+        live("Die öffentliche Bereitstellung muss zuerst bestätigt werden.");
+        confirmation?.focus();
+        return;
+      }
+      try {
+        const result = exportCourse(snapshot.draft, status);
+        if (status) {
+          status.className = "course-export-status";
+          status.textContent = `Browser-Kursdatei vorbereitet: ${result.filename}. Die Datei ist noch nicht veröffentlicht.`;
+          status.focus?.();
+        }
+        live("Browser-Kursdatei wurde vorbereitet und ist noch nicht veröffentlicht.");
+      } catch { /* UI was updated by exportCourse. */ }
+      return;
     } else if (action === "export-scorm") {
       await exportScormPackage(snapshot.draft);
       return;

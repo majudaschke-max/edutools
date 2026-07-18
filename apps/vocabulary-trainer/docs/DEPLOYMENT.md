@@ -2,8 +2,9 @@
 
 Der Vocabulary Trainer wird ohne Framework, Bundler, Backend oder externe
 Laufzeitabhängigkeit veröffentlicht. Ein JSON-Profil erzeugt entweder die
-vollständige lokale Autorenanwendung oder eine auf genau einen Kurs begrenzte
-Lernanwendung.
+vollständige lokale Autorenanwendung, eine auf genau einen Kurs begrenzte
+Lernanwendung oder den statischen Pages-Learner mit einem expliziten
+Mehrkurs-Katalog.
 
 ## Voraussetzungen
 
@@ -62,9 +63,13 @@ Entwicklungsabhängigkeiten und werden nicht in Produktdateipläne kopiert.
 
 ### Learner-Profil
 
-Das Learner-Profil referenziert exakt eine kanonische Kursdatei. Der Validator
-prüft App-Typ, Kurs-, Unit- und Wortstruktur vor dem Schreiben des Builds. Der
-Build enthält anschließend eine eigene `data/course.json` und keine
+Ein Learner-Profil referenziert entweder exakt eine kanonische Kursdatei über
+`course.file` oder einen expliziten Katalog über `courseCatalog.entries`. Beide
+Varianten schließen sich gegenseitig aus. Der Validator prüft App-Typ, Kurs-,
+Unit- und Wortstruktur vor dem Schreiben des Builds. Der Einzelkurs-Build
+enthält anschließend eine eigene `data/course.json`; der Katalog-Build enthält
+einen deterministisch erzeugten `data/courses/index.json` und genau eine
+Kursdatei pro stabiler `publicationId`. Beide Varianten enthalten keine
 Kursbibliothek, Editoren, Import-/Exportmodule, OCR-Module, OCR-Engine,
 HEIC-/HEIF-Decoder, Sprachmodelle, SpeechRecognition-, Mikrofon- oder
 Aufnahmemodule oder Autorenstyles.
@@ -80,8 +85,11 @@ SCORM-Pakete, da sie aus dem Learner-Dateiplan gebaut werden.
 Produktionsprofile liegen getrennt unter `profiles/production/`. Sie werden
 nicht durch Ordnersuche veröffentlicht, sondern ausschließlich durch den
 Deployment-Satz `deployments/github-pages.production.json` ausgewählt. Der
-aktuell ausgewählte, frei erfundene Kurs ist eine austauschbare Beispielquelle; weder
-Kursname noch Sprachenpaar beeinflussen die Buildlogik.
+im Katalog ausgewählten, frei erfundenen Kurse sind austauschbare
+Beispielquellen; weder Kursname noch Sprachenpaar beeinflussen die Buildlogik.
+Nur Einträge des ausdrücklich benannten Produktionsprofils werden öffentlich
+ausgeliefert. Das feste Einzelkursprofil bleibt unverändert die Quelle der
+Author-SCORM-Vorlage.
 
 ## Build-Ablauf
 
@@ -89,10 +97,12 @@ Kursname noch Sprachenpaar beeinflussen die Buildlogik.
 2. Ein positiver Dateiplan wird für den gewählten Modus berechnet.
 3. Dateien werden in ein temporäres Nachbarverzeichnis kopiert und
    profilspezifisch transformiert.
-4. Laufzeitprofil, Buildinformation, Learner-Kurs, `.nojekyll` und
+4. Laufzeitprofil, Buildinformation, Learner-Kurs beziehungsweise
+   Katalogindex und Katalogkurse, `.nojekyll` und
    deterministisches `build-manifest.json` werden geschrieben.
 5. Der Build prüft fehlende Referenzen, verbotene Autoren-, OCR-/HEIC- und
-   Speech-Module, lokale absolute Pfade, Testdateien und die feste Kurs-ID.
+   Speech-Module, lokale absolute Pfade, Testdateien sowie feste Kurs- oder
+   Katalogidentitäten.
 6. Erst nach erfolgreicher Prüfung ersetzt der temporäre Stand das Ziel
    atomar. Ein vorhandener gültiger Build wird bei einem Fehler wiederhergestellt.
 
@@ -115,7 +125,8 @@ node apps/vocabulary-trainer/scripts/serve-static.mjs \
 Danach:
 
 ```text
-http://127.0.0.1:4173/index.html#/dashboard
+http://127.0.0.1:4173/index.html#/course-select
+http://127.0.0.1:4173/index.html?course=english-everyday#/dashboard
 http://127.0.0.1:4173/author/index.html#/courses
 ```
 
@@ -154,7 +165,8 @@ deploymentbezogen gespeichert und enthalten keine Kurs- oder Lernergebnisse.
 `build-manifest.json` enthält keine aktuelle Uhrzeit. Bei gleichen Quellen,
 gleichem Profil und gleichem Kurs entstehen identische Manifestdaten und
 Dateiprüfsummen. Das Manifest dokumentiert Profil, Deployment, Modus,
-Featureumfang, Build-Hash und die tatsächlich ausgelieferten Dateien. Derselbe
+Featureumfang, feste Kurs-ID beziehungsweise alle Katalog-Kurs-IDs, Build-Hash
+und die tatsächlich ausgelieferten Dateien. Derselbe
 Hash steht in `runtime/deployment-profile.json` und
 `runtime/build-info.json`.
 
@@ -162,7 +174,8 @@ Hash steht in `runtime/deployment-profile.json` und
 
 Der versionierte Deployment-Satz veröffentlicht genau zwei Profile:
 
-- `vocabulary-learner` am Root-Mount mit `deploymentId=vocabulary-learner`,
+- `vocabulary-learner-catalog` am Root-Mount mit der stabilen
+  `deploymentId=vocabulary-learner`,
 - `vocabulary-author` unter `/author/` mit
   `deploymentId=vocabulary-author`.
 
@@ -177,12 +190,13 @@ Ohne `--verified` führt das CLI Tests, Syntax- und JSON-Prüfung sowie den
 Roundtrip vor der Assembly aus. CI verwendet `--verified`, nachdem diese Gates
 bereits als eigene Schritte bestanden wurden. Die Assembly baut jedes Profil
 über den Builder aus ADR-007, mountet es in einem temporären Dateibaum,
-erzeugt 404 und Release-Manifest, validiert alle Hashes und führt zehn echte
+erzeugt 404 und Release-Manifest, validiert alle Hashes und führt fünfzehn echte
 HTTP-Smoke-Checks aus. Erst dann ersetzt sie `dist/pages`. Ein Fehler erhält
 den letzten gültigen Ordner und entfernt temporäre Verzeichnisse.
 
 Das Root-`release-manifest.json` enthält Deployment-Satz, Site-Metadaten,
-sortierte Profile, Mount-Pfade, Kurs-IDs, Profil-Build-Hashes, eine sortierte
+sortierte Profile, Mount-Pfade, feste Kurs-ID beziehungsweise Katalog-Kurs-IDs,
+Profil-Build-Hashes, eine sortierte
 Dateiliste, Bytegrößen, SHA-256 sowie einen deterministischen Release-Hash.
 Zeitstempel, lokale Quellpfade und Nutzerdaten werden nicht aufgenommen.
 
@@ -213,20 +227,30 @@ Learner-Builds können von jeder Person mit Zugriff auf die URL gelesen werden.
 Produktionskurse dürfen deshalb keine Geheimnisse oder personenbezogenen Daten
 enthalten.
 
+Die Author-Aktion `Browser-Kurs für Veröffentlichung vorbereiten` lädt nur das
+kanonische JSON-Artefakt herunter. Sie veröffentlicht nichts automatisch. Vor
+dem Download ist zu bestätigen, dass Titel und Inhalte neutral sind und weder
+Namen, Lehrwerksbilder noch personenbezogene Daten enthalten. Erst die bewusst
+geprüfte Aufnahme in das Katalogprofil und ein späterer Pages-Release machen
+den Kurs öffentlich. SCORM-only-Kurse werden dadurch nicht veröffentlicht.
+
 ## Cache- und Updateverhalten
 
 Es gibt keinen Service Worker und keinen Offline-Cache. Ein deterministischer
 Profil-Build-Hash versioniert die direkten HTML-Assets, das Runtimeprofil und
-die Kursdatei. Der unveränderte ES-Modulgraph wird bewusst nicht fragil
+die Kurs- beziehungsweise Katalogdateien. Der unveränderte ES-Modulgraph wird bewusst nicht fragil
 umgeschrieben. Ein harter Reload kann nach einem Deployment kurzfristig
 zwischengespeicherte Module aktualisieren; die funktionalen Einstiegspunkte
 verweisen jedoch auf die neue Buildversion.
 
-Bei gleicher `deploymentId`, Kurs-ID und stabilen Wort-IDs bleiben Learning
+Bei gleicher `deploymentId`, `publicationId`, Kurs-ID und stabilen Wort-IDs bleiben Learning
 State, Wiederholungstermine, schwierige und gemerkte Wörter, Motivation, XP,
 Level und Lernserie erhalten. Neue Wort-IDs beginnen ungelernt. Entfernte oder
 archivierte Wörter werden nicht mehr angeboten; alte lokale Einträge dürfen
-verwaist bleiben. Eine geänderte Wort-ID gilt als neues Wort.
+verwaist bleiben. Eine geänderte Wort-ID gilt als neues Wort. Der zuletzt
+gewählte Lernbereich wird ebenfalls deployment- und kursbezogen gespeichert;
+ein vorhandener älterer kursbezogener Schlüssel wird einmalig und idempotent
+kopiert, aber nicht gelöscht.
 
 ## GitHub Actions und Pages-Einstellungen
 
@@ -255,10 +279,12 @@ autorisierten Workflowlauf wird keine Live-Veröffentlichung behauptet.
 
 Vor dem Build:
 
-- [ ] Produktionsprofile und bewusst gewählten öffentlichen Kurs prüfen.
+- [ ] Produktionsprofile, stabile `publicationId`-Werte und alle bewusst
+  gewählten öffentlichen Kurse prüfen.
 - [ ] Keine personenbezogenen, geheimen oder urheberrechtlich unzulässigen
   Kursdaten aufnehmen.
-- [ ] `deploymentId`, Kurs-ID und bestehende Wort-IDs stabil halten.
+- [ ] `deploymentId`, `publicationId`, Kurs-ID und bestehende Wort-IDs stabil
+  halten.
 - [ ] JSON-Export-/Import-Roundtrip mit der tatsächlichen Datei durchführen.
 
 Automatische Prüfungen:
@@ -273,6 +299,10 @@ Automatische Prüfungen:
 Manuelle Prüfungen:
 
 - [ ] Learner und Author bei 320, 375, 768 und 1440 Pixeln prüfen,
+- [ ] Kursauswahl, drei Direktlinks, Kurswechsel, Reload und Browser-Zurück
+  prüfen,
+- [ ] unterschiedliche Lernbereiche und Lernstände in mindestens drei Kursen
+  getrennt prüfen,
 - [ ] Tastatur, Fokus, Reflow und Browserhistorie prüfen,
 - [ ] Course Builder, Import/Export und alle Lernrichtungen prüfen,
 - [ ] Konsole, CSP und fehlgeschlagene Requests prüfen,
@@ -280,14 +310,14 @@ Manuelle Prüfungen:
 
 Nach dem Deployment:
 
-- [ ] Root, `/author/`, Runtimeprofile, Kurs, CSS, App-Modul und 404 über die
-  ausgegebene URL prüfen,
+- [ ] Root, `/author/`, Runtimeprofile, Katalogindex, alle öffentlichen Kurse,
+  CSS, App-Modul und 404 über die ausgegebene URL prüfen,
 - [ ] Deployment-URL und funktionalen Release-Hash dokumentieren,
 - [ ] keine Live-Freigabe behaupten, bevor diese Checks wirklich bestanden
   sind.
 
 Rollback: letzten bekannten funktionsfähigen Commit auswählen und den gleichen
-Workflow erneut ausführen. `deploymentId`, Kurs-ID und Wort-IDs unverändert
+Workflow erneut ausführen. `deploymentId`, `publicationId`, Kurs-ID und Wort-IDs unverändert
 lassen, damit lokale Zustände erhalten bleiben. GitHub Pages stellt danach das
 neu hochgeladene vollständige `dist/pages`-Artefakt bereit; kein partieller
 Dateitausch ist vorgesehen.
@@ -332,7 +362,8 @@ Rückkehr zum Dashboard. Technische Details bleiben in der Konsole.
 - keine dauerhafte Speicherung laufender Sessions
 - keine serverseitigen Pretty-URL-Routen
 - kein Schutz öffentlich ausgelieferter Kursinhalte vor Einsicht im Browser
-- ein Learner-Build enthält genau einen Kurs und bietet keinen Kurswechsel
+- ein Einzelkurs- oder SCORM-Learner enthält genau einen Kurs und bietet keinen
+  Kurswechsel; nur der explizite Pages-Katalog-Learner enthält mehrere Kurse
 - kein Service Worker, Offline-Cache oder vollständiges Modulgraph-Bundling
 
 ## Private SCORM-1.2-Auslieferung

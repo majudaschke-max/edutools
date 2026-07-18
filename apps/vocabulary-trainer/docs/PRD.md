@@ -1047,6 +1047,30 @@ neuer Build mit stabiler `deploymentId`, Kurs-ID und Wort-IDs erhält lokale
 Lern- und Motivationszustände. Diese Freigabe führt keinen Service Worker,
 Backend, Cloudspeicher, Nutzerkonten oder neue Lernfunktion ein.
 
+## Slice A – mehrere öffentliche Browser-Kurse bei unabhängigem SCORM-Export
+
+ADR-018 ergänzt die weiterhin gültige Einzelkurs-Variante um einen
+buildgenerierten Browser-Katalog. Ein Learner-Profil verwendet exklusiv
+entweder `course.file` oder `courseCatalog.entries`. Der Pages-Katalog kopiert
+nur ausdrücklich gelistete, kanonisch validierte Kurse und erzeugt
+`data/courses/index.json` deterministisch aus deren Metadaten.
+
+Jeder Browser-Kurs besitzt eine stabile, titelunabhängige `publicationId` und
+ist über `?course=<publicationId>#/dashboard` direkt erreichbar. Ohne gültigen
+Parameter zeigt der Learner eine Kursauswahl; unbekannte oder entfernte IDs
+öffnen niemals still einen anderen Kurs. Learning State, Motivation und der
+zuletzt gewählte Lernbereich bleiben über Deployment- und Kurs-ID getrennt.
+
+Die Author-App kann eine kanonische Kursdatei für die spätere öffentliche
+Bereitstellung vorbereiten, nachdem die öffentliche Abrufbarkeit und das
+Fehlen von Namen, personenbezogenen Daten, Lehrwerksbildern und Scans bestätigt
+wurden. Sie veröffentlicht nicht selbst. Der eigentliche Katalogeintrag und
+Pages-Release bleiben kontrollierte Repository-Schritte.
+
+Der bestehende SCORM-Export bleibt eine unabhängige Einzelkurs-Ausgabe. Seine
+Vorlage verwendet weiterhin das feste Produktions-Learner-Profil; Katalog,
+Kursauswahl und Browser-Publikationsmodule gelangen nicht in das ZIP.
+
 ## Noch nicht Bestandteil des MVP
 
 - Accounts

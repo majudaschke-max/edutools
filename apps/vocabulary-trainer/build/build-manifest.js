@@ -5,7 +5,7 @@ import { readFile, stat } from "node:fs/promises";
 import { listFiles } from "./build-utils.js";
 import { APP_VERSION } from "../src/runtime/app-version.js";
 
-export async function createBuildManifest(buildRoot, profile, course = null) {
+export async function createBuildManifest(buildRoot, profile, course = null, catalog = null) {
   const files = (await listFiles(buildRoot))
     .filter((file) => file !== "build-manifest.json")
     .sort();
@@ -35,6 +35,13 @@ export async function createBuildManifest(buildRoot, profile, course = null) {
     },
     files: entries,
   };
+  if (catalog) {
+    manifest.courseIds = catalog.entries.map((entry) => entry.course.id);
+    manifest.courseContentVersions = catalog.entries.map((entry) => ({
+      courseId: entry.course.id,
+      contentVersion: entry.course.contentVersion,
+    }));
+  }
   const buildHash = createHash("sha256")
     .update(JSON.stringify(manifest))
     .digest("hex");

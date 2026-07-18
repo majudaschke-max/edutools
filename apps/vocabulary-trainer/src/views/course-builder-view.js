@@ -639,6 +639,49 @@ function renderImport(documentRoot, draft, selectedUnitId, model) {
     exportHelp,
   );
 
+  const browserExport = createElement(documentRoot, "section", {
+    className: "course-export-panel course-export-panel--browser",
+  });
+  const browserDescription = createElement(documentRoot, "div");
+  browserDescription.append(
+    createElement(documentRoot, "h3", { text: "Browser-Kurs für Veröffentlichung vorbereiten" }),
+    createElement(documentRoot, "p", {
+      className: "form-field__help",
+      text: "Erstellt eine Kursdatei für einen späteren, bewussten GitHub-Pages-Release. Der Download veröffentlicht noch nichts.",
+    }),
+  );
+  const publicConfirmation = createElement(documentRoot, "label", {
+    className: "setting-toggle course-publication-confirmation",
+  });
+  publicConfirmation.append(
+    createElement(documentRoot, "input", {
+      attributes: { type: "checkbox" },
+      dataset: { browserPublicationConfirm: "" },
+    }),
+    createElement(documentRoot, "span", {
+      text: "Ich habe geprüft: Der Kurs darf öffentlich abrufbar sein und enthält keine Namen, personenbezogenen Daten, Lehrwerksbilder oder Scans.",
+    }),
+  );
+  browserExport.append(
+    browserDescription,
+    publicConfirmation,
+    createElement(documentRoot, "button", {
+      className: "button button--secondary",
+      text: "Browser-Kursdatei vorbereiten",
+      attributes: { type: "button" },
+      dataset: { editorAction: "export-browser" },
+    }),
+    createElement(documentRoot, "p", {
+      className: "course-export-status",
+      attributes: { role: "status", "aria-live": "polite", tabindex: "-1", hidden: "" },
+      dataset: { browserPublicationStatus: "" },
+    }),
+    createElement(documentRoot, "p", {
+      className: "form-field__help",
+      text: "Erst die manuelle Aufnahme in den öffentlichen Browser-Katalog und ein separater Pages-Release stellen den Kurs online bereit.",
+    }),
+  );
+
   const scormExport = createElement(documentRoot, "section", { className: "course-export-panel course-export-panel--scorm" });
   const scormDescription = createElement(documentRoot, "div");
   scormDescription.append(
@@ -686,7 +729,7 @@ function renderImport(documentRoot, draft, selectedUnitId, model) {
     text: "Wichtig: Die ZIP-Datei nicht entpacken.",
   }));
   scormExport.append(scormHelp);
-  exportOptions.append(jsonExport, scormExport);
+  exportOptions.append(jsonExport, browserExport, scormExport);
 
   const tableImport = createElement(documentRoot, "div", { className: "course-import-primary", dataset: { tableImportSection: "" } });
   tableImport.append(

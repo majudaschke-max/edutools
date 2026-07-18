@@ -17,6 +17,7 @@ import {
 } from "./build-profile-schema.js";
 
 const IDENTIFIER_PATTERN = /^[a-z0-9][a-z0-9._-]*$/;
+const PUBLICATION_ID_PATTERN = /^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/;
 const ROUTE_PATTERN = /^#\/[a-z0-9-]+$/;
 
 export class PublicationProfileError extends Error {
@@ -99,26 +100,39 @@ function normalizeFeatures(raw, mode, profileName) {
   return Object.freeze(features);
 }
 
-async function loadCourse(coursePath, profileName) {
+async function loadCourse(coursePath, profileName, field = "course.file") {
   let serialized;
   try {
     serialized = await readFile(coursePath, "utf8");
   } catch (error) {
-    profileError(profileName, "course.file", `konnte nicht gelesen werden (${error.code ?? "Dateifehler"}).`);
+    profileError(profileName, field, `konnte nicht gelesen werden (${error.code ?? "Dateifehler"}).`);
   }
   let raw;
   try {
     raw = JSON.parse(serialized);
   } catch {
-    profileError(profileName, "course.file", "enthält kein gültiges JSON.");
+    profileError(profileName, field, "enthält kein gültiges JSON.");
   }
   try {
     const course = rebuildCourseData(raw);
     assertValidCourse(course);
     return course;
   } catch (error) {
-    profileError(profileName, "course.file", error.message);
+    profileError(profileName, field, error.message);
   }
+}
+
+async function requireCourseFile(rawFile, options) {
+  const coursePath = safeRepositoryPath(rawFile, options);
+  try {
+    const courseStat = await stat(coursePath.absolute);
+    if (!courseStat.isFile()) profileError(options.profileName, options.field, "muss eine Datei sein.");
+  } catch (error) {
+    if (error instanceof PublicationProfileError) throw error;
+    profileError(options.profileName, options.field, "existiert nicht.");
+  }
+  const course = await loadCourse(coursePath.absolute, options.profileName, options.field);
+  return Object.freeze({ path: coursePath, course });
 }
 
 export async function validatePublicationProfile(rawProfile, options = {}) {
@@ -178,27 +192,85 @@ export async function validatePublicationProfile(rawProfile, options = {}) {
 
   let course = null;
   let coursePath = null;
+  let catalog = null;
   if (root.mode === PUBLICATION_MODES.LEARNER) {
-    if (Array.isArray(root.course)) {
-      profileError(profileName, "course", "muss genau eine Kursquelle als Objekt enthalten, kein Array.");
+    const hasCourse = root.course !== undefined;
+    const hasCatalog = root.courseCatalog !== undefined;
+    if (hasCourse === hasCatalog) {
+      profileError(
+        profileName,
+        hasCourse ? "courseCatalog" : "course",
+        hasCourse
+          ? "darf nicht gemeinsam mit course angegeben sein."
+          : "oder courseCatalog muss für ein Learner-Profil angegeben sein.",
+      );
     }
-    const rawCourse = requireObject(root.course, profileName, "course");
-    rejectUnknownKeys(rawCourse, PROFILE_KEYS.course, profileName, "course");
-    coursePath = safeRepositoryPath(rawCourse.file, {
-      repositoryRoot,
+    if (hasCourse) {
+      if (Array.isArray(root.course)) {
+        profileError(profileName, "course", "muss genau eine Kursquelle als Objekt enthalten, kein Array.");
+      }
+      const rawCourse = requireObject(root.course, profileName, "course");
+      rejectUnknownKeys(rawCourse, PROFILE_KEYS.course, profileName, "course");
+      const loaded = await requireCourseFile(rawCourse.file, {
+        repositoryRoot,
+        profileName,
+        field: "course.file",
+      });
+      coursePath = loaded.path;
+      course = loaded.course;
+    } else {
+      const rawCatalog = requireObject(root.courseCatalog, profileName, "courseCatalog");
+      rejectUnknownKeys(rawCatalog, PROFILE_KEYS.courseCatalog, profileName, "courseCatalog");
+      if (!Array.isArray(rawCatalog.entries) || rawCatalog.entries.length === 0) {
+        profileError(profileName, "courseCatalog.entries", "muss mindestens einen Browser-Kurs enthalten.");
+      }
+      const publicationIds = new Set();
+      const courseIds = new Set();
+      const entries = [];
+      for (const [index, rawEntry] of rawCatalog.entries.entries()) {
+        const field = `courseCatalog.entries[${index}]`;
+        const entry = requireObject(rawEntry, profileName, field);
+        rejectUnknownKeys(entry, PROFILE_KEYS.courseCatalogEntry, profileName, field);
+        const publicationId = requireText(entry.publicationId, profileName, `${field}.publicationId`);
+        if (!PUBLICATION_ID_PATTERN.test(publicationId)) {
+          profileError(
+            profileName,
+            `${field}.publicationId`,
+            "darf nur Kleinbuchstaben, Ziffern und innere Bindestriche enthalten.",
+          );
+        }
+        if (publicationIds.has(publicationId)) {
+          profileError(profileName, `${field}.publicationId`, "kommt im Browser-Katalog mehrfach vor.");
+        }
+        publicationIds.add(publicationId);
+        const loaded = await requireCourseFile(entry.file, {
+          repositoryRoot,
+          profileName,
+          field: `${field}.file`,
+        });
+        if (courseIds.has(loaded.course.id)) {
+          profileError(
+            profileName,
+            `${field}.file`,
+            `verwendet die Kurs-ID „${loaded.course.id}“ mehrfach im Browser-Katalog.`,
+          );
+        }
+        courseIds.add(loaded.course.id);
+        entries.push(Object.freeze({
+          publicationId,
+          file: loaded.path.value,
+          absoluteFile: loaded.path.absolute,
+          course: loaded.course,
+        }));
+      }
+      catalog = Object.freeze({ entries: Object.freeze(entries) });
+    }
+  } else if (root.course !== undefined || root.courseCatalog !== undefined) {
+    profileError(
       profileName,
-      field: "course.file",
-    });
-    try {
-      const courseStat = await stat(coursePath.absolute);
-      if (!courseStat.isFile()) profileError(profileName, "course.file", "muss eine Datei sein.");
-    } catch (error) {
-      if (error instanceof PublicationProfileError) throw error;
-      profileError(profileName, "course.file", "existiert nicht.");
-    }
-    course = await loadCourse(coursePath.absolute, profileName);
-  } else if (root.course !== undefined) {
-    profileError(profileName, "course", "wird im Author-Profil nicht fest vorgegeben.");
+      root.course !== undefined ? "course" : "courseCatalog",
+      "wird im Author-Profil nicht fest vorgegeben.",
+    );
   }
 
   const profile = Object.freeze({
@@ -208,13 +280,22 @@ export async function validatePublicationProfile(rawProfile, options = {}) {
     mode: root.mode,
     app,
     course: coursePath ? Object.freeze({ file: coursePath.value }) : null,
+    courseCatalog: catalog
+      ? Object.freeze({
+        entries: Object.freeze(catalog.entries.map((entry) => Object.freeze({
+          publicationId: entry.publicationId,
+          file: entry.file,
+        }))),
+      })
+      : null,
     features,
     output: Object.freeze({ directory: outputPath.value, basePath }),
   });
-  return Object.freeze({ profile, course, paths: Object.freeze({
+  return Object.freeze({ profile, course, catalog, paths: Object.freeze({
     repositoryRoot,
     outputDirectory: outputPath.absolute,
     courseFile: coursePath?.absolute ?? null,
+    courseFiles: Object.freeze(catalog?.entries.map((entry) => entry.absoluteFile) ?? []),
   }) });
 }
 

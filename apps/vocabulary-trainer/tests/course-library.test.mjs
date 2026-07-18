@@ -967,7 +967,7 @@ test("JSON-Export enthält nur Kursinhalt und einen stabilen Dateinamen", () => 
   assert.equal(exported.text.includes("session"), false);
 });
 
-test("Course Builder trennt JSON-Sicherung und individuelles SCORM-Lernpaket", () => {
+test("Course Builder trennt JSON-Sicherung, Browser-Vorbereitung und individuelles SCORM-Lernpaket", () => {
   const documentRoot = new MiniDocument();
   const container = documentRoot.createElement("div");
   const course = validCourse();
@@ -989,8 +989,14 @@ test("Course Builder trennt JSON-Sicherung und individuelles SCORM-Lernpaket", (
   assert.match(container.textContent, /1 freigegebenes Lernpaket · 2 Wörter · Englisch → Deutsch/);
   assert.match(container.textContent, /SCORM-Lernpaket herunterladen/);
   assert.match(container.textContent, /ZIP-Datei nicht entpacken/);
+  assert.match(container.textContent, /Browser-Kurs für Veröffentlichung vorbereiten/);
+  assert.match(container.textContent, /Der Download veröffentlicht noch nichts/);
+  assert.match(container.textContent, /keine Namen, personenbezogenen Daten, Lehrwerksbilder oder Scans/);
+  assert.match(container.textContent, /manuelle Aufnahme in den öffentlichen Browser-Katalog/);
   assert.equal(findNodes(container, (node) => node.dataset.editorAction === "export").length, 1);
+  assert.equal(findNodes(container, (node) => node.dataset.editorAction === "export-browser").length, 1);
   assert.equal(findNodes(container, (node) => node.dataset.editorAction === "export-scorm").length, 1);
+  assert.equal(findNodes(container, (node) => Object.hasOwn(node.dataset, "browserPublicationConfirm")).length, 1);
   const status = findNodes(container, (node) => Object.hasOwn(node.dataset, "scormExportStatus"))[0];
   assert.equal(status.attributes.get("role"), "status");
   assert.equal(status.attributes.get("aria-live"), "polite");

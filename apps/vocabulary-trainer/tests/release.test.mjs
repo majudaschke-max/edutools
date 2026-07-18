@@ -96,7 +96,10 @@ for (const [name, relative] of [
   ["Author-Index", "author/index.html"],
   ["Author-Buildmanifest", "author/build-manifest.json"],
   ["Author-Runtimeprofil", "author/runtime/deployment-profile.json"],
-  ["Learner-Kurs", "data/course.json"],
+  ["Learner-Kurskatalog", "data/courses/index.json"],
+  ["Learner-Kurs Alltag", "data/courses/english-everyday.json"],
+  ["Learner-Kurs Aufbau", "data/courses/english-advanced.json"],
+  ["Learner-Kurs Latein", "data/courses/latin-foundations.json"],
 ]) {
   test(`Release enthält ${name}`, async () => assert.equal((await stat(path.join(RELEASE_ROOT, relative))).isFile(), true));
 }
@@ -110,6 +113,13 @@ test("Learner enthält keine Autorenmodule und Author enthält Course Builder", 
   assert.equal((await stat(path.join(RELEASE_ROOT, "author/import/course-exporter.js"))).isFile(), true);
   assert.equal((await stat(path.join(RELEASE_ROOT, "author/prompts/prompt-generator.js"))).isFile(), true);
   assert.equal((await stat(path.join(RELEASE_ROOT, "author/prompts/vocabulary/import-v1.txt"))).isFile(), true);
+  for (const catalogModule of [
+    "runtime/published-course-catalog.js",
+    "views/published-course-library-view.js",
+  ]) {
+    assert.equal((await stat(path.join(RELEASE_ROOT, catalogModule))).isFile(), true);
+    await assert.rejects(() => stat(path.join(RELEASE_ROOT, "author", catalogModule)));
+  }
   const learnerHtml = await readFile(path.join(RELEASE_ROOT, "index.html"), "utf8");
   const authorHtml = await readFile(path.join(RELEASE_ROOT, "author/index.html"), "utf8");
   const authorBuilder = await readFile(path.join(RELEASE_ROOT, "author/views/course-builder-view.js"), "utf8");
@@ -135,6 +145,11 @@ test("Release-Manifest besitzt sortierte Profile und Dateien", async () => {
   assert.deepEqual(manifest.profiles.map((item) => item.mountPath), ["", "author"]);
   assert.deepEqual(manifest.files.map((item) => item.path), [...manifest.files.map((item) => item.path)].sort());
   assert.match(manifest.releaseHash, /^[a-f0-9]{64}$/);
+  assert.deepEqual(manifest.profiles[0].courseIds, [
+    "neutral-language-course",
+    "neutral-english-advanced-course",
+    "neutral-latin-foundations-course",
+  ]);
 });
 
 test("Release-Manifestgrößen und SHA-256 stimmen", async () => {
@@ -187,7 +202,7 @@ test("404 ist zugänglich, besitzt Landmarke und keine Weiterleitungsschleife", 
 
 test("statischer Server liefert MIME-Typen, echte 404 und keine Directory Listings", async () => {
   const result = await runReleaseSmokeTests(RELEASE_ROOT, deployment);
-  assert.equal(result.checks.length, 12);
+  assert.equal(result.checks.length, 15);
   assert.equal(result.checks.find((check) => check.pathname === "/does-not-exist").status, 404);
 });
 

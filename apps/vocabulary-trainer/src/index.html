@@ -33,6 +33,9 @@
           <span class="course__label">Aktiver Kurs</span>
           <span class="course__name" data-dashboard-course-title>Neutraler Sprachkurs</span>
           <span class="course__unit" data-dashboard-current-unit>Lernpaket 4</span>
+          <!-- build:catalog:start -->
+          <a class="course__switch" href="#/course-select" data-published-course-switch data-feature-capability="course-catalog" hidden>Kurs wechseln</a>
+          <!-- build:catalog:end -->
         </p>
 
         <nav class="app-nav" aria-label="Hauptnavigation">
@@ -56,6 +59,16 @@
     <main id="app-view" class="dashboard-shell app-view" tabindex="-1" data-vocabulary-app aria-busy="true">
       <p class="visually-hidden" data-pronunciation-live aria-live="polite" aria-atomic="true"></p>
       <p class="visually-hidden" data-course-live aria-live="polite" aria-atomic="true"></p>
+      <!-- build:catalog:start -->
+      <section class="app-screen route-view published-course-selection" data-route-view="/course-select" data-route-title="Browser-Kurs auswählen" hidden>
+        <header class="screen-heading">
+          <p class="section-kicker">Browser-Kurse</p>
+          <h1 id="published-course-selection-title" class="display-page">Welchen Kurs möchtest du lernen?</h1>
+          <p class="card__description">Wähle einen veröffentlichten Kurs. Dein Lernstand bleibt auf diesem Gerät für jeden Kurs getrennt.</p>
+        </header>
+        <div data-published-course-library></div>
+      </section>
+      <!-- build:catalog:end -->
       <div class="dashboard route-view" data-route-view="/dashboard" data-route-title="Dashboard">
       <section class="card dashboard-hero" aria-labelledby="today-title">
         <div class="dashboard-hero__content">

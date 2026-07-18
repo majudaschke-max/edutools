@@ -68,9 +68,39 @@ function runtimeProfile(profile, course, buildHash = null, delivery = null) {
     : { type: "standalone" };
   if (profile.mode === "learner") {
     const suffix = buildHash ? `?build=${buildHash.slice(0, 16)}` : "";
-    result.course = { id: course.id, file: `./data/course.json${suffix}` };
+    if (profile.courseCatalog) {
+      result.courseCatalog = { file: `./data/courses/index.json${suffix}` };
+    } else {
+      result.course = { id: course.id, file: `./data/course.json${suffix}` };
+    }
   }
   return result;
+}
+
+function publishedCatalog(profile, catalog, buildHash = null) {
+  const suffix = buildHash ? `?build=${buildHash.slice(0, 16)}` : "";
+  return {
+    schemaVersion: 1,
+    deploymentId: profile.deploymentId,
+    courses: catalog.entries.map((entry) => ({
+      publicationId: entry.publicationId,
+      courseId: entry.course.id,
+      contentVersion: entry.course.contentVersion,
+      title: entry.course.title,
+      subtitle: entry.course.subtitle,
+      languages: {
+        source: {
+          code: entry.course.languages.source.code,
+          label: entry.course.languages.source.label,
+        },
+        target: {
+          code: entry.course.languages.target.code,
+          label: entry.course.languages.target.label,
+        },
+      },
+      file: `./${entry.publicationId}.json${suffix}`,
+    })),
+  };
 }
 
 function transformIndexHtml(source, profile) {
@@ -86,9 +116,20 @@ function transformIndexHtml(source, profile) {
     `$1\n    <meta http-equiv="Content-Security-Policy" content="${escapeHtml(createContentSecurityPolicy(profile.mode))}">\n    <meta name="referrer" content="no-referrer">`,
   );
   if (profile.mode !== "author") html = removeBuildBlock(html, "author");
+  if (!profile.courseCatalog) html = removeBuildBlock(html, "catalog");
   if (!profile.features.speedChallenge) html = removeBuildBlock(html, "speed");
   if (!profile.features.motivation) html = removeBuildBlock(html, "motivation");
   return removeBuildMarkers(html);
+}
+
+function transformAppJs(source, profile) {
+  if (profile.courseCatalog) {
+    return source.replace(/\s*\/\* build:catalog:(?:start|end) \*\//g, "");
+  }
+  return source.replace(
+    /\s*\/\* build:catalog:start \*\/[\s\S]*?\/\* build:catalog:end \*\//g,
+    "",
+  );
 }
 
 function addBuildHashToIndex(source, buildHash) {
@@ -147,7 +188,7 @@ export async function validateStaticReferences(buildRoot, files) {
   }
 }
 
-export async function validateBuiltVocabularyTrainer(buildRoot, profile, course = null) {
+export async function validateBuiltVocabularyTrainer(buildRoot, profile, course = null, catalog = null) {
   const files = (await listFiles(buildRoot)).sort();
   for (const required of ["index.html", "runtime/deployment-profile.json", "build-manifest.json", ".nojekyll"]) {
     if (!files.includes(required)) throw new Error(`Builddatei fehlt: ${required}`);
@@ -168,7 +209,38 @@ export async function validateBuiltVocabularyTrainer(buildRoot, profile, course 
   }
   if (profile.mode === "learner") {
     const courseFiles = files.filter((file) => /^data\/.*\.json$/i.test(file));
-    if (courseFiles.length !== 1 || courseFiles[0] !== "data/course.json") {
+    if (profile.courseCatalog) {
+      const expectedCourseFiles = [
+        "data/courses/index.json",
+        ...profile.courseCatalog.entries.map((entry) => `data/courses/${entry.publicationId}.json`),
+      ].sort();
+      if (courseFiles.join("\n") !== expectedCourseFiles.join("\n")) {
+        throw new Error("Katalog-Learner enthält unerwartete oder fehlende Kursdateien.");
+      }
+      for (const required of [
+        "runtime/published-course-catalog.js",
+        "views/published-course-library-view.js",
+      ]) {
+        if (!files.includes(required)) throw new Error(`Katalog-Learner-Datei fehlt: ${required}`);
+      }
+      const builtCatalog = JSON.parse(await readText(path.join(buildRoot, "data/courses/index.json")));
+      if (builtCatalog.deploymentId !== profile.deploymentId) {
+        throw new Error("Browser-Katalog gehört nicht zum Learner-Deployment.");
+      }
+      const expectedIds = profile.courseCatalog.entries.map((entry) => entry.publicationId);
+      if (builtCatalog.courses?.map((entry) => entry.publicationId).join("\n") !== expectedIds.join("\n")) {
+        throw new Error("Browser-Katalog bildet die Profilreihenfolge nicht ab.");
+      }
+      for (const entry of catalog?.entries ?? []) {
+        const builtCourse = JSON.parse(await readText(path.join(
+          buildRoot,
+          `data/courses/${entry.publicationId}.json`,
+        )));
+        if (builtCourse.id !== entry.course.id) {
+          throw new Error(`Kurs-ID im Browser-Katalog stimmt nicht: ${entry.publicationId}`);
+        }
+      }
+    } else if (courseFiles.length !== 1 || courseFiles[0] !== "data/course.json") {
       throw new Error("Learner-Build muss genau data/course.json als Kursdatei enthalten.");
     }
     const forbidden = [
@@ -192,9 +264,27 @@ export async function validateBuiltVocabularyTrainer(buildRoot, profile, course 
     if (/href="#\/(?:courses|course-builder)/.test(indexHtml)) {
       throw new Error("Learner-Navigation enthält eine Autorenroute.");
     }
-    const builtCourse = JSON.parse(await readText(path.join(buildRoot, "data/course.json")));
-    if (builtCourse.id !== course.id) throw new Error("Kurs-ID im Learner-Build stimmt nicht überein.");
+    if (!profile.courseCatalog) {
+      for (const forbiddenCatalogFile of [
+        "runtime/published-course-catalog.js",
+        "views/published-course-library-view.js",
+      ]) {
+        if (files.includes(forbiddenCatalogFile)) {
+          throw new Error(`Einzelkurs-Learner enthält eine Katalogdatei: ${forbiddenCatalogFile}`);
+        }
+      }
+      const builtCourse = JSON.parse(await readText(path.join(buildRoot, "data/course.json")));
+      if (builtCourse.id !== course.id) throw new Error("Kurs-ID im Learner-Build stimmt nicht überein.");
+    }
   } else {
+    for (const forbiddenCatalogFile of [
+      "runtime/published-course-catalog.js",
+      "views/published-course-library-view.js",
+    ]) {
+      if (files.includes(forbiddenCatalogFile)) {
+        throw new Error(`Author-Build enthält eine Learner-Katalogdatei: ${forbiddenCatalogFile}`);
+      }
+    }
     for (const required of [
       "course-library/course-runtime.js",
       "ai-import/ai-import-controller.js",
@@ -267,7 +357,7 @@ export async function buildVocabularyTrainer(profilePath, options = {}) {
     repositoryRoot,
     profilePath,
   });
-  const { profile, course, paths } = validated;
+  const { profile, course, catalog, paths } = validated;
   const outputDirectory = options.outputDirectory
     ? path.resolve(options.outputDirectory)
     : paths.outputDirectory;
@@ -281,6 +371,8 @@ export async function buildVocabularyTrainer(profilePath, options = {}) {
   try {
     const plan = await createBuildFilePlan({ repositoryRoot, profile });
     await copyPlannedFiles(plan, tempDirectory);
+    const appPath = path.join(tempDirectory, "app.js");
+    await writeFile(appPath, transformAppJs(await readText(appPath), profile), "utf8");
     const indexPath = path.join(tempDirectory, "index.html");
     await writeFile(indexPath, transformIndexHtml(await readText(indexPath), profile), "utf8");
     const cssPath = path.join(tempDirectory, "dashboard.css");
@@ -294,7 +386,20 @@ export async function buildVocabularyTrainer(profilePath, options = {}) {
       );
     }
     if (profile.mode === "learner") {
-      await writeJson(path.join(tempDirectory, "data/course.json"), course);
+      if (profile.courseCatalog) {
+        for (const entry of catalog.entries) {
+          await writeJson(
+            path.join(tempDirectory, `data/courses/${entry.publicationId}.json`),
+            entry.course,
+          );
+        }
+        await writeJson(
+          path.join(tempDirectory, "data/courses/index.json"),
+          publishedCatalog(profile, catalog),
+        );
+      } else {
+        await writeJson(path.join(tempDirectory, "data/course.json"), course);
+      }
     }
     if (
       profile.mode === "author"
@@ -319,9 +424,15 @@ export async function buildVocabularyTrainer(profilePath, options = {}) {
     }
     await writeJson(runtimePath, runtimeProfile(profile, course, null, options.deliveryProfile));
     await writeFile(path.join(tempDirectory, ".nojekyll"), "", "utf8");
-    const preliminaryManifest = await createBuildManifest(tempDirectory, profile, course);
+    const preliminaryManifest = await createBuildManifest(tempDirectory, profile, course, catalog);
     const buildHash = preliminaryManifest.buildHash;
     await writeFile(indexPath, addBuildHashToIndex(await readText(indexPath), buildHash), "utf8");
+    if (profile.courseCatalog) {
+      await writeJson(
+        path.join(tempDirectory, "data/courses/index.json"),
+        publishedCatalog(profile, catalog, buildHash),
+      );
+    }
     await writeJson(runtimePath, runtimeProfile(profile, course, buildHash, options.deliveryProfile));
     await writeJson(path.join(tempDirectory, "runtime/build-info.json"), {
       schemaVersion: 1,
@@ -330,13 +441,19 @@ export async function buildVocabularyTrainer(profilePath, options = {}) {
       deploymentId: profile.deploymentId,
       buildHash,
     });
-    const manifest = await createBuildManifest(tempDirectory, profile, course);
+    const manifest = await createBuildManifest(tempDirectory, profile, course, catalog);
     manifest.buildHash = buildHash;
     await writeJson(path.join(tempDirectory, "build-manifest.json"), manifest);
-    await validateBuiltVocabularyTrainer(tempDirectory, profile, course);
+    await validateBuiltVocabularyTrainer(tempDirectory, profile, course, catalog);
     await options.beforeReplace?.({ tempDirectory, outputDirectory, profile });
     await replaceBuildAtomically(tempDirectory, outputDirectory);
-    return { outputDirectory, profile, courseId: course?.id ?? null, manifest };
+    return {
+      outputDirectory,
+      profile,
+      courseId: course?.id ?? null,
+      courseIds: catalog?.entries.map((entry) => entry.course.id) ?? [],
+      manifest,
+    };
   } catch (error) {
     await cleanDirectory(tempDirectory);
     throw error;

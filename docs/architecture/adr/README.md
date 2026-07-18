@@ -28,3 +28,4 @@ Architecture Decision Records (ADRs) halten wichtige technische und strukturelle
 - [ADR-015: Lokale kalenderbasierte Lernserie](ADR-015-local-calendar-learning-streak.md)
 - [ADR-016: Universelle Importpipeline vor dem kanonischen Kursmodell](ADR-016-universal-import-pipeline.md)
 - [ADR-017: Versionierte lokale Promptressourcen](ADR-017-versioned-prompt-resources.md)
+- [ADR-018: Statischer Mehrkurs-Katalog für öffentliche Browser-Learner](ADR-018-static-multi-course-browser-catalog.md)

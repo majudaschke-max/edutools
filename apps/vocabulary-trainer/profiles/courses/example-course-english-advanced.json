@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "id": "neutral-english-advanced-course",
+  "appType": "vocabulary",
+  "contentVersion": 1,
+  "sourceType": "bundled",
+  "editable": false,
+  "title": "Englisch – Aufbauwortschatz",
+  "subtitle": "Neutrale Übungsinhalte für fortgeschrittenes Englisch",
+  "description": "Frei zusammengestellter Aufbauwortschatz ohne Verbindung zu einem Lehrwerk oder Verlag.",
+  "schoolType": "",
+  "gradeLevel": "",
+  "createdAt": "2026-01-01T00:00:00.000Z",
+  "updatedAt": "2026-01-01T00:00:00.000Z",
+  "languages": {
+    "source": { "code": "en", "label": "Englisch", "speechLocale": "en-GB" },
+    "target": { "code": "de", "label": "Deutsch", "speechLocale": "de-DE" }
+  },
+  "pronunciation": { "enabled": true, "rate": 0.9, "pitch": 1, "volume": 1 },
+  "archived": false,
+  "units": [
+    {
+      "id": "neutral-advanced-unit-1",
+      "title": "Beschreiben und begründen",
+      "description": "",
+      "order": 1,
+      "released": true,
+      "current": true,
+      "archived": false,
+      "words": [
+        {
+          "id": "neutral-advanced-word-001",
+          "source": "reliable",
+          "targets": ["zuverlässig", "verlässlich"],
+          "phonetic": "rɪˈlaɪəbl",
+          "hint": "Someone or something that can be trusted to work well.",
+          "example": "A reliable plan helps the whole group.",
+          "tags": ["adjective"],
+          "archived": false
+        },
+        {
+          "id": "neutral-advanced-word-002",
+          "source": "consider",
+          "targets": ["berücksichtigen", "erwägen"],
+          "phonetic": "kənˈsɪdə",
+          "hint": "To think carefully about a fact or possibility.",
+          "example": "Please consider both ideas before you decide.",
+          "tags": ["verb"],
+          "archived": false
+        },
+        {
+          "id": "neutral-advanced-word-003",
+          "source": "evidence",
+          "targets": ["Beleg", "Nachweis"],
+          "phonetic": "ˈevɪdəns",
+          "hint": "Information that helps show whether something is true.",
+          "example": "The report includes evidence for its conclusion.",
+          "tags": ["noun"],
+          "archived": false
+        },
+        {
+          "id": "neutral-advanced-word-004",
+          "source": "nevertheless",
+          "targets": ["trotzdem", "dennoch"],
+          "phonetic": "ˌnevəðəˈles",
+          "hint": "Used to introduce a contrast with what was just said.",
+          "example": "The route was long; nevertheless, we arrived on time.",
+          "tags": ["adverb"],
+          "archived": false
+        }
+      ]
+    }
+  ]
+}

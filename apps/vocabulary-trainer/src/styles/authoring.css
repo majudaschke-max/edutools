@@ -275,6 +275,18 @@
   overflow-wrap: anywhere;
 }
 
+.course-publication-confirmation {
+  align-items: flex-start;
+  padding: var(--space-3);
+  background: var(--color-bg-surface);
+  border: var(--border-width) solid var(--color-border-default);
+  border-radius: var(--radius-md);
+}
+
+.course-publication-confirmation input {
+  margin-block-start: var(--space-1);
+}
+
 .unit-editor-item,
 .word-editor-item,
 .import-preview,

@@ -6,10 +6,10 @@
     "language": "de",
     "description": "Statischer Vocabulary Trainer und lokales Autorenwerkzeug"
   },
-  "rootProfileId": "vocabulary-learner",
+  "rootProfileId": "vocabulary-learner-catalog",
   "entries": [
     {
-      "profile": "apps/vocabulary-trainer/profiles/production/learner.production.json",
+      "profile": "apps/vocabulary-trainer/profiles/production/learner-catalog.production.json",
       "mountPath": ""
     },
     {

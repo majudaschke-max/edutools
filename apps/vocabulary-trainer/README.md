@@ -72,8 +72,30 @@ verändern. Sprint 4.1.2 lagert den bestehenden Prompt als versionierte lokale
 Klartextressource aus. Registry, SHA-256-Prüfung, strikte Template-Engine und
 PromptGenerator bereiten weitere Versionen und Promptfamilien vor; eine neue
 KI-Importfunktion oder sichtbare UI entsteht dabei nicht.
-Veröffentlichungsprofile erzeugen wahlweise die vollständige Autorenanwendung
-oder eine statische Lernanwendung mit genau einem freigegebenen Kurs.
+Veröffentlichungsprofile erzeugen wahlweise die vollständige Autorenanwendung,
+eine statische Lernanwendung mit genau einem freigegebenen Kurs oder einen
+öffentlichen Pages-Learner mit einem expliziten statischen Kurskatalog. Der
+Katalog verwendet stabile Direktlinks und bleibt vollständig vom privaten
+Einzelkurs-SCORM-Export getrennt.
+
+## Öffentliche Browser-Kurse
+
+Der Pages-Learner lädt `data/courses/index.json` und bietet ausschließlich die
+im Produktionsprofil bewusst gelisteten, neutral benannten Kurse an. Ein
+Direktlink verwendet `?course=<publicationId>#/dashboard`; ohne Kursparameter
+erscheint die Kursauswahl. Lernstand, Motivation und Lernbereich bleiben über
+die stabile Deployment- und Kurs-ID lokal getrennt.
+
+Im Course Builder bereitet `Browser-Kursdatei vorbereiten` nach einer
+ausdrücklichen Öffentlichkeitserklärung den bestehenden kanonischen
+JSON-Export vor. Dieser Download veröffentlicht nichts. Erst die manuelle
+Aufnahme in das Katalogprofil und ein getrennter Pages-Release stellen den
+Kurs öffentlich bereit. GitHub Pages bietet keinen privaten Link: Kurse dürfen
+keine Namen, personenbezogenen Daten, Lehrwerksbilder oder Scans enthalten.
+
+`SCORM-Lernpaket herunterladen` bleibt ein davon unabhängiger lokaler
+Einzelkurs-Export für eine neue ByCS-/Moodle-Aktivität. SCORM-only-Kurse
+erscheinen niemals automatisch im Pages-Katalog.
 
 ## Struktur
 

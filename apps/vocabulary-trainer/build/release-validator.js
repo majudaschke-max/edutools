@@ -81,7 +81,7 @@ export async function validatePagesRelease(releaseRoot, deployment) {
         throw new Error(`Pages-Release: Profil „${entry.profile.profileId}" fehlt ${required}.`);
       }
     }
-    await validateBuiltVocabularyTrainer(prefix, entry.profile, entry.course);
+    await validateBuiltVocabularyTrainer(prefix, entry.profile, entry.course, entry.catalog);
     const buildManifest = await readJson(path.join(prefix, "build-manifest.json"), "Build-Manifest");
     await assertManifestFileEntries(prefix, buildManifest);
     const runtime = await readJson(path.join(prefix, "runtime/deployment-profile.json"), "Runtime-Profil");
@@ -94,7 +94,12 @@ export async function validatePagesRelease(releaseRoot, deployment) {
       const expected = field === "mountPath" ? entry.mountPath : entry.profile[field];
       if (listedProfile[field] !== expected) throw new Error(`Release-Manifest: Profilfeld ${field} stimmt nicht.`);
     }
-    if (listedProfile.courseId !== (entry.course?.id ?? null) || listedProfile.buildHash !== buildManifest.buildHash) {
+    const expectedCourseIds = entry.catalog?.entries.map((catalogEntry) => catalogEntry.course.id) ?? [];
+    if (
+      listedProfile.courseId !== (entry.course?.id ?? null)
+      || JSON.stringify(listedProfile.courseIds ?? []) !== JSON.stringify(expectedCourseIds)
+      || listedProfile.buildHash !== buildManifest.buildHash
+    ) {
       throw new Error("Release-Manifest: Kurs-ID oder Build-Hash stimmt nicht.");
     }
   }
