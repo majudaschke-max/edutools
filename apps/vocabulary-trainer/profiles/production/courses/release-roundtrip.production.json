@@ -1,0 +1,104 @@
+{
+  "schemaVersion": 1,
+  "id": "course-6944f5d5-9f0e-4df5-afb8-b6f7add482dc",
+  "appType": "vocabulary",
+  "contentVersion": 1,
+  "sourceType": "own",
+  "editable": true,
+  "title": "Release Roundtrip Kurs",
+  "subtitle": "Neutraler Produktionsnachweis",
+  "description": "Temporärer Kurs für den validierten Export- und Importnachweis.",
+  "schoolType": "",
+  "gradeLevel": "",
+  "createdAt": "2026-07-14T19:01:35.650Z",
+  "updatedAt": "2026-07-14T19:04:46.145Z",
+  "languages": {
+    "source": {
+      "code": "fr",
+      "label": "Französisch",
+      "speechLocale": "fr-FR"
+    },
+    "target": {
+      "code": "de",
+      "label": "Deutsch",
+      "speechLocale": "de-DE"
+    }
+  },
+  "pronunciation": {
+    "enabled": true,
+    "rate": 0.9,
+    "pitch": 1,
+    "volume": 1
+  },
+  "archived": false,
+  "units": [
+    {
+      "id": "unit-fdeb1b37-5ca9-4e3b-a0f0-19daa5caa602",
+      "title": "Module 1",
+      "description": "",
+      "order": 1,
+      "released": true,
+      "current": true,
+      "archived": false,
+      "words": [
+        {
+          "id": "word-25394a79-137e-4ff1-aaac-85b5d301b5d4",
+          "source": "château",
+          "targets": [
+            "Burg",
+            "Schloss"
+          ],
+          "phonetic": "ʃɑ.to",
+          "hint": "Un grand bâtiment fortifié où vivait une famille noble.",
+          "example": "Le château domine la vallée.",
+          "tags": [
+            "nom",
+            "bâtiment"
+          ],
+          "archived": false
+        },
+        {
+          "id": "word-ce9c5d91-3a98-4f53-a6fa-9e5e4c7d4521",
+          "source": "rivière",
+          "targets": [
+            "Fluss"
+          ],
+          "phonetic": "ʁi.vjɛʁ",
+          "hint": "Un cours d’eau naturel qui traverse le paysage.",
+          "example": "La rivière traverse le village.",
+          "tags": [
+            "nom",
+            "nature"
+          ],
+          "archived": false
+        }
+      ]
+    },
+    {
+      "id": "unit-1c4007ea-9266-4544-a33d-7a35cc74028b",
+      "title": "Module 2",
+      "description": "",
+      "order": 2,
+      "released": false,
+      "current": false,
+      "archived": false,
+      "words": [
+        {
+          "id": "word-2d60bb0a-3392-4e27-b59e-49141edbc982",
+          "source": "voyage",
+          "targets": [
+            "Reise"
+          ],
+          "phonetic": "vwa.jaʒ",
+          "hint": "Un déplacement d’un lieu à un autre.",
+          "example": "Le voyage commence demain.",
+          "tags": [
+            "nom",
+            "déplacement"
+          ],
+          "archived": false
+        }
+      ]
+    }
+  ]
+}

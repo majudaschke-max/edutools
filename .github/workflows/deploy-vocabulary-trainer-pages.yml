@@ -1,0 +1,102 @@
+name: Vocabulary Trainer Pages
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "apps/vocabulary-trainer/build/**"
+      - "apps/vocabulary-trainer/deployments/**"
+      - "apps/vocabulary-trainer/docs/**"
+      - "apps/vocabulary-trainer/profiles/**"
+      - "apps/vocabulary-trainer/scorm/examples/**"
+      - "apps/vocabulary-trainer/scripts/**"
+      - "apps/vocabulary-trainer/src/**"
+      - "apps/vocabulary-trainer/tests/**"
+      - "design-system/css/**"
+      - "docs/architecture/**"
+      - ".github/workflows/deploy-vocabulary-trainer-pages.yml"
+  pull_request:
+    paths:
+      - "apps/vocabulary-trainer/build/**"
+      - "apps/vocabulary-trainer/deployments/**"
+      - "apps/vocabulary-trainer/docs/**"
+      - "apps/vocabulary-trainer/profiles/**"
+      - "apps/vocabulary-trainer/scorm/examples/**"
+      - "apps/vocabulary-trainer/scripts/**"
+      - "apps/vocabulary-trainer/src/**"
+      - "apps/vocabulary-trainer/tests/**"
+      - "design-system/css/**"
+      - "docs/architecture/**"
+      - ".github/workflows/deploy-vocabulary-trainer-pages.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    name: Test, build and verify Pages artifact
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "24"
+          package-manager-cache: false
+
+      - name: Run all tests
+        run: node apps/vocabulary-trainer/scripts/test-all.mjs
+
+      - name: Check JavaScript syntax
+        run: node apps/vocabulary-trainer/scripts/check-syntax.mjs
+
+      - name: Validate JSON files
+        run: node apps/vocabulary-trainer/scripts/validate-json.mjs
+
+      - name: Validate production deployment set
+        run: node apps/vocabulary-trainer/scripts/validate-deployment.mjs
+
+      - name: Verify course export/import roundtrip fixture
+        run: node apps/vocabulary-trainer/scripts/roundtrip.mjs
+
+      - name: Assemble atomic Pages release
+        run: node apps/vocabulary-trainer/scripts/release-pages.mjs --deployment apps/vocabulary-trainer/deployments/github-pages.production.json --verified
+
+      - name: Validate Pages release tree and manifests
+        run: node apps/vocabulary-trainer/scripts/validate-release.mjs
+
+      - name: Run static production smoke tests
+        run: node apps/vocabulary-trainer/scripts/smoke-release.mjs
+
+      - name: Configure GitHub Pages
+        if: github.event_name != 'pull_request'
+        uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
+
+      - name: Upload validated Pages artifact
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        with:
+          path: dist/pages
+
+  deploy:
+    name: Deploy GitHub Pages
+    if: github.event_name != 'pull_request'
+    needs: verify
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy validated artifact
+        id: deployment
+        uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5.0.0

@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "decoder": {
+    "name": "heic-to",
+    "version": "1.5.2",
+    "license": "LGPL-3.0",
+    "variant": "csp",
+    "libheifVersion": "1.22.2"
+  },
+  "files": [
+    {
+      "file": "heic-to-LICENSE",
+      "bytes": 8177,
+      "sha256": "dbd7222d8026e5d6ca6991d1e6a205de927f300840433c2e90a60644a9980c75"
+    },
+    {
+      "file": "heic-to.js",
+      "bytes": 2995463,
+      "sha256": "c189220a7a1e87559758a48ab4700e55629fb23a4cb57489e1e8970be1b9d018"
+    }
+  ]
+}

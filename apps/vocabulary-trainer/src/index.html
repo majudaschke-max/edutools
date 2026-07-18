@@ -1,0 +1,530 @@
+<!doctype html>
+<html lang="de" data-edutools-theme="vocabulary">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="EduTools Vocabulary Trainer">
+    <title>Dashboard – EduTools Vocabulary Trainer</title>
+    <link rel="icon" href="icon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="../../../design-system/css/tokens.css">
+    <link rel="stylesheet" href="../../../design-system/css/brand-core.css">
+    <link rel="stylesheet" href="../../../design-system/css/themes/vocabulary.css">
+    <link rel="stylesheet" href="../../../design-system/css/base.css">
+    <link rel="stylesheet" href="../../../design-system/css/components.css">
+    <link rel="stylesheet" href="dashboard.css?v=4.0.3">
+  </head>
+  <body>
+    <a class="skip-link" href="#app-view">Zum Hauptinhalt springen</a>
+    <header class="app-header">
+      <div class="dashboard-shell app-header__inner">
+        <a class="brand" href="#/dashboard" aria-label="EduTools Vocabulary Trainer – zum Dashboard">
+          <svg class="brand__mark" viewBox="0 0 40 40" aria-hidden="true" focusable="false">
+            <rect x="6" y="7" width="22" height="27" rx="5"></rect>
+            <path d="M13 14h18a3 3 0 0 1 3 3v14a3 3 0 0 1-3 3H13z"></path>
+            <path d="M17 21h10M17 26h7"></path>
+          </svg>
+          <span class="brand__copy">
+            <span class="brand__family">EduTools</span>
+            <span class="brand__name" data-app-title>Vocabulary Trainer</span>
+          </span>
+        </a>
+
+        <p class="course" data-dashboard-course-label aria-label="Aktueller Kurs: Neutraler Sprachkurs, Alltag und Umgebung">
+          <span class="course__label">Aktiver Kurs</span>
+          <span class="course__name" data-dashboard-course-title>Neutraler Sprachkurs</span>
+          <span class="course__unit" data-dashboard-current-unit>Lernpaket 4</span>
+        </p>
+
+        <nav class="app-nav" aria-label="Hauptnavigation">
+          <a class="app-nav__link" href="#/dashboard" data-route-link="/dashboard" data-main-nav-link>Dashboard</a>
+          <a class="app-nav__link" href="#/learn" data-route-link="/learn" data-route-group="learning" data-main-nav-link>Lernen</a>
+          <a class="app-nav__link" href="#/progress" data-route-link="/progress" data-main-nav-link>Fortschritt</a>
+          <!-- build:author:start -->
+          <a class="app-nav__link" href="#/courses" data-route-link="/courses" data-route-group="courses" data-main-nav-link data-course-builder-only data-feature-capability="authoring">Kurse</a>
+          <!-- build:author:end -->
+        </nav>
+
+        <a class="button button--icon icon-button" href="#/settings" data-route-link="/settings" data-header-action aria-label="Einstellungen öffnen" title="Einstellungen">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+            <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.09a2 2 0 0 1-1-1.74v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+        </a>
+      </div>
+    </header>
+
+    <main id="app-view" class="dashboard-shell app-view" tabindex="-1" data-vocabulary-app aria-busy="true">
+      <p class="visually-hidden" data-pronunciation-live aria-live="polite" aria-atomic="true"></p>
+      <p class="visually-hidden" data-course-live aria-live="polite" aria-atomic="true"></p>
+      <div class="dashboard route-view" data-route-view="/dashboard" data-route-title="Dashboard">
+      <section class="card dashboard-hero" aria-labelledby="today-title">
+        <div class="dashboard-hero__content">
+          <p class="section-kicker" data-app-status>Dein Lernplan für heute</p>
+          <h1 id="app-error-title" class="display-hero" data-app-error-title hidden>Vocabulary Trainer nicht verfügbar</h1>
+          <p class="card__description" data-app-error role="alert" hidden></p>
+          <h1 id="today-title" class="display-hero" data-app-ready>Heute lernen</h1>
+          <p class="dashboard-hero__lead" data-dashboard-today-count data-app-ready>18 Wörter warten auf dich.</p>
+          <p class="learning-time" data-app-ready>
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+              <circle cx="12" cy="12" r="10"></circle>
+              <path d="M12 6v6l4 2"></path>
+            </svg>
+            <span>Geschätzte Lernzeit: <strong data-dashboard-estimated-time>ca. 8 Minuten</strong></span>
+          </p>
+          <div class="dashboard-hero__actions" data-app-ready>
+            <a class="button button--primary hero-primary-action" href="#/learn" data-route-link="/learn">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                <path d="m6 3 14 9-14 9z"></path>
+              </svg>
+              Jetzt lernen
+            </a>
+            <a class="button button--secondary" href="#/units" data-route-link="/units">Lernbereich ändern</a>
+          </div>
+        </div>
+
+        <div class="learning-motif" data-app-ready aria-hidden="true">
+          <div class="learning-motif__sheet learning-motif__sheet--back"></div>
+          <div class="learning-motif__sheet learning-motif__sheet--middle"></div>
+          <div class="learning-motif__sheet learning-motif__sheet--front">
+            <span class="learning-motif__line learning-motif__line--short"></span>
+            <span class="learning-motif__line"></span>
+            <span class="learning-motif__line"></span>
+          </div>
+        </div>
+      </section>
+
+      <section class="dashboard-section" data-dashboard-section aria-labelledby="status-title">
+        <div class="section-heading">
+          <div>
+            <p class="section-kicker">Dein Überblick</p>
+            <h2 id="status-title" class="section-title">Lernstatus</h2>
+          </div>
+        </div>
+
+        <div class="status-grid">
+          <article class="card card--stat status-card status-card--new">
+            <h3 class="card__title">Neue Wörter</h3>
+            <p class="card__value" data-dashboard-new-count>18</p>
+          </article>
+          <article class="card card--stat status-card status-card--difficult">
+            <h3 class="card__title">Schwierige Wörter</h3>
+            <p class="card__value" data-dashboard-difficult-count>7</p>
+          </article>
+          <article class="card card--stat status-card status-card--remembered">
+            <h3 class="card__title">Bereits gemerkt</h3>
+            <p class="card__value" data-dashboard-marked-count>46</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="dashboard-section" data-dashboard-section aria-labelledby="modes-title">
+        <div class="section-heading">
+          <div>
+            <p class="section-kicker">Wähle deinen Lernweg</p>
+            <h2 id="modes-title" class="section-title">Lernmodi</h2>
+          </div>
+        </div>
+
+        <div class="learning-mode-grid">
+          <article class="card learning-mode-card learning-mode-card--flashcards">
+            <span class="learning-mode-card__icon" aria-hidden="true">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+                <rect x="4" y="5" width="14" height="16" rx="2"></rect>
+                <path d="M8 3h10a2 2 0 0 1 2 2v12"></path>
+              </svg>
+            </span>
+            <h3 class="card__title">Karteikarten</h3>
+            <p class="card__description">Wörter ansehen, aufdecken und selbst einschätzen.</p>
+            <a class="button button--secondary" href="#/learn" data-route-link="/learn">Karteikarten öffnen</a>
+          </article>
+
+          <article class="card learning-mode-card learning-mode-card--quiz">
+            <span class="learning-mode-card__icon" aria-hidden="true">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+                <path d="M9 11l3 3L22 4"></path>
+                <path d="M21 12a9 9 0 1 1-5.3-8.2"></path>
+              </svg>
+            </span>
+            <h3 class="card__title">Quiz</h3>
+            <p class="card__description">Die passende Übersetzung aus mehreren Möglichkeiten auswählen.</p>
+            <a class="button button--secondary" href="#/quiz" data-route-link="/quiz">Quiz öffnen</a>
+          </article>
+
+          <article class="card learning-mode-card learning-mode-card--writing">
+            <span class="learning-mode-card__icon" aria-hidden="true">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+                <path d="M12 20h9"></path>
+                <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"></path>
+              </svg>
+            </span>
+            <h3 class="card__title">Schreiben</h3>
+            <p class="card__description">Die gesuchte Übersetzung selbst eingeben.</p>
+            <a class="button button--secondary" href="#/write" data-route-link="/write">Schreiben öffnen</a>
+          </article>
+
+          <!-- build:speed:start -->
+          <article class="card learning-mode-card learning-mode-card--speed" data-feature-capability="speed">
+            <span class="learning-mode-card__icon" aria-hidden="true">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+                <circle cx="12" cy="13" r="8"></circle>
+                <path d="M12 9v4l2 2"></path>
+                <path d="M9 2h6"></path>
+              </svg>
+            </span>
+            <h3 class="card__title">Speed Challenge</h3>
+            <p class="card__description">Passende Wortpaare unter Zeitdruck zuordnen.</p>
+            <a class="button button--secondary" href="#/speed" data-route-link="/speed">Challenge öffnen</a>
+          </article>
+          <!-- build:speed:end -->
+        </div>
+      </section>
+
+      <section class="card progress-card" data-dashboard-section aria-labelledby="progress-title">
+        <div class="progress-card__heading">
+          <div>
+            <p class="section-kicker" data-dashboard-unit-context>Neutraler Sprachkurs · Alltag und Umgebung</p>
+            <h2 id="progress-title" class="section-title">Fortschritt dieses Lernpakets</h2>
+          </div>
+          <p class="progress-card__value" data-dashboard-progress aria-label="72 Prozent">72&nbsp;%</p>
+        </div>
+        <progress class="unit-progress" data-dashboard-progress-bar value="72" max="100">72 %</progress>
+        <p class="card__description" data-dashboard-progress-description>Du hast bereits 72 % im aktuellen Lernpaket sicher gelernt.</p>
+      </section>
+
+      <!-- build:motivation:start -->
+      <section class="card dashboard-motivation" data-dashboard-section data-dashboard-motivation data-feature-capability="motivation" aria-labelledby="dashboard-motivation-title" hidden>
+        <div class="dashboard-motivation__content">
+          <div class="dashboard-motivation__heading">
+            <div>
+              <p class="section-kicker">Dein Lernweg</p>
+              <h2 id="dashboard-motivation-title" class="section-title" data-dashboard-level>Level 1</h2>
+            </div>
+          </div>
+          <p class="dashboard-motivation__xp" data-dashboard-level-xp>0 von 50 XP bis Level 2</p>
+          <progress class="unit-progress" data-dashboard-level-progress value="0" max="50" aria-label="Level 1: 0 von 50 XP">0 %</progress>
+        </div>
+        <div class="dashboard-motivation__aside">
+          <p class="dashboard-motivation__streak" data-dashboard-streak>🔥 0 Tage in Folge</p>
+          <p class="card__description dashboard-motivation__best" data-dashboard-longest-streak>Beste Serie: 0 Tage</p>
+          <a class="button button--text dashboard-motivation__link" href="#/progress" data-route-link="/progress">Mein Fortschritt</a>
+        </div>
+      </section>
+      <!-- build:motivation:end -->
+
+      <section class="dashboard-section" data-dashboard-section aria-labelledby="quick-title">
+        <div class="section-heading">
+          <div>
+            <p class="section-kicker">Direkt zum Ziel</p>
+            <h2 id="quick-title" class="section-title">Weitere Bereiche</h2>
+          </div>
+        </div>
+
+        <div class="quick-grid">
+          <a class="card card--interactive quick-action" href="#/review" data-route-link="/review">
+            <span class="quick-action__icon" aria-hidden="true">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+                <path d="M3 12a9 9 0 1 0 3-6.7L3 8"></path>
+                <path d="M3 3v5h5"></path>
+              </svg>
+            </span>
+            <span class="quick-action__label">Wiederholen</span>
+          </a>
+
+          <a class="card card--interactive quick-action" href="#/marked" data-route-link="/marked">
+            <span class="quick-action__icon" aria-hidden="true">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+                <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+              </svg>
+            </span>
+            <span class="quick-action__label">Gemerkte Wörter</span>
+          </a>
+
+          <a class="card card--interactive quick-action" href="#/units" data-route-link="/units">
+            <span class="quick-action__icon" aria-hidden="true">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+                <path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"></path>
+                <path d="m22 12.5-9.17 4.17a2 2 0 0 1-1.66 0L2 12.5"></path>
+                <path d="m22 17.5-9.17 4.17a2 2 0 0 1-1.66 0L2 17.5"></path>
+              </svg>
+            </span>
+            <span class="quick-action__label">Alle Lernpakete</span>
+          </a>
+
+          <a class="card card--interactive quick-action" href="#/settings" data-route-link="/settings">
+            <span class="quick-action__icon" aria-hidden="true">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+                <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.09a2 2 0 0 1-1-1.74v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+            </span>
+            <span class="quick-action__label">Einstellungen</span>
+          </a>
+        </div>
+      </section>
+      </div>
+
+      <section class="app-screen route-view" data-route-view="/learn" data-route-title="Heute lernen" aria-labelledby="learn-view-title" hidden>
+        <a class="button button--text screen-back" href="#/dashboard" data-route-link="/dashboard">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+            <path d="M19 12H5"></path>
+            <path d="m12 19-7-7 7-7"></path>
+          </svg>
+          Dashboard
+        </a>
+        <header class="screen-header">
+          <p class="section-kicker">Lernsitzung</p>
+          <h1 id="learn-view-title" class="page-title">Heute lernen</h1>
+          <p class="screen-intro" data-learn-summary>Deine heutige Auswahl wird vorbereitet.</p>
+        </header>
+        <p class="visually-hidden" data-learn-live aria-live="polite" aria-atomic="true"></p>
+        <div class="view-content" data-learn-view-content></div>
+      </section>
+
+      <section class="app-screen route-view" data-route-view="/review" data-route-title="Wiederholen" aria-labelledby="review-view-title" hidden>
+        <a class="button button--text screen-back" href="#/dashboard" data-route-link="/dashboard">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+            <path d="M19 12H5"></path>
+            <path d="m12 19-7-7 7-7"></path>
+          </svg>
+          Dashboard
+        </a>
+        <header class="screen-header">
+          <p class="section-kicker">Dein Lernrhythmus</p>
+          <h1 id="review-view-title" class="page-title">Wiederholen</h1>
+          <p class="screen-intro" data-review-summary>Hier findest du Wörter, deren Wiederholung jetzt sinnvoll ist.</p>
+        </header>
+        <p class="visually-hidden" data-review-live aria-live="polite" aria-atomic="true"></p>
+        <div class="view-content" data-review-view-content></div>
+      </section>
+
+      <section class="app-screen route-view" data-route-view="/marked" data-route-title="Gemerkte Wörter" aria-labelledby="marked-view-title" hidden>
+        <a class="button button--text screen-back" href="#/dashboard" data-route-link="/dashboard">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+            <path d="M19 12H5"></path>
+            <path d="m12 19-7-7 7-7"></path>
+          </svg>
+          Dashboard
+        </a>
+        <header class="screen-header">
+          <p class="section-kicker">Persönliche Auswahl</p>
+          <h1 id="marked-view-title" class="page-title">Gemerkte Wörter</h1>
+          <p class="screen-intro" data-marked-summary>Noch keine Wörter gemerkt.</p>
+        </header>
+        <p class="visually-hidden" data-marked-live aria-live="polite" aria-atomic="true"></p>
+        <div class="view-content" data-marked-view-content></div>
+      </section>
+
+      <section class="app-screen route-view" data-route-view="/quiz" data-route-title="Quiz" aria-labelledby="quiz-view-title" hidden>
+        <a class="button button--text screen-back" href="#/dashboard" data-route-link="/dashboard">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+            <path d="M19 12H5"></path>
+            <path d="m12 19-7-7 7-7"></path>
+          </svg>
+          Dashboard
+        </a>
+        <header class="screen-header">
+          <p class="section-kicker">Wissen prüfen</p>
+          <h1 id="quiz-view-title" class="page-title">Quiz</h1>
+          <p class="screen-intro" data-quiz-summary>Stelle dein Quiz zusammen.</p>
+        </header>
+        <p class="visually-hidden" data-quiz-live aria-live="polite" aria-atomic="true"></p>
+        <div class="view-content" data-quiz-view-content></div>
+      </section>
+
+      <section class="app-screen route-view" data-route-view="/write" data-route-title="Schreibtraining" aria-labelledby="writing-view-title" hidden>
+        <a class="button button--text screen-back" href="#/dashboard" data-route-link="/dashboard">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+            <path d="M19 12H5"></path>
+            <path d="m12 19-7-7 7-7"></path>
+          </svg>
+          Dashboard
+        </a>
+        <header class="screen-header">
+          <p class="section-kicker">Selbst schreiben</p>
+          <h1 id="writing-view-title" class="page-title">Schreibtraining</h1>
+          <p class="screen-intro" data-writing-summary>Stelle dein Schreibtraining zusammen.</p>
+        </header>
+        <p class="visually-hidden" data-writing-live aria-live="polite" aria-atomic="true"></p>
+        <div class="view-content" data-writing-view-content></div>
+      </section>
+
+      <!-- build:speed:start -->
+      <section class="app-screen route-view" data-route-view="/speed" data-route-title="Speed Challenge" data-feature-capability="speed" aria-labelledby="speed-view-title" hidden>
+        <a class="button button--text screen-back" href="#/dashboard" data-route-link="/dashboard">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+            <path d="M19 12H5"></path>
+            <path d="m12 19-7-7 7-7"></path>
+          </svg>
+          Dashboard
+        </a>
+        <header class="screen-header">
+          <p class="section-kicker">Wortpaare unter Zeitdruck</p>
+          <h1 id="speed-view-title" class="page-title">Speed Challenge</h1>
+          <p class="screen-intro" data-speed-summary>Stelle deine Speed Challenge zusammen.</p>
+        </header>
+        <p class="visually-hidden" data-speed-live aria-live="polite" aria-atomic="true"></p>
+        <div class="view-content" data-speed-view-content></div>
+      </section>
+      <!-- build:speed:end -->
+
+      <section class="app-screen route-view" data-route-view="/progress" data-route-title="Mein Fortschritt" aria-labelledby="progress-view-title" hidden>
+        <a class="button button--text screen-back" href="#/dashboard" data-route-link="/dashboard">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+            <path d="M19 12H5"></path>
+            <path d="m12 19-7-7 7-7"></path>
+          </svg>
+          Dashboard
+        </a>
+        <header class="screen-header">
+          <p class="section-kicker">Dein Lernweg</p>
+          <h1 id="progress-view-title" class="page-title">Mein Fortschritt</h1>
+          <p class="screen-intro">Fachlicher Lernstand und freiwillige Motivation bleiben bewusst getrennt.</p>
+        </header>
+        <p class="visually-hidden" data-motivation-live aria-live="polite" aria-atomic="true"></p>
+        <div class="progress-view" data-progress-view-content></div>
+      </section>
+
+      <section class="app-screen route-view" data-route-view="/units" data-route-title="Alle Lernpakete" aria-labelledby="units-view-title" hidden>
+        <a class="button button--text screen-back" href="#/dashboard" data-route-link="/dashboard">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+            <path d="M19 12H5"></path>
+            <path d="m12 19-7-7 7-7"></path>
+          </svg>
+          Dashboard
+        </a>
+        <header class="screen-header">
+          <p class="section-kicker">Kursübersicht</p>
+          <h1 id="units-view-title" class="page-title">Alle Lernpakete</h1>
+          <p class="screen-intro">Die Kurskonfiguration bestimmt, welche Lernpakete verfügbar sind.</p>
+        </header>
+        <section class="card shell-card" aria-labelledby="units-list-title">
+          <div>
+            <p class="section-kicker" data-units-course-title>Neutraler Sprachkurs</p>
+            <h2 id="units-list-title" class="card__title">Kursbereiche</h2>
+          </div>
+          <ul class="shell-list" data-units-list></ul>
+          <p class="visually-hidden" data-units-live aria-live="polite" aria-atomic="true"></p>
+        </section>
+      </section>
+
+      <section class="app-screen route-view" data-route-view="/settings" data-route-title="Einstellungen" aria-labelledby="settings-view-title" hidden>
+        <a class="button button--text screen-back" href="#/dashboard" data-route-link="/dashboard">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+            <path d="M19 12H5"></path>
+            <path d="m12 19-7-7 7-7"></path>
+          </svg>
+          Dashboard
+        </a>
+        <header class="screen-header">
+          <p class="section-kicker">Vocabulary Trainer</p>
+          <h1 id="settings-view-title" class="page-title">Einstellungen</h1>
+          <p class="screen-intro">Die wichtigsten Grundlagen des aktuellen Kurses auf einen Blick.</p>
+        </header>
+        <section class="card shell-card" aria-labelledby="settings-data-title">
+          <h2 id="settings-data-title" class="card__title">Daten und Datenschutz</h2>
+          <dl class="summary-list">
+            <div class="summary-list__row">
+              <dt>Kurs</dt>
+              <dd data-settings-course-title>Neutraler Sprachkurs</dd>
+            </div>
+            <div class="summary-list__row">
+              <dt>Speicherung</dt>
+              <dd>Nur auf diesem Gerät</dd>
+            </div>
+            <div class="summary-list__row">
+              <dt>Konto</dt>
+              <dd>Nicht erforderlich</dd>
+            </div>
+          </dl>
+          <p class="card__description">Es werden keine Namen, Konten oder Analysedaten verarbeitet.</p>
+          <p class="card__description">Für die Aussprache übergibt EduTools kurze Source-Begriffe an die Sprachausgabe des Browsers beziehungsweise Betriebssystems.</p>
+          <!-- build:author:start -->
+          <a class="button button--secondary" href="#/courses" data-route-link="/courses" data-course-builder-only data-feature-capability="authoring">Kursbibliothek öffnen</a>
+          <!-- build:author:end -->
+        </section>
+        <section class="card shell-card" data-feature-capability="pronunciation" aria-labelledby="settings-pronunciation-title">
+          <h2 id="settings-pronunciation-title" class="card__title">Aussprache</h2>
+          <p class="card__description">Passe die lokale Browserstimme für die Ausgangssprache an. Die Auswahl gilt nur in diesem Browserprofil.</p>
+          <fieldset class="settings-choice" data-pronunciation-speed-group>
+            <legend>Sprechgeschwindigkeit</legend>
+            <label><input type="radio" name="pronunciation-speed" value="slow" data-pronunciation-speed> Langsam</label>
+            <label><input type="radio" name="pronunciation-speed" value="normal" data-pronunciation-speed> Normal</label>
+            <label><input type="radio" name="pronunciation-speed" value="fast" data-pronunciation-speed> Schnell</label>
+          </fieldset>
+          <div class="form-field">
+            <label for="pronunciation-voice">Stimme für die Ausgangssprache</label>
+            <select id="pronunciation-voice" data-pronunciation-voice>
+              <option value="automatic">Automatisch</option>
+            </select>
+            <p class="form-field__help" data-pronunciation-voice-help>Verfügbare Stimmen werden vom Browser beziehungsweise Betriebssystem bereitgestellt.</p>
+          </div>
+          <p class="visually-hidden" data-pronunciation-settings-live aria-live="polite" aria-atomic="true"></p>
+        </section>
+      </section>
+
+      <!-- build:author:start -->
+      <section class="app-screen route-view" data-route-view="/courses" data-route-title="Kursbibliothek" data-feature-capability="authoring" aria-labelledby="courses-view-title" hidden>
+        <a class="button button--text screen-back" href="#/dashboard" data-route-link="/dashboard">Dashboard</a>
+        <header class="screen-header">
+          <p class="section-kicker">Lokale Inhalte</p>
+          <h1 id="courses-view-title" class="page-title">Kursbibliothek</h1>
+          <p class="screen-intro">Mitgelieferte und eigene Kurse bleiben getrennt von Lernstand und Motivation gespeichert.</p>
+        </header>
+        <div class="view-content" data-course-library-content></div>
+      </section>
+
+      <section class="app-screen route-view" data-route-view="/course-builder" data-route-title="Kurs bearbeiten" aria-labelledby="course-builder-view-title" hidden>
+        <a class="button button--text screen-back" href="#/courses" data-route-link="/courses">Kursbibliothek</a>
+        <header class="screen-header">
+          <p class="section-kicker">Lokaler Bearbeitungsmodus</p>
+          <h1 id="course-builder-view-title" class="page-title">Kurs bearbeiten</h1>
+          <p class="screen-intro">Kursinhalte werden ausschließlich lokal in diesem Browserprofil gespeichert.</p>
+        </header>
+        <div class="view-content course-builder" data-course-builder-content></div>
+      </section>
+      <!-- build:author:end -->
+
+      <section class="app-screen route-view" data-route-view="/unavailable" data-route-title="Funktion nicht verfügbar" aria-labelledby="unavailable-view-title" hidden>
+        <div class="card shell-card empty-state">
+          <p class="section-kicker">Nicht verfügbar</p>
+          <h1 id="unavailable-view-title" class="page-title">Funktion nicht verfügbar</h1>
+          <p class="card__description" data-unavailable-description>Diese Funktion ist in dieser Version nicht verfügbar.</p>
+          <a class="button button--primary" href="#/dashboard" data-route-link="/dashboard">Zum Dashboard</a>
+        </div>
+      </section>
+
+      <section class="app-screen route-view" data-route-view="/not-found" data-route-title="Bereich nicht gefunden" aria-labelledby="not-found-view-title" hidden>
+        <div class="card shell-card empty-state">
+          <p class="section-kicker">Nicht gefunden</p>
+          <h1 id="not-found-view-title" class="page-title">Bereich nicht gefunden</h1>
+          <p class="card__description">Die Adresse <strong data-unknown-route></strong> gehört zu keinem Bereich des Vocabulary Trainers.</p>
+          <a class="button button--primary" href="#/dashboard" data-route-link="/dashboard">Zum Dashboard</a>
+        </div>
+      </section>
+
+      <!-- build:motivation:start -->
+      <dialog class="quiz-exit-dialog" data-motivation-reset-dialog data-feature-capability="motivation" aria-labelledby="motivation-reset-title" aria-describedby="motivation-reset-description">
+        <div class="quiz-exit-dialog__content">
+          <h2 id="motivation-reset-title">Motivationsfortschritt zurücksetzen?</h2>
+          <p id="motivation-reset-description" class="card__description">XP, Level, Lernserien und Meilensteine werden gelöscht. Deine Wortlernstände, Wiederholungen und gemerkten Wörter bleiben erhalten.</p>
+          <div class="quiz-exit-dialog__actions">
+            <button class="button button--secondary" type="button" data-motivation-reset-action="cancel">Abbrechen</button>
+            <button class="button button--destructive" type="button" data-motivation-reset-action="confirm">Motivationsfortschritt zurücksetzen</button>
+          </div>
+        </div>
+      </dialog>
+      <!-- build:motivation:end -->
+    </main>
+    <footer class="app-footer">
+      <div class="dashboard-shell app-footer__inner">
+        <p class="app-footer__promise">EduTools</p>
+        <p class="edutools-signature" aria-label="Erstellt von MJ">
+          <span class="edutools-signature__mark" aria-hidden="true">
+            <span class="edutools-signature__initials">MJ</span>
+          </span>
+        </p>
+      </div>
+    </footer>
+    <script type="module" src="app.js?v=4.0.3"></script>
+  </body>
+</html>

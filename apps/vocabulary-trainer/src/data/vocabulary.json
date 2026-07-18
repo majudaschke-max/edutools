@@ -1,0 +1,130 @@
+{
+  "schemaVersion": 1,
+  "courseId": "neutral-language-course",
+  "contentVersion": 3,
+  "contentNotice": "Frei zusammengestellte, lehrwerksunabhängige Beispielinhalte.",
+  "units": [
+    {
+      "id": "neutral-unit-1",
+      "title": "Grundwortschatz",
+      "order": 1,
+      "words": [
+        {
+          "id": "neutral-1-word-001",
+          "source": "lantern",
+          "targets": ["Laterne"],
+          "phonetic": "ˈlæntən",
+          "hint": "A portable light with a handle that you can carry.",
+          "example": "We carried a lantern along the quiet path.",
+          "tags": ["noun"]
+        },
+        {
+          "id": "neutral-1-word-002",
+          "source": "pathway",
+          "targets": ["Weg", "Pfad"],
+          "phonetic": "ˈpɑːθweɪ",
+          "hint": "A narrow route for people walking, not for cars.",
+          "example": "A narrow pathway led behind the library.",
+          "tags": ["noun"]
+        },
+        {
+          "id": "neutral-1-word-003",
+          "source": "harbour",
+          "targets": ["Hafen"],
+          "phonetic": "ˈhɑːbə",
+          "hint": "A sheltered place by the water where boats can stay.",
+          "example": "The small boat returned to the harbour before sunset.",
+          "tags": ["noun"]
+        },
+        {
+          "id": "neutral-1-word-004",
+          "source": "neighbour",
+          "targets": ["Nachbar", "Nachbarin"],
+          "phonetic": "ˈneɪbə",
+          "hint": "A person who lives near you.",
+          "example": "Our neighbour shared some apples from the garden.",
+          "tags": ["noun", "person"]
+        },
+        {
+          "id": "neutral-1-word-005",
+          "source": "blanket",
+          "targets": ["Decke"],
+          "phonetic": "ˈblæŋkɪt",
+          "hint": "A warm cover used on a bed or on a cold evening.",
+          "example": "Mira folded the blue blanket after the picnic.",
+          "tags": ["noun"]
+        },
+        {
+          "id": "neutral-1-word-006",
+          "source": "cheerful",
+          "targets": ["fröhlich", "heiter"],
+          "phonetic": "ˈtʃɪəfəl",
+          "hint": "Happy and showing a positive mood.",
+          "example": "His cheerful greeting made everyone smile.",
+          "tags": ["adjective"]
+        }
+      ]
+    },
+    {
+      "id": "neutral-unit-2",
+      "title": "Alltag und Umgebung",
+      "order": 2,
+      "words": [
+        {
+          "id": "neutral-2-word-001",
+          "source": "whisper",
+          "targets": ["flüstern"],
+          "phonetic": "ˈwɪspə",
+          "hint": "To speak very quietly.",
+          "example": "Please whisper while the baby is sleeping.",
+          "tags": ["verb"]
+        },
+        {
+          "id": "neutral-2-word-002",
+          "source": "cloudy",
+          "targets": ["bewölkt", "wolkig"],
+          "phonetic": "ˈklaʊdi",
+          "hint": "When the sky is covered with clouds.",
+          "example": "The morning was cloudy, but the afternoon stayed dry.",
+          "tags": ["adjective", "weather"]
+        },
+        {
+          "id": "neutral-2-word-003",
+          "source": "borrow",
+          "targets": ["ausleihen", "borgen"],
+          "phonetic": "ˈbɒrəʊ",
+          "hint": "To take something for a limited time and give it back later.",
+          "example": "Can I borrow your pencil for a minute?",
+          "tags": ["verb"]
+        },
+        {
+          "id": "neutral-2-word-004",
+          "source": "journey",
+          "targets": ["Reise"],
+          "phonetic": "ˈdʒɜːni",
+          "hint": "A trip from one place to another, often over some distance.",
+          "example": "Their train journey began early on Saturday.",
+          "tags": ["noun", "travel"]
+        },
+        {
+          "id": "neutral-2-word-005",
+          "source": "careful",
+          "targets": ["vorsichtig", "sorgfältig"],
+          "phonetic": "ˈkeəfəl",
+          "hint": "Paying attention to avoid mistakes or danger.",
+          "example": "Be careful when you carry the full glass.",
+          "tags": ["adjective"]
+        },
+        {
+          "id": "neutral-2-word-006",
+          "source": "promise",
+          "targets": ["Versprechen"],
+          "phonetic": "ˈprɒmɪs",
+          "hint": "A firm commitment to do something.",
+          "example": "Nora kept her promise and arrived on time.",
+          "tags": ["noun"]
+        }
+      ]
+    }
+  ]
+}

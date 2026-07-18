@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="EduTools">
+  <rect width="64" height="64" rx="16" fill="#176b7a"/>
+  <rect x="13" y="12" width="33" height="41" rx="8" fill="#f7fcff"/>
+  <path d="M24 22h27a5 5 0 0 1 5 5v21a5 5 0 0 1-5 5H24z" fill="#dff4ec"/>
+  <path d="M30 33h15M30 41h10" fill="none" stroke="#17323a" stroke-width="4" stroke-linecap="round"/>
+</svg>

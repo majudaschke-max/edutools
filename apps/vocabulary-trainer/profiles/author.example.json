@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "profileId": "vocabulary-author-example",
+  "mode": "author",
+  "deploymentId": "vocabulary-author",
+  "app": {
+    "title": "EduTools – Vocabulary Trainer",
+    "shortTitle": "EduTools – Vocabulary Trainer",
+    "description": "Lokaler Vocabulary Trainer mit Course Builder",
+    "language": "de",
+    "defaultRoute": "#/dashboard"
+  },
+  "features": {
+    "motivation": true,
+    "pronunciation": true,
+    "speedChallenge": true,
+    "courseLibrary": true,
+    "courseBuilder": true,
+    "importExport": true,
+    "bookCapture": false
+  },
+  "output": {
+    "directory": "./dist/vocabulary-trainer/author-example",
+    "basePath": "./"
+  }
+}

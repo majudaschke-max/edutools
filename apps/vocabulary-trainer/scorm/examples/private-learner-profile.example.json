@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "profileId": "neutral-scorm-learner",
+  "mode": "learner",
+  "deploymentId": "neutral-classroom-2026-27",
+  "app": {
+    "title": "Vocabulary Trainer – Neutraler Sprachkurs",
+    "shortTitle": "EduTools – Sprachkurs",
+    "description": "Neutrales privates SCORM-Beispiel für lokale Tests",
+    "language": "de",
+    "defaultRoute": "#/dashboard"
+  },
+  "course": { "file": "./apps/vocabulary-trainer/scorm/examples/private-course.example.json" },
+  "features": {
+    "motivation": true,
+    "pronunciation": true,
+    "speedChallenge": true,
+    "courseLibrary": false,
+    "courseBuilder": false,
+    "importExport": false,
+    "bookCapture": false
+  },
+  "output": { "directory": "./dist/private-scorm/.neutral-learner-build", "basePath": "./" }
+}

@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "deploymentSetId": "vocabulary-pages",
+  "site": {
+    "title": "EduTools – Vocabulary Trainer",
+    "language": "de",
+    "description": "Statischer Vocabulary Trainer und lokales Autorenwerkzeug"
+  },
+  "rootProfileId": "vocabulary-learner",
+  "entries": [
+    {
+      "profile": "apps/vocabulary-trainer/profiles/production/learner.production.json",
+      "mountPath": ""
+    },
+    {
+      "profile": "apps/vocabulary-trainer/profiles/production/author.production.json",
+      "mountPath": "author"
+    }
+  ]
+}

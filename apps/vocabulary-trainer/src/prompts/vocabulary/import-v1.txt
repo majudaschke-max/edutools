@@ -1,0 +1,83 @@
+Du bist Experte für Fremdsprachendidaktik, Wortschatzarbeit, strukturierte Datenextraktion und valide EduTools-Kursdateien.
+Ich lade dir gleich eine oder mehrere Vokabelseiten, Screenshots, Fotos oder eine individuelle Vokabelliste hoch.
+Erstelle daraus eine oder mehrere vollständig importierbare EduTools-JSON-Kursdateien und einen davon getrennten, zahlenmäßig exakten Prüfbericht.
+
+1. Kurskontext und Rückfragen
+Kursname: {{COURSE_NAME}}
+Ausgangssprache: {{SOURCE_LANGUAGE}}
+Zielsprache: {{TARGET_LANGUAGE}}
+Unterstützte Sprachwerte: {{SUPPORTED_LANGUAGES}}.
+Wenn Kursname, Ausgangssprache, Zielsprache, Bedeutung odes Lernpakets-Zuordnung nicht sicher feststehen, frage vor der Dateierstellung nach und rate nicht.
+Beispielsätze und IPA richten sich nach der Ausgangssprache und ihrer Locale. EduTools-Hinweise werden entsprechend der bestehenden Kurskonvention knapp in der Ausgangssprache formuliert.
+
+2. Exaktes importierbares EduTools-JSON
+Verwende schemaVersion {{SCHEMA_VERSION}} und appType "{{APP_TYPE}}".
+Das folgende Objekt zeigt exakt die Felder, Datentypen und Verschachtelung, die du ausgeben darfst:
+BEGINN EDUTOOLS-JSON-BEISPIEL
+{{SCHEMA_EXAMPLE}}
+ENDE EDUTOOLS-JSON-BEISPIEL
+Ersetze die Beispielinhalte durch die ermittelten Kursdaten. Behalte die Struktur und erzeuge keine zusätzlichen Top-Level-, Lernpaket- oder Word-Felder.
+Wenn du mehrere Dateien erzeugst, muss jede Datei dieses Schema vollständig einhalten. schemaVersion, appType, der bereinigte Kurstitel sowie Source- und Target-Sprachcode und beide speechLocale-Werte müssen in allen Teilen identisch sein.
+EduTools erzeugt beim Import kollisionsarme Kurs-, Lernpaket- und Word-IDs sowie contentVersion, sourceType, editable, createdAt, updatedAt, pronunciation und den obersten archived-Status. Gib diese technischen Felder nicht aus und erfinde keine deploymentId.
+Jede Lernpaket benötigt title, description, order, released, current, archived und words. Über die gesamte erzeugte Dateigruppe darf genau ein freigegebenes, nicht archiviertes Lernpaket current=true sein; alle weiteren Lernpakete erhalten current=false.
+Jedes Wort benötigt source, targets als Array mit mindestens einer Übersetzung, phonetic, hint, example, tags als Array und archived=false. Mehrere gültige Übersetzungen sind einzelne Strings im targets-Array.
+Grenzen: source und jedes target höchstens 200 Zeichen, phonetic höchstens 200, hint höchstens 500, example höchstens 1000 und jeder tag höchstens 100 Zeichen.
+Optionale Textfelder bleiben als leerer String und tags als leeres Array erhalten, wenn kein sicherer sinnvoller Inhalt vorliegt. Verwende keine Platzhalter wie n/a, kein Hinweis oder –.
+
+3. Vorlage adaptiv einordnen
+Unterscheide automatisch:
+A) vollständige Schulbuchseite mit Lautschrift, rechter Spalte, Beispielen, Hinweisen, Sonderformen, Kästen und Abschnittsüberschriften: Übernimm vorhandene Informationen vorlagentreu und ergänze erst danach echte Lücken.
+B) einfache individuelle Zweispaltenliste nur mit Ausgangsbegriff und Übersetzung: Bewahre beide Angaben und ergänze kontrolliert zuverlässige Lautschrift, einen passenden kurzen Beispielsatz und nur fachlich relevante Besonderheiten.
+C) gemischte Vorlage: Bewahre alle vorhandenen Felder unverändert und ergänze ausschließlich die tatsächlich fehlenden Inhalte.
+Vorhandener Inhalt hat immer Vorrang vor sicher rekonstruierbarem Inhalt, dieser vor neu erzeugten Ergänzungen. Bleibt etwas unsicher, lasse das optionale Feld leer und nenne den Eintrag im Prüfbericht.
+
+4. Sämtliche Spalten und Kästen auswerten
+Werte auch die dritte beziehungsweise ganz rechte Spalte der Vokabelseite vollständig aus.
+Ordne fremdsprachlichen Begriff zu source, Übersetzungen zu targets, Lautschrift zu phonetic, einen eindeutig zugehörigen Satz in der Ausgangssprache zu example und Kategorien zu tags.
+Ordne typische Verwendung, Präposition, Kasus, feste Verbindung, Register, false friend, Zählbarkeit, transitive oder intransitive Verwendung, Bedeutungsabgrenzung und wichtige Sonderformen knapp hint zu.
+Sonderformen sind zum Beispiel unregelmäßige Verbformen, Plural, grammatisches Geschlecht, Steigerung, principal parts oder andere lernrelevante Flexionsformen. Verwende keine vollständigen Konjugationstabellen und liste reguläre Standardformen nicht unnötig auf.
+Synonyme, Antonyme, Wortfamilien und verwandte Ausdrücke kommen knapp in hint und nur bei klarer, nützlicher Kategorie zusätzlich in tags.
+Das Schema unterstützt genau einen example-String. Sind mehrere Beispiele vorhanden, übernimm den für die angegebene Bedeutung klarsten kurzen Satz und nenne weitere nicht übernommene Beispiele im Prüfbericht.
+Ein gelber, farbiger oder hervorgehobener Kasten, der eindeutig zu einem Wort gehört, wird knapp in hint beziehungsweise bei einem Satz in example übernommen.
+Gilt ein Kasten eindeutig für mehrere bestimmte Wörter, ergänze ihn nur bei diesen Wörtern. Gilt er für einen ganzen Abschnitt oder ist die Zuordnung unklar, erzeuge weder eine Fake-Vokabel noch eine willkürliche Zuordnung; nenne ihn stattdessen im Prüfbericht als nicht eindeutig einem Eintrag zuordenbar.
+Klare fachliche Abschnittsüberschriften, Wortfelder und zusammengehörige Redemittel bilden Lernpakete. Eine Bilddatei, Buchseite, Seitenzahl, technische Dateigrenze, ein Antwort-Chunk oder ein JSON-Dateiteil bildet niemals allein ein neues Lernpaket.
+Führe dieselbe fachliche Zuordnung dateiübergreifend unter exakt demselben Lernpaket-Titel zusammen und bewahre die ursprüngliche Wortreihenfolge.
+Wenn keine eindeutige fachliche Unterteilung erkennbar ist, gruppiere fortlaufend ungefähr 15 bis 25 Wörter pro Lernpaket. Erzeuge möglichst kein automatisch gebildetes Lernpaket mit weniger als acht Wörtern; füge einen kleinen Rest am Ende dem vorherigen Paket hinzu. Ausnahmen gelten nur für insgesamt sehr kurzes Material oder eine eindeutig fachlich zusammengehörige Kleingruppe.
+Ist weder eine fachliche Gliederung noch ein sinnvoller neutraler Lernpaket-Titel bestimmbar, frage nach und erfinde weder Schulbuch-Unit noch Lehrwerkstitel.
+Ignoriere Seitenzahlen wie p. 12 oder S. 12, Randnummern, Tabellenlinien, Layouttexte, Warnsymbole ohne Inhalt, redaktionelle Angaben und bloße Querverweise ohne Lernwert.
+
+5. Fehlende Inhalte kontrolliert ergänzen
+Fehlt phonetic, ergänze eine zuverlässige standardsprachliche IPA-Lautschrift passend zur Ausgangssprache, Locale und gemeinten Bedeutung. Für Englisch gilt bei en-GB britische Standardaussprache. Bei unklarer Lesart, Eigennamen oder Abkürzungen lasse phonetic leer und melde dies.
+Fehlt example, ergänze genau einen kurzen, natürlichen, altersgerechten Satz in der Ausgangssprache. Der Source-Ausdruck muss vorkommen und der Satz muss genau zur Bedeutung der Targets passen. Erzeuge keine problematischen Inhalte und stelle einen neuen Satz nie als Schulbuchzitat dar.
+Fehlt hint, ergänze ihn nur bei echtem fachlichem Mehrwert, etwa für eine unregelmäßige Form, typischen Plural, notwendige Präposition, Kasus, Kollokation, false friend, Verwechslungsgefahr, Bedeutungsabgrenzung oder besondere Schreibweise.
+Ein leeres hint ist besser als eine Wiederholung der Übersetzung, eine erfundene Regel oder ein belangloser Füllhinweis.
+Prüfe bei Verben auf relevante unregelmäßige Formen der jeweiligen Sprache. Ergänze nur sichere lernrelevante Besonderheiten; bei Mehrdeutigkeit bleibt hint leer und der Eintrag wird gemeldet.
+
+6. Bedeutung und Originaltreue sichern
+Die Targets bestimmen den Bedeutungskontext. Erzeuge Lautschrift, Beispiel und Hinweis nur für genau diese Bedeutung. Trenne deutlich verschiedene Bedeutungen, statt widersprüchliche Beispiele zusammenzuführen.
+Ersetze keine vorhandene Lautschrift, keinen vorhandenen Beispielsatz und keine vorhandene Sonderform durch generierte Alternativen. Vereinfache keine Vorlage so, dass Information verloren geht.
+Korrigiere nur offensichtliche OCR- oder Schreibfehler. Melde jede unsichere Korrektur mit Source-Begriff im Prüfbericht.
+Erfinde keine Seitenzahlen, Lernpaket-Namen, Lehrwerkstitel, Verlage, Buchhinweise oder Übersetzungen. Neu erzeugte Inhalte sind allgemeine sprachdidaktische Ergänzungen und keine Reproduktion des Lehrwerks.
+Erzeuge keine sichtbaren KI-Präfixe und keine KI-Tags im Lernmaterial. Weise erzeugte Felder ausschließlich im separaten Prüfbericht aus.
+
+7. Qualitätsprüfung
+Prüfe vor der Ausgabe: syntaktisch gültiges UTF-8-JSON ohne Kommentare oder nachgestellte Kommata; ausschließlich die erlaubten Felder; alle Pflichtwerte; unterschiedliche unterstützte Source- und Target-Sprachen; identische gemeinsame Kursmetadaten in allen Dateiteilen; eindeutige Lernpaket-Reihenfolge über alle Teile hinweg; genau ein geeignetes aktuelles Lernpaket über die gesamte Dateigruppe; keine doppelten Vokabeleinträge über Dateigrenzen hinweg; plausible IPA; Beispiele und Hinweise passend zur Target-Bedeutung; vollständige Auswertung der rechten Spalte und kontrollierte Behandlung farbiger Kästen; keine Seitenzahlen oder Layoutreste.
+
+8. Ausgabe als herunterladbare Datei oder Dateigruppe
+Erstelle nicht nur JSON-Codeblöcke, sondern direkt herunterladbare UTF-8-Dateien. In den Dateien stehen ausschließlich Kursdaten, niemals Markdown, Erläuterungen oder der Prüfbericht.
+Verwende für einen kleinen oder mittleren Kurs eine Datei nach dem Muster edutools-vocabulary-kursname.json.
+Teile einen größeren Kurs in ungefähr 40 bis 50 Vokabeleinträge pro Datei. Zerschneide ein kleines, inhaltlich zusammengehöriges Lernpaket nicht unnötig. Wenn ein großes Lernpaket über mehrere Dateien verteilt werden muss, verwende in allen Teilen exakt denselben Lernpaket-Titel; behalte die ursprüngliche Wortreihenfolge bei. Die Dateigrenze darf niemals einen neuen fachlichen Titel erzeugen.
+Nummeriere mehrere Dateien stabil nach dem Muster edutools-vocabulary-kursname-teil-1.json, edutools-vocabulary-kursname-teil-2.json und so weiter. Bewahre die Lernpaket- und Wortreihenfolge über alle Teile. Verwende in allen Teilen denselben Kurstitel, dieselbe schemaVersion, denselben appType und dieselbe Source-/Target-Sprachkonfiguration. Erzeuge keine zusätzlichen Kursvarianten.
+Falls dein System keine echten Dateidownloads erstellen kann, gib als Fallback für jeden Dateiteil den vollständigen ungekürzten JSON-Inhalt in einem eindeutig nach Dateinamen beschrifteten Codeblock aus – ohne Vorschaukürzung oder Auslassungszeichen.
+
+9. Separater Prüfbericht außerhalb der JSON-Dateien
+Zeige außerhalb der Dateien einen kurzen, aber exakten Prüfbericht. Alle Zahlen müssen sich auf die tatsächlich erzeugten JSON-Dateien beziehen und zusammenpassen. Nenne mindestens:
+* Anzahl der erzeugten Dateien, Lernpakete und Vokabeleinträge insgesamt sowie die Eintragszahl je Datei,
+* bei phonetic getrennt: aus der Vorlage unverändert übernommen, nur typografisch oder nach eindeutigem OCR-Fehler korrigiert, neu erzeugt sowie wegen Unsicherheit leer gelassen,
+* bei example getrennt: aus der Vorlage unverändert übernommen, nur minimal bereinigt, neu erzeugt sowie wegen Unsicherheit leer gelassen,
+* bei hint getrennt: aus der Vorlage übernommen, neu erzeugt sowie wegen fehlenden sicheren Mehrwerts oder Unsicherheit nicht ergänzt,
+* ergänzte Sonderformen und Gebrauchshinweise,
+* unklare oder mehrdeutige Übersetzungen, unsichere Korrekturen sowie nicht eindeutig zuordenbare Kästen oder Abschnittshinweise,
+* exakte Duplikate oder auffällige Wiederholungen über alle Dateiteile,
+* die Source-Begriffe aller Einträge, bei denen Inhalte neu erzeugt, korrigiert, leer gelassen oder vor dem Import fachlich geprüft werden sollten, jeweils mit den betroffenen Feldern.
+Kennzeichne im Prüfbericht klar, welche Information aus der Vorlage stammt, welche nur sicher korrigiert wurde und welche du neu ergänzt hast. Gib keine geschätzten Sammelzahlen aus.

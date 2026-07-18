@@ -1,0 +1,52 @@
+{
+  "courseId": "neutral-language-course",
+  "contentVersion": 3,
+  "sourceType": "bundled",
+  "editable": false,
+  "title": "Neutraler Sprachkurs",
+  "languages": {
+    "source": {
+      "code": "en",
+      "label": "Englisch",
+      "speechLocale": "en-GB"
+    },
+    "target": {
+      "code": "de",
+      "label": "Deutsch",
+      "speechLocale": "de-DE"
+    }
+  },
+  "pronunciation": {
+    "enabled": true,
+    "provider": "speech-synthesis",
+    "rate": 0.9,
+    "pitch": 1,
+    "volume": 1
+  },
+  "motivation": {
+    "enabled": true,
+    "recentHistoryDays": 30,
+    "xp": {
+      "flashcardsWord": 1,
+      "quizCorrect": 2,
+      "writeCorrect": 3,
+      "speedCorrect": 2,
+      "sessionCompletion": 5
+    }
+  },
+  "features": {
+    "courseBuilder": {
+      "enabled": true
+    }
+  },
+  "mode": "school",
+  "currentUnit": "neutral-unit-2",
+  "availableUnits": [
+    "neutral-unit-1",
+    "neutral-unit-2"
+  ],
+  "showLockedUnits": true,
+  "dailyNewWordLimit": 10,
+  "dailyReviewLimit": 20,
+  "contentNotice": "Frei zusammengestellte, lehrwerksunabhängige Beispielinhalte."
+}

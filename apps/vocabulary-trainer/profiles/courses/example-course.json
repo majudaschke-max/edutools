@@ -1,0 +1,158 @@
+{
+  "schemaVersion": 1,
+  "id": "neutral-language-course",
+  "appType": "vocabulary",
+  "contentVersion": 3,
+  "sourceType": "bundled",
+  "editable": false,
+  "title": "Neutraler Sprachkurs",
+  "subtitle": "Lehrwerksunabhängige Beispielinhalte",
+  "description": "Frei zusammengestellte Wörter ohne Verbindung zu einem Lehrwerk oder Verlag.",
+  "schoolType": "",
+  "gradeLevel": "",
+  "createdAt": "2026-01-01T00:00:00.000Z",
+  "updatedAt": "2026-01-01T00:00:00.000Z",
+  "languages": {
+    "source": {
+      "code": "en",
+      "label": "Englisch",
+      "speechLocale": "en-GB"
+    },
+    "target": {
+      "code": "de",
+      "label": "Deutsch",
+      "speechLocale": "de-DE"
+    }
+  },
+  "pronunciation": {
+    "enabled": true,
+    "rate": 0.9,
+    "pitch": 1,
+    "volume": 1
+  },
+  "archived": false,
+  "units": [
+    {
+      "id": "neutral-unit-1",
+      "title": "Grundwortschatz",
+      "description": "",
+      "order": 1,
+      "released": true,
+      "current": false,
+      "archived": false,
+      "words": [
+        {
+          "id": "neutral-1-word-001",
+          "source": "lantern",
+          "targets": ["Laterne"],
+          "phonetic": "ˈlæntən",
+          "hint": "A portable light with a handle that you can carry.",
+          "example": "We carried a lantern along the quiet path.",
+          "tags": ["noun"],
+          "archived": false
+        },
+        {
+          "id": "neutral-1-word-002",
+          "source": "pathway",
+          "targets": ["Weg", "Pfad"],
+          "phonetic": "ˈpɑːθweɪ",
+          "hint": "A narrow route for people walking, not for cars.",
+          "example": "A narrow pathway led behind the library.",
+          "tags": ["noun"],
+          "archived": false
+        },
+        {
+          "id": "neutral-1-word-003",
+          "source": "harbour",
+          "targets": ["Hafen"],
+          "phonetic": "ˈhɑːbə",
+          "hint": "A sheltered place by the water where boats can stay.",
+          "example": "The small boat returned to the harbour before sunset.",
+          "tags": ["noun"],
+          "archived": false
+        },
+        {
+          "id": "neutral-1-word-004",
+          "source": "neighbour",
+          "targets": ["Nachbar", "Nachbarin"],
+          "phonetic": "ˈneɪbə",
+          "hint": "A person who lives near you.",
+          "example": "Our neighbour shared some apples from the garden.",
+          "tags": ["noun", "person"],
+          "archived": false
+        }
+      ]
+    },
+    {
+      "id": "neutral-unit-2",
+      "title": "Alltag und Umgebung",
+      "description": "",
+      "order": 2,
+      "released": true,
+      "current": true,
+      "archived": false,
+      "words": [
+        {
+          "id": "neutral-2-word-001",
+          "source": "whisper",
+          "targets": ["flüstern"],
+          "phonetic": "ˈwɪspə",
+          "hint": "To speak very quietly.",
+          "example": "Please whisper while the baby is sleeping.",
+          "tags": ["verb"],
+          "archived": false
+        },
+        {
+          "id": "neutral-2-word-002",
+          "source": "cloudy",
+          "targets": ["bewölkt", "wolkig"],
+          "phonetic": "ˈklaʊdi",
+          "hint": "When the sky is covered with clouds.",
+          "example": "The morning was cloudy, but the afternoon stayed dry.",
+          "tags": ["adjective", "weather"],
+          "archived": false
+        },
+        {
+          "id": "neutral-2-word-003",
+          "source": "borrow",
+          "targets": ["ausleihen", "borgen"],
+          "phonetic": "ˈbɒrəʊ",
+          "hint": "To take something for a limited time and give it back later.",
+          "example": "Can I borrow your pencil for a minute?",
+          "tags": ["verb"],
+          "archived": false
+        },
+        {
+          "id": "neutral-2-word-004",
+          "source": "journey",
+          "targets": ["Reise"],
+          "phonetic": "ˈdʒɜːni",
+          "hint": "A trip from one place to another, often over some distance.",
+          "example": "Their train journey began early on Saturday.",
+          "tags": ["noun", "travel"],
+          "archived": false
+        },
+        {
+          "id": "neutral-2-word-005",
+          "source": "careful",
+          "targets": ["vorsichtig", "sorgfältig"],
+          "phonetic": "ˈkeəfəl",
+          "hint": "Paying attention to avoid mistakes or danger.",
+          "example": "Be careful when you carry the full glass.",
+          "tags": ["adjective"],
+          "archived": false
+        },
+        {
+          "id": "neutral-2-word-006",
+          "source": "promise",
+          "targets": ["Versprechen"],
+          "phonetic": "ˈprɒmɪs",
+          "hint": "A firm commitment to do something.",
+          "example": "Nora kept her promise and arrived on time.",
+          "tags": ["noun"],
+          "archived": false
+        }
+      ]
+    }
+  ]
+}

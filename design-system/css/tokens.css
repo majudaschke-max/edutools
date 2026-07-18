@@ -1,0 +1,163 @@
+/*
+ * EduTools structural and semantic status tokens — Version 2.0.
+ *
+ * These semantic roles are shared by EduTools applications. Raw values live
+ * only here; product colours are supplied by one central app theme. These
+ * neutral fallbacks keep shared components usable without a theme. Colour
+ * never communicates meaning alone.
+ */
+
+:root {
+  /* ------------------------------------------------------------------------
+   * Colour: neutral surfaces and text
+   * --------------------------------------------------------------------- */
+  --color-bg-page: #f6f9f9;
+  --color-bg-surface: #ffffff;
+  --color-bg-subtle: #edf3f2;
+  --color-bg-accent-soft: #e3efed;
+
+  --color-text-primary: #26363a;
+  --color-text-secondary: #52666a;
+  --color-text-muted: #687b7f;
+  --color-text-on-accent: #ffffff;
+
+  --color-border-default: #d5e1df;
+  --color-border-strong: #afc5c3;
+
+  /* Neutral fallback brand; concrete products override this via app themes. */
+  --color-brand-primary: #245f67;
+  --color-brand-primary-hover: #1c535b;
+  --color-brand-primary-active: #16464d;
+  --color-brand-soft: #e1eeed;
+
+  /* Semantic feedback: pair every colour with text and/or an icon. */
+  --color-success: #426b58;
+  --color-success-soft: #e5f1ea;
+  --color-warning: #7a582d;
+  --color-warning-soft: #f8eedf;
+  --color-error: #914b5b;
+  --color-error-soft: #f7e7eb;
+  --color-info: #4d6488;
+  --color-info-soft: #e8eef7;
+
+  --color-focus: #1f5f8b;
+  --color-overlay: rgb(24 49 54 / 48%);
+
+  /* Product accents orient without pretending to be status colours. */
+  --color-accent-lavender: #dcecf1;
+  --color-accent-blue: #dcecf5;
+  --color-accent-sage: #dceee6;
+  --color-accent-apricot: #f3e3d2;
+
+  /* ------------------------------------------------------------------------
+   * Spacing: continuous 4 px rhythm
+   * --------------------------------------------------------------------- */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-7: 1.75rem;
+  --space-8: 2rem;
+  --space-9: 2.25rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+
+  /* ------------------------------------------------------------------------
+   * Shape, elevation and focus
+   * --------------------------------------------------------------------- */
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+  --radius-pill: 999rem;
+
+  --shadow-sm: 0 1px 3px rgb(24 49 54 / 8%), 0 1px 2px rgb(24 49 54 / 4%);
+  --shadow-md: 0 10px 30px rgb(24 72 78 / 10%), 0 2px 8px rgb(24 49 54 / 5%);
+  --shadow-lg: 0 24px 64px rgb(24 72 78 / 14%), 0 4px 16px rgb(24 49 54 / 6%);
+  --shadow-focus: 0 0 0 0.25rem rgb(31 95 139 / 24%);
+
+  --border-width: 0.0625rem;
+  --focus-ring-width: 0.1875rem;
+  --focus-ring-offset: 0.1875rem;
+
+  /* ------------------------------------------------------------------------
+   * Typography: system-first, with a softer display fallback stack
+   * --------------------------------------------------------------------- */
+  --font-family-ui: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-family-display: ui-rounded, "SF Pro Rounded", "Segoe UI", system-ui, sans-serif;
+
+  --font-size-xs: 0.8125rem;
+  --font-size-sm: 0.875rem;
+  --font-size-md: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.375rem;
+  --font-size-2xl: 1.875rem;
+  --font-size-3xl: clamp(2.25rem, 6vw, 3.5rem);
+
+  --line-height-tight: 1.18;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.7;
+
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* ------------------------------------------------------------------------
+   * Layout, motion and stacking
+   * --------------------------------------------------------------------- */
+  --content-width: 72rem;
+  --content-width-wide: 84rem;
+  --content-width-reading: 48rem;
+  --content-width-form: 45rem;
+  --content-width-dialog: 35rem;
+  --column-width-sm: 12rem;
+  --column-width-md: 14rem;
+  --column-width-lg: 18rem;
+  --column-width-xl: 22rem;
+  --component-min-width: var(--column-width-sm);
+  --selection-min-width: var(--column-width-sm);
+  --form-column-min-width: var(--column-width-md);
+  --course-card-min-width: 20rem;
+  --decorative-field-md: 24rem;
+  --decorative-field-lg: 28rem;
+  --header-height: 4.5rem;
+  --touch-target-min: 2.75rem;
+  --timer-font-size: clamp(2.5rem, 9vw, 4rem);
+  --transition-fast: 120ms;
+  --transition-normal: 200ms;
+  --transition-slow: 320ms;
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --duration-reduced: 0.01ms;
+
+  --z-base: 0;
+  --z-header: 10;
+  --z-dialog: 100;
+  --opacity-disabled: 0.62;
+
+  /* ------------------------------------------------------------------------
+   * Compatibility aliases
+   *
+   * Existing EduTools screens can migrate without duplicating raw values.
+   * New styles use the canonical roles above.
+   * --------------------------------------------------------------------- */
+  --color-background: var(--color-bg-page);
+  --color-surface: var(--color-bg-surface);
+  --color-surface-muted: var(--color-bg-subtle);
+  --color-text-inverse: var(--color-text-on-accent);
+  --color-border: var(--color-border-default);
+  --color-primary: var(--color-brand-primary);
+  --color-primary-hover: var(--color-brand-primary-hover);
+  --color-primary-active: var(--color-brand-primary-active);
+  --color-primary-strong: var(--color-brand-primary-active);
+  --color-danger: var(--color-error);
+  --font-family-sans: var(--font-family-ui);
+  --font-size-base: var(--font-size-md);
+  --font-weight-normal: var(--font-weight-regular);
+  --duration-fast: var(--transition-fast);
+  --duration-normal: var(--transition-normal);
+  --duration-slow: var(--transition-slow);
+}

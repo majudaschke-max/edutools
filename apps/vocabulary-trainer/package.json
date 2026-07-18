@@ -1,0 +1,20 @@
+{
+  "name": "@edutools/vocabulary-trainer",
+  "version": "4.0.3",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "vendor:ocr": "node scripts/vendor-ocr-assets.mjs",
+    "vendor:heic": "node scripts/vendor-heic-assets.mjs",
+    "vendor:assets": "node scripts/vendor-ocr-assets.mjs && node scripts/vendor-heic-assets.mjs"
+  },
+  "devDependencies": {
+    "@tesseract.js-data/deu": "1.0.0",
+    "@tesseract.js-data/eng": "1.0.0",
+    "@tesseract.js-data/fra": "1.0.0",
+    "@tesseract.js-data/lat": "1.0.0",
+    "heic-to": "1.5.2",
+    "tesseract.js": "7.0.0",
+    "tesseract.js-core": "7.0.0"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "profileId": "vocabulary-learner",
+  "mode": "learner",
+  "deploymentId": "vocabulary-learner",
+  "app": {
+    "title": "EduTools – Vocabulary Trainer",
+    "shortTitle": "EduTools – Vocabulary Trainer",
+    "description": "Statischer Vocabulary Trainer mit einem austauschbaren, lehrwerksunabhängigen Sprachkurs",
+    "language": "de",
+    "defaultRoute": "#/dashboard"
+  },
+  "course": {
+    "file": "./apps/vocabulary-trainer/profiles/courses/example-course.json"
+  },
+  "features": {
+    "motivation": true,
+    "pronunciation": true,
+    "speedChallenge": true,
+    "courseLibrary": false,
+    "courseBuilder": false,
+    "importExport": false,
+    "bookCapture": false
+  },
+  "output": {
+    "directory": "./dist/vocabulary-trainer/production/learner",
+    "basePath": "./"
+  }
+}

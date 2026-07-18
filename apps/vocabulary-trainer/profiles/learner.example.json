@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "profileId": "vocabulary-learner-example",
+  "mode": "learner",
+  "deploymentId": "vocabulary-learner-example",
+  "app": {
+    "title": "Vocabulary Trainer – Beispielkurs",
+    "shortTitle": "EduTools – Beispielkurs",
+    "description": "Statischer Vokabeltrainer für einen frei austauschbaren Beispielkurs",
+    "language": "de",
+    "defaultRoute": "#/dashboard"
+  },
+  "course": {
+    "file": "./apps/vocabulary-trainer/profiles/courses/example-course.json"
+  },
+  "features": {
+    "motivation": true,
+    "pronunciation": true,
+    "speedChallenge": true,
+    "courseLibrary": false,
+    "courseBuilder": false,
+    "importExport": false,
+    "bookCapture": false
+  },
+  "output": {
+    "directory": "./dist/vocabulary-trainer/learner-example",
+    "basePath": "./"
+  }
+}

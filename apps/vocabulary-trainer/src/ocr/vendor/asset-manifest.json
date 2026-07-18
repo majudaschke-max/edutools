@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "engine": {
+    "name": "tesseract.js",
+    "version": "7.0.0"
+  },
+  "core": {
+    "name": "tesseract.js-core",
+    "version": "7.0.0",
+    "mode": "lstm-only"
+  },
+  "languageData": {
+    "packageVersion": "1.0.0",
+    "variant": "4.0.0_best_int",
+    "installed": [
+      "deu",
+      "eng",
+      "fra",
+      "lat"
+    ]
+  },
+  "files": [
+    {
+      "file": "licenses/tesseract.js-core-LICENSE",
+      "bytes": 11358,
+      "sha256": "c6596eb7be8581c18be736c846fb9173b69eccf6ef94c5135893ec56bd92ba08"
+    },
+    {
+      "file": "licenses/tesseract.js-LICENSE.md",
+      "bytes": 11357,
+      "sha256": "b40930bbcf80744c86c46a12bc9da056641d722716c378f5659b9e555ef833e1"
+    },
+    {
+      "file": "tesseract/core/tesseract-core-lstm.wasm.js",
+      "bytes": 3896484,
+      "sha256": "eef5f8b2f8e20e150680b20adaec4a60babafee3adbe8a94583c81fee46e8680"
+    },
+    {
+      "file": "tesseract/core/tesseract-core-relaxedsimd-lstm.wasm.js",
+      "bytes": 3905767,
+      "sha256": "861a536cf9ef8e63cb644d57bab39c388f37f7d6b6f60024b741c5f6b39a59b3"
+    },
+    {
+      "file": "tesseract/core/tesseract-core-simd-lstm.wasm.js",
+      "bytes": 3899472,
+      "sha256": "c58b46a4c796c0b8afccf77591d5b875b6896b45d402bbce8caa6f5362447b38"
+    },
+    {
+      "file": "tesseract/lang/deu.traineddata.gz",
+      "bytes": 1333102,
+      "sha256": "306c4280d0cbed46fbff727486bd43b92730181bae80f56941a091f363bdf28b"
+    },
+    {
+      "file": "tesseract/lang/eng.traineddata.gz",
+      "bytes": 2952873,
+      "sha256": "45b4cb346724ac1774f1c36f42f182b887bcdb28ebe63e6fff90ac41f3fcff91"
+    },
+    {
+      "file": "tesseract/lang/fra.traineddata.gz",
+      "bytes": 707406,
+      "sha256": "d611139672b3752c7097e671e4a1d9209dfd37f2aeb081ef6487fba3351e9255"
+    },
+    {
+      "file": "tesseract/lang/lat.traineddata.gz",
+      "bytes": 1739234,
+      "sha256": "22101c28f8f9b3e0b08a526a3e7895bb319d1e876684a150901c2e8580060e31"
+    },
+    {
+      "file": "tesseract/tesseract.esm.min.js",
+      "bytes": 63216,
+      "sha256": "64dc889baba8d56f08892572d093c6044e551e0990cdcd33e5e2327f389e623f"
+    },
+    {
+      "file": "tesseract/worker.min.js",
+      "bytes": 111272,
+      "sha256": "9b34bbc87168cbb76f6b4f5453701c432ea32a8193c342890ea17004164ff9eb"
+    }
+  ]
+}

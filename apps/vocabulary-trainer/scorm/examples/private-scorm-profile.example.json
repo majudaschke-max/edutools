@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "packageId": "neutral-classroom-package",
+  "learnerProfile": "./apps/vocabulary-trainer/scorm/examples/private-learner-profile.example.json",
+  "distribution": "private-classroom",
+  "scorm": {
+    "version": "1.2",
+    "title": "Vocabulary Trainer – Neutraler Sprachkurs",
+    "organizationTitle": "Neutraler Sprachkurs",
+    "completionPolicy": "first-completed-session"
+  },
+  "output": { "file": "./dist/private-scorm/neutral-classroom-package.scorm.zip" }
+}
+

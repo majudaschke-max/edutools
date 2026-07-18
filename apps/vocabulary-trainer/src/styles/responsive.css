@@ -1,0 +1,211 @@
+/* --------------------------------------------------------------------------
+ * Responsive system: mobile first, three deliberate layout transitions
+ * ----------------------------------------------------------------------- */
+
+@media (max-width: 35rem) {
+  body {
+    background: var(--color-bg-page);
+  }
+
+  .dashboard-shell {
+    width: min(calc(100% - (var(--space-3) * 2)), var(--content-width));
+  }
+
+  .brand__name {
+    max-width: var(--column-width-md);
+  }
+
+  .dashboard-hero,
+  .flashcard,
+  .quiz-card,
+  .writing-card,
+  .speed-board,
+  .card {
+    padding: var(--space-5);
+  }
+
+  .dashboard-hero::before,
+  .dashboard-hero::after {
+    display: none;
+  }
+
+  .app-footer__inner {
+    display: grid;
+    justify-items: start;
+  }
+
+  .learning-motif {
+    min-height: calc(var(--space-10) * 3);
+  }
+
+  .course-actions,
+  .course-library-toolbar,
+  .editor-section-heading,
+  .course-card__heading,
+  .unit-editor-item__heading,
+  .word-editor-item,
+  .inline-editor-form {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .course-actions .button,
+  .course-library-toolbar .button,
+  .inline-editor-form .button {
+    inline-size: 100%;
+  }
+
+  .course-export-panel {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .course-export-panel .button {
+    inline-size: 100%;
+  }
+
+  .course-statuses {
+    justify-content: start;
+  }
+
+  .summary-list__row {
+    display: grid;
+  }
+
+  .summary-list__row dd {
+    text-align: start;
+  }
+
+  .session-actions .button,
+  .session-completion__actions .button,
+  .quiz-completion__actions .button,
+  .writing-completion__actions .button,
+  .speed-toolbar .button,
+  .speed-completion__actions .button,
+  .quiz-exit-dialog__actions .button {
+    flex-basis: 100%;
+  }
+
+  .speed-pair {
+    padding: var(--space-2);
+    font-size: var(--font-size-xs);
+  }
+
+  .speed-columns {
+    gap: var(--space-1);
+  }
+}
+
+@media (min-width: 48rem) {
+  .course-editor-form .editor-field-grid,
+  .course-editor-section > .editor-field-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .dashboard-shell {
+    width: min(calc(100% - (var(--space-6) * 2)), var(--content-width));
+  }
+
+  .app-header__inner {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--space-3) var(--space-5);
+  }
+
+  .brand {
+    font-size: var(--font-size-md);
+  }
+
+  .app-nav {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .dashboard {
+    gap: var(--space-12);
+    padding-block-start: var(--space-8);
+  }
+
+  .dashboard-hero {
+    grid-template-columns: minmax(0, 1.5fr) minmax(var(--column-width-md), 0.7fr);
+    align-items: center;
+    padding: var(--space-10);
+  }
+
+  .quick-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--space-4);
+  }
+
+  .dashboard-motivation {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .dashboard-motivation__aside {
+    display: grid;
+    justify-items: end;
+  }
+
+  .flashcard,
+  .quiz-card,
+  .writing-card,
+  .speed-board {
+    padding: var(--space-10);
+  }
+
+  .marked-list__item {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+  }
+}
+
+@media (min-width: 64rem) {
+  .app-header__inner {
+    min-height: var(--header-height);
+    grid-template-columns: auto minmax(var(--column-width-xl), 1fr) auto auto;
+    gap: var(--space-5);
+    padding-block: var(--space-2);
+  }
+
+  .brand {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .app-nav {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .course {
+    max-width: var(--column-width-lg);
+    grid-column: 3;
+    grid-row: 1;
+    display: grid;
+    grid-template-columns: auto auto;
+  }
+
+  .course__label {
+    grid-column: 1 / -1;
+  }
+
+  .icon-button {
+    grid-column: 4;
+    grid-row: 1;
+  }
+
+  .course-builder {
+    grid-template-columns: minmax(var(--column-width-lg), 0.8fr) minmax(0, 1.4fr);
+    align-items: start;
+  }
+
+  .course-builder > :first-child,
+  .course-builder > :nth-last-child(2),
+  .course-builder > dialog {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body {
+    background-attachment: scroll;
+  }
+}

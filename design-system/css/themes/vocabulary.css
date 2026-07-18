@@ -1,0 +1,90 @@
+/*
+ * EduTools Vocabulary Theme — Himmelblau, Mint and restrained turquoise.
+ * Apricot is a small warm orientation accent, never a warning substitute.
+ */
+
+[data-edutools-theme="vocabulary"] {
+  --brand-page-start: #f7fcff;
+  --brand-page-end: #f3fbf7;
+
+  --brand-hero-start: #dcefff;
+  --brand-hero-middle: #dff7ee;
+  --brand-hero-end: #f4fbf8;
+
+  --brand-accent-primary: #176b7a;
+  --brand-accent-primary-hover: #125e6d;
+  --brand-accent-primary-active: #0e4e5b;
+  --brand-accent-primary-soft: #dceff2;
+
+  --brand-accent-secondary: #267c78;
+  --brand-accent-secondary-soft: #dff4ec;
+
+  --brand-accent-warm: #ad5c30;
+  --brand-accent-warm-soft: #fff0e5;
+
+  --brand-surface-default: #ffffff;
+  --brand-surface-raised: #ffffff;
+  --brand-surface-tinted: #eef8f6;
+  --brand-surface-glass: rgb(255 255 255 / 88%);
+
+  --brand-text-primary: #17323a;
+  --brand-text-secondary: #3f5960;
+  --brand-text-muted: #5b7077;
+  --brand-text-on-accent: #ffffff;
+
+  --brand-border-soft: #dbe9ea;
+  --brand-border-default: #c8dde0;
+  --brand-border-strong: #9fc2c7;
+
+  --brand-shadow-soft: 0 0.125rem 0.5rem rgb(23 50 58 / 7%);
+  --brand-shadow-card: 0 1rem 2.75rem rgb(23 82 91 / 10%), 0 0.125rem 0.5rem rgb(23 50 58 / 5%);
+  --brand-shadow-raised: 0 1.75rem 4.5rem rgb(23 82 91 / 14%), 0 0.25rem 1rem rgb(23 50 58 / 6%);
+
+  --brand-focus: #175d8c;
+  --brand-focus-shadow: 0 0 0 0.25rem rgb(23 93 140 / 24%);
+
+  --brand-blob-one: rgb(184 225 250 / 62%);
+  --brand-blob-two: rgb(188 235 218 / 56%);
+  --brand-blob-three: rgb(250 205 173 / 42%);
+  --brand-blob-opacity: 0.68;
+  --brand-blob-blur: 0.5rem;
+
+  --brand-signature-background: #e4f4f1;
+  --brand-signature-border: #78aeb3;
+  --brand-signature-text: #0e4e5b;
+
+  --brand-mode-flashcards: #176b7a;
+  --brand-mode-flashcards-soft: #dcefff;
+  --brand-mode-quiz: #2f7c67;
+  --brand-mode-quiz-soft: #dff4e9;
+  --brand-mode-writing: #237680;
+  --brand-mode-writing-soft: #dceff2;
+  --brand-mode-speed: #ad5c30;
+  --brand-mode-speed-soft: #fff0e5;
+
+  /* Compatibility aliases keep existing components on the central theme. */
+  --color-bg-page: var(--brand-page-start);
+  --color-bg-surface: var(--brand-surface-default);
+  --color-bg-subtle: var(--brand-surface-tinted);
+  --color-bg-accent-soft: var(--brand-accent-primary-soft);
+  --color-text-primary: var(--brand-text-primary);
+  --color-text-secondary: var(--brand-text-secondary);
+  --color-text-muted: var(--brand-text-muted);
+  --color-text-on-accent: var(--brand-text-on-accent);
+  --color-border-default: var(--brand-border-default);
+  --color-border-strong: var(--brand-border-strong);
+  --color-brand-primary: var(--brand-accent-primary);
+  --color-brand-primary-hover: var(--brand-accent-primary-hover);
+  --color-brand-primary-active: var(--brand-accent-primary-active);
+  --color-brand-soft: var(--brand-accent-primary-soft);
+  --color-focus: var(--brand-focus);
+  --color-overlay: rgb(13 45 52 / 52%);
+  --color-accent-lavender: var(--brand-mode-flashcards-soft);
+  --color-accent-blue: var(--brand-mode-flashcards-soft);
+  --color-accent-sage: var(--brand-mode-quiz-soft);
+  --color-accent-apricot: var(--brand-mode-speed-soft);
+  --shadow-sm: var(--brand-shadow-soft);
+  --shadow-md: var(--brand-shadow-card);
+  --shadow-lg: var(--brand-shadow-raised);
+  --shadow-focus: var(--brand-focus-shadow);
+}

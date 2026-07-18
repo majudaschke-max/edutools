@@ -1,0 +1,10 @@
+/* Vocabulary Trainer reference implementation — Brand Sprint 3.1.
+ * Shared tokens, reset and components are loaded by index.html. These modules
+ * contain only app composition and vocabulary-specific patterns.
+ */
+@import url("styles/app-shell.css?v=4.0.3");
+@import url("styles/dashboard.css?v=4.0.3");
+@import url("styles/content.css?v=4.0.3");
+@import url("styles/learning-modes.css?v=4.0.3");
+@import url("styles/authoring.css?v=4.0.3&rev=4");
+@import url("styles/responsive.css?v=4.0.3");

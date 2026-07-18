@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "id": "neutral-language-course",
+  "appType": "vocabulary",
+  "contentVersion": 1,
+  "sourceType": "own",
+  "editable": true,
+  "title": "Neutraler Sprachkurs",
+  "subtitle": "Selbst erstelltes SCORM-Beispiel",
+  "description": "Frei erfundene Inhalte ohne Lehrwerks- oder Verlagsbezug.",
+  "schoolType": "",
+  "gradeLevel": "",
+  "createdAt": "2026-01-01T00:00:00.000Z",
+  "updatedAt": "2026-01-01T00:00:00.000Z",
+  "languages": {
+    "source": { "code": "en", "label": "Englisch", "speechLocale": "en-GB" },
+    "target": { "code": "de", "label": "Deutsch", "speechLocale": "de-DE" }
+  },
+  "pronunciation": { "enabled": true, "rate": 0.9, "pitch": 1, "volume": 1 },
+  "archived": false,
+  "units": [
+    {
+      "id": "neutral-unit-1",
+      "title": "Alltag",
+      "description": "Neutrale Beispielwörter",
+      "order": 1,
+      "released": true,
+      "current": true,
+      "archived": false,
+      "words": [
+        { "id": "neutral-word-window", "source": "window", "targets": ["Fenster"], "phonetic": "ˈwɪndəʊ", "hint": "An opening in a wall that lets light into a room.", "example": "Please open the window.", "tags": ["noun"], "archived": false },
+        { "id": "neutral-word-quiet", "source": "quiet", "targets": ["ruhig", "leise"], "phonetic": "ˈkwaɪət", "hint": "Making very little noise.", "example": "The library is quiet today.", "tags": ["adjective"], "archived": false },
+        { "id": "neutral-word-carry", "source": "carry", "targets": ["tragen"], "phonetic": "ˈkæri", "hint": "To hold something while moving it.", "example": "I carry my bag to school.", "tags": ["verb"], "archived": false },
+        { "id": "neutral-word-bridge", "source": "bridge", "targets": ["Brücke"], "phonetic": "brɪdʒ", "hint": "A structure that lets you cross over water or a road.", "example": "We walked across the bridge.", "tags": ["noun"], "archived": false }
+      ]
+    }
+  ]
+}
+
