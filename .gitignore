@@ -5,7 +5,7 @@ Thumbs.db
 # Dependencies and generated output
 node_modules/
 dist/
-build/
+/build/
 
 # Environment files
 .env
