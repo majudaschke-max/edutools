@@ -1,7 +1,7 @@
 import {
   COURSE_JSON_BATCH_ADAPTER_ID,
   COURSE_JSON_BATCH_INPUT_KIND,
-} from "./adapters/course-json-batch-adapter.js?v=4.0.3";
+} from "./adapters/course-json-batch-adapter.js?v=4.0.5";
 import { COURSE_JSON_RESTORE_ADAPTER_ID } from "./adapters/course-json-restore-adapter.js";
 import { createImportError } from "./core/import-issues.js";
 import { importOrchestrator } from "./import-pipeline.js";

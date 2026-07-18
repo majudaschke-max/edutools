@@ -4,7 +4,7 @@ import { LEARNING_SCOPE_MULTIPLE } from "../core/learning-scope.js";
 import {
   getDefaultSessionSize,
   getSessionSizeOptions,
-} from "../core/session-size.js?v=4.0.3";
+} from "../core/session-size.js?v=4.0.5";
 import { createElement } from "./view-elements.js";
 
 function choice(documentRoot, inputOptions, labelText) {

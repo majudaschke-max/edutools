@@ -1,4 +1,4 @@
-import { getLevelFromXp } from "./level-system.js?v=4.0.3";
+import { getLevelFromXp } from "./level-system.js?v=4.0.5";
 
 export const MOTIVATION_SCHEMA_VERSION = 2;
 

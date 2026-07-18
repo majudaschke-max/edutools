@@ -14,8 +14,50 @@ const REQUIRED_TEMPLATE_FILES = Object.freeze([
   "runtime/build-info.json",
 ]);
 const FORBIDDEN_TEMPLATE_PATH = /(^|\/)(?:import|ocr|author|tests?|fixtures?)(\/|$)|(?:heic|heif|book-capture|speech-recognition|recognition-adapter)/iu;
+const TEMPLATE_DEPLOYMENT_FILES = new Set([".nojekyll"]);
 const encoder = new TextEncoder();
 const decoder = new TextDecoder("utf-8", { fatal: true });
+
+export const SCORM_EXPORT_ERROR_CODES = Object.freeze({
+  COURSE: "SCORM_COURSE_INVALID",
+  TEMPLATE: "SCORM_TEMPLATE_LOAD_FAILED",
+  GENERATION: "SCORM_PACKAGE_GENERATION_FAILED",
+  VALIDATION: "SCORM_PACKAGE_VALIDATION_FAILED",
+});
+
+export class ScormExportError extends Error {
+  constructor(code, message, options = {}) {
+    super(message);
+    this.name = "ScormExportError";
+    this.code = code;
+    this.details = options.details ?? "";
+    this.issues = Object.freeze([...(options.issues ?? [])]);
+    if (options.cause) this.cause = options.cause;
+  }
+}
+
+function scormError(code, message, options = {}) {
+  return new ScormExportError(code, message, options);
+}
+
+export function getScormExportUserMessage(error) {
+  if (error?.code === SCORM_EXPORT_ERROR_CODES.COURSE) {
+    if (error.issues?.some((issue) => /Lernpaket/u.test(issue))) {
+      return "Der Kurs enthält keine freigegebenen Lernpakete.";
+    }
+    if (error.issues?.some((issue) => /Wort/u.test(issue))) {
+      return "Die freigegebenen Lernpakete enthalten keine aktiven Wörter.";
+    }
+    return "Der Kurs ist noch nicht bereit für den SCORM-Export.";
+  }
+  if (error?.code === SCORM_EXPORT_ERROR_CODES.TEMPLATE) {
+    return "Die SCORM-Vorlage konnte nicht geladen werden.";
+  }
+  if (error?.code === SCORM_EXPORT_ERROR_CODES.VALIDATION) {
+    return "Das erzeugte SCORM-Paket ist unvollständig.";
+  }
+  return "Das SCORM-ZIP konnte nicht erstellt werden.";
+}
 
 function jsonBytes(value) {
   return encoder.encode(`${JSON.stringify(value, null, 2)}\n`);
@@ -126,36 +168,117 @@ export function validateScormExportCourse(course) {
 
 function validateTemplate(template) {
   if (!template?.manifest || !Array.isArray(template?.entries)) {
-    throw new Error("Die SCORM-Vorlage ist nicht verfügbar.");
+    throw scormError(SCORM_EXPORT_ERROR_CODES.TEMPLATE, "Die SCORM-Vorlage ist nicht verfügbar.", {
+      details: "Manifest oder Dateieinträge der SCORM-Vorlage fehlen.",
+    });
   }
   if (template.manifest.mode !== "learner" || !/^[a-f0-9]{64}$/u.test(template.manifest.buildHash ?? "")) {
-    throw new Error("Die SCORM-Vorlage besitzt kein gültiges Learner-Manifest.");
+    throw scormError(SCORM_EXPORT_ERROR_CODES.TEMPLATE, "Die SCORM-Vorlage besitzt kein gültiges Learner-Manifest.", {
+      details: "mode oder buildHash des Vorlagenmanifests ist ungültig.",
+    });
   }
-  const paths = new Set(template.entries.map((entry) => entry.path));
+  const entries = template.entries.filter((entry) => !TEMPLATE_DEPLOYMENT_FILES.has(entry.path));
+  const paths = new Set(entries.map((entry) => entry.path));
   for (const required of REQUIRED_TEMPLATE_FILES) {
-    if (!paths.has(required)) throw new Error(`Der SCORM-Vorlage fehlt: ${required}`);
+    if (!paths.has(required)) throw scormError(SCORM_EXPORT_ERROR_CODES.TEMPLATE, "Die SCORM-Vorlage ist unvollständig.", {
+      details: `Pflichtdatei fehlt: ${required}`,
+      issues: [`Der SCORM-Vorlage fehlt: ${required}`],
+    });
   }
   const forbidden = [...paths].find((path) => FORBIDDEN_TEMPLATE_PATH.test(path));
-  if (forbidden) throw new Error(`Die SCORM-Vorlage enthält eine unzulässige Datei: ${forbidden}`);
-  return template;
+  if (forbidden) throw scormError(SCORM_EXPORT_ERROR_CODES.TEMPLATE, "Die SCORM-Vorlage enthält eine unzulässige Datei.", {
+    details: `Unzulässige Vorlagendatei: ${forbidden}`,
+    issues: [`Die SCORM-Vorlage enthält eine unzulässige Datei: ${forbidden}`],
+  });
+  return Object.freeze({
+    manifest: template.manifest,
+    entries: Object.freeze(entries),
+  });
+}
+
+/** Resolves the Author-relative template directory for local and Pages subpaths. */
+export function resolveScormTemplateBaseUrl(options = {}) {
+  const documentBase = options.document?.baseURI
+    ?? globalThis.document?.baseURI
+    ?? globalThis.location?.href;
+  const configured = options.baseUrl ?? "./scorm-template/";
+  try {
+    const resolved = documentBase ? new URL(configured, documentBase) : new URL(configured);
+    resolved.search = "";
+    resolved.hash = "";
+    if (!resolved.pathname.endsWith("/")) resolved.pathname = `${resolved.pathname}/`;
+    return resolved;
+  } catch (cause) {
+    throw scormError(SCORM_EXPORT_ERROR_CODES.TEMPLATE, "Die SCORM-Vorlage kann nicht aufgelöst werden.", {
+      cause,
+      details: `Ungültige Vorlagenbasis: ${String(configured)}`,
+    });
+  }
+}
+
+async function fetchTemplateResource(fetchImpl, url, label) {
+  let response;
+  try {
+    response = await fetchImpl(url);
+  } catch (cause) {
+    throw scormError(SCORM_EXPORT_ERROR_CODES.TEMPLATE, "Die SCORM-Vorlage konnte nicht geladen werden.", {
+      cause,
+      details: `Netzwerkfehler beim Laden von ${url.href}`,
+    });
+  }
+  if (!response?.ok) {
+    throw scormError(SCORM_EXPORT_ERROR_CODES.TEMPLATE, "Die SCORM-Vorlage konnte nicht geladen werden.", {
+      details: `${label}: HTTP ${response?.status ?? "unbekannt"} (${url.href})`,
+      issues: [`${label} ist nicht erreichbar.`],
+    });
+  }
+  return response;
 }
 
 /** Loads the checked Learner template that is physically embedded in Author builds. */
 export async function loadScormTemplate(options = {}) {
   const fetchImpl = options.fetch ?? globalThis.fetch;
-  if (typeof fetchImpl !== "function") throw new Error("Die SCORM-Vorlage kann nicht geladen werden.");
-  const baseUrl = new URL(
-    options.baseUrl ?? "./scorm-template/",
-    options.document?.baseURI ?? globalThis.document?.baseURI ?? globalThis.location?.href,
+  if (typeof fetchImpl !== "function") throw scormError(
+    SCORM_EXPORT_ERROR_CODES.TEMPLATE,
+    "Die SCORM-Vorlage kann nicht geladen werden.",
+    { details: "Fetch API ist nicht verfügbar." },
   );
-  const manifestResponse = await fetchImpl(new URL("build-manifest.json", baseUrl));
-  if (!manifestResponse?.ok) throw new Error("Die SCORM-Vorlage ist nicht verfügbar.");
-  const manifest = await manifestResponse.json();
-  const paths = manifest.files.map((entry) => entry.path);
+  const baseUrl = resolveScormTemplateBaseUrl(options);
+  const manifestUrl = new URL("build-manifest.json", baseUrl);
+  const manifestResponse = await fetchTemplateResource(fetchImpl, manifestUrl, "Vorlagenmanifest");
+  let manifest;
+  try {
+    manifest = await manifestResponse.json();
+  } catch (cause) {
+    throw scormError(SCORM_EXPORT_ERROR_CODES.TEMPLATE, "Die SCORM-Vorlage besitzt kein lesbares Manifest.", {
+      cause,
+      details: `Ungültiges JSON: ${manifestUrl.href}`,
+    });
+  }
+  if (!Array.isArray(manifest?.files)) throw scormError(
+    SCORM_EXPORT_ERROR_CODES.TEMPLATE,
+    "Die SCORM-Vorlage besitzt kein gültiges Dateimanifest.",
+    { details: `files fehlt im Vorlagenmanifest: ${manifestUrl.href}` },
+  );
+  const declaredPaths = manifest.files.map((entry) => entry?.path);
+  if (declaredPaths.some((path) => typeof path !== "string" || !path)) throw scormError(
+    SCORM_EXPORT_ERROR_CODES.TEMPLATE,
+    "Die SCORM-Vorlage besitzt ungültige Dateieinträge.",
+    { details: `Ungültiger Dateipfad im Vorlagenmanifest: ${manifestUrl.href}` },
+  );
+  const paths = declaredPaths
+    .filter((path) => !TEMPLATE_DEPLOYMENT_FILES.has(path));
   const entries = await Promise.all(paths.map(async (path) => {
-    const response = await fetchImpl(new URL(path, baseUrl));
-    if (!response?.ok) throw new Error(`Der SCORM-Vorlage fehlt: ${path}`);
-    return Object.freeze({ path, data: new Uint8Array(await response.arrayBuffer()) });
+    const fileUrl = new URL(path, baseUrl);
+    const response = await fetchTemplateResource(fetchImpl, fileUrl, `Vorlagendatei ${path}`);
+    try {
+      return Object.freeze({ path, data: new Uint8Array(await response.arrayBuffer()) });
+    } catch (cause) {
+      throw scormError(SCORM_EXPORT_ERROR_CODES.TEMPLATE, "Die SCORM-Vorlage konnte nicht gelesen werden.", {
+        cause,
+        details: `Binärdaten konnten nicht gelesen werden: ${fileUrl.href}`,
+      });
+    }
   }));
   return validateTemplate({ manifest, entries });
 }
@@ -164,13 +287,15 @@ export async function loadScormTemplate(options = {}) {
 export async function createIndividualScormPackage(course, options = {}) {
   const validation = validateScormExportCourse(course);
   if (!validation.valid) {
-    const error = new Error(`Das Lernpaket kann noch nicht erstellt werden. ${validation.errors.join(" ")}`);
-    error.issues = validation.errors;
-    throw error;
+    throw scormError(SCORM_EXPORT_ERROR_CODES.COURSE, "Der Kurs kann noch nicht als SCORM-Lernpaket exportiert werden.", {
+      details: validation.errors.join(" "),
+      issues: validation.errors,
+    });
   }
   const template = validateTemplate(
     options.template ?? await loadScormTemplate(options),
   );
+  try {
   const cryptoObject = options.crypto ?? globalThis.crypto;
   const publishedCourse = createPublishedScormCourse(course);
   const identity = createScormExportIdentity(publishedCourse);
@@ -287,9 +412,11 @@ export async function createIndividualScormPackage(course, options = {}) {
   try {
     validateScormPackageEntries(entries);
   } catch (error) {
-    const packageError = new Error("Das SCORM-Lernpaket konnte nicht korrekt erstellt werden.");
-    packageError.issues = [error.message];
-    throw packageError;
+    throw scormError(SCORM_EXPORT_ERROR_CODES.VALIDATION, "Das erzeugte SCORM-Paket ist unvollständig.", {
+      cause: error,
+      details: error.message,
+      issues: [error.message],
+    });
   }
   const zip = createStoredZipBytes(entries);
   return Object.freeze({
@@ -301,6 +428,13 @@ export async function createIndividualScormPackage(course, options = {}) {
     identity,
     packageManifest,
   });
+  } catch (error) {
+    if (error instanceof ScormExportError) throw error;
+    throw scormError(SCORM_EXPORT_ERROR_CODES.GENERATION, "Das SCORM-ZIP konnte nicht erstellt werden.", {
+      cause: error,
+      details: error?.message ?? String(error),
+    });
+  }
 }
 
 export async function downloadIndividualScormPackage(course, options = {}) {
@@ -308,7 +442,9 @@ export async function downloadIndividualScormPackage(course, options = {}) {
   const URLObject = options.URL ?? globalThis.URL;
   const BlobClass = options.Blob ?? globalThis.Blob;
   if (!documentRoot || !URLObject?.createObjectURL || !URLObject?.revokeObjectURL || !BlobClass) {
-    throw new Error("Der Browser kann das SCORM-Lernpaket nicht herunterladen.");
+    throw scormError(SCORM_EXPORT_ERROR_CODES.GENERATION, "Das SCORM-ZIP konnte nicht erstellt werden.", {
+      details: "Blob-Download wird von diesem Browser nicht vollständig unterstützt.",
+    });
   }
   const result = await createIndividualScormPackage(course, options);
   const url = URLObject.createObjectURL(new BlobClass(

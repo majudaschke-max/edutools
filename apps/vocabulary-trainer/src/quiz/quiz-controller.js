@@ -16,7 +16,7 @@ import {
   getWrongQuizWordIds,
   recordQuizResult,
   selectQuizAnswer,
-} from "./quiz-state.js?v=4.0.3";
+} from "./quiz-state.js?v=4.0.5";
 
 const EMPTY_SOURCE_MESSAGE = "Für diese Lernquelle sind aktuell keine Wörter verfügbar.";
 const INSUFFICIENT_OPTIONS_MESSAGE = "Für diese Auswahl gibt es nicht genügend eindeutige Antwortmöglichkeiten.";

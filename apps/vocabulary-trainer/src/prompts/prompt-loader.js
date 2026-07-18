@@ -1,6 +1,6 @@
 // @ts-check
 
-import { promptRegistry } from "./prompt-registry.js?v=4.0.3";
+import { promptRegistry } from "./prompt-registry.js?v=4.0.5";
 import { validatePromptTemplate } from "./template-engine.js";
 
 /**

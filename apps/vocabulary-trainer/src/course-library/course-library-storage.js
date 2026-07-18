@@ -7,8 +7,8 @@ import {
 import {
   COURSE_SOURCE_TYPES,
   rebuildCourseData,
-} from "./course-schema.js?v=4.0.3";
-import { validateCourse } from "./course-validator.js?v=4.0.3";
+} from "./course-schema.js?v=4.0.5";
+import { validateCourse } from "./course-validator.js?v=4.0.5";
 import { createCourseLibraryState } from "./course-library-state.js";
 
 export const COURSE_LIBRARY_KEY = "edutools:vocabulary-trainer:course-library";

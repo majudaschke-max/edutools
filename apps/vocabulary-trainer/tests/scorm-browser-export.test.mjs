@@ -22,12 +22,17 @@ import {
   createScormExportFilename,
   createScormExportIdentity,
   downloadIndividualScormPackage,
+  getScormExportUserMessage,
+  loadScormTemplate,
+  resolveScormTemplateBaseUrl,
+  SCORM_EXPORT_ERROR_CODES,
   validateScormExportCourse,
 } from "../src/scorm-export/scorm-browser-export.js";
 
 const TEST_ROOT = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(TEST_ROOT, "../../..");
 const LEARNER_PROFILE = path.join(ROOT, "apps/vocabulary-trainer/profiles/production/learner.production.json");
+const AUTHOR_PROFILE = path.join(ROOT, "apps/vocabulary-trainer/profiles/production/author.production.json");
 const tests = [];
 const test = (name, callback) => tests.push({ name, callback });
 
@@ -60,6 +65,36 @@ function courseFixture() {
   return course;
 }
 
+function largeCourseFixture() {
+  const course = createCourse({
+    id: "course-neutral-116",
+    title: "Neutraler SCORM Test 116",
+    description: "Neutraler Mehrpaketkurs für die Releaseprüfung.",
+    sourceType: COURSE_SOURCE_TYPES.OWN,
+    languages: {
+      source: { code: "en", label: "Englisch", speechLocale: "en-GB" },
+      target: { code: "de", label: "Deutsch", speechLocale: "de-DE" },
+    },
+  }, { now: "2026-07-18T09:00:00.000Z" });
+  for (let unitIndex = 1; unitIndex <= 6; unitIndex += 1) {
+    course.units.push(createUnit({
+      id: `unit-neutral-${unitIndex}`,
+      title: `Lernpaket ${unitIndex}`,
+      order: unitIndex,
+      released: true,
+      current: unitIndex === 1,
+    }));
+  }
+  for (let wordIndex = 1; wordIndex <= 116; wordIndex += 1) {
+    course.units[(wordIndex - 1) % 6].words.push(createWord({
+      id: `word-neutral-${wordIndex}`,
+      source: `testword ${wordIndex}`,
+      targets: [`Testbegriff ${wordIndex}`],
+    }));
+  }
+  return course;
+}
+
 async function buildTemplate(root) {
   const outputDirectory = path.join(root, "learner-template");
   await buildVocabularyTrainer(LEARNER_PROFILE, {
@@ -77,8 +112,14 @@ async function buildTemplate(root) {
 
 const workRoot = await mkdtemp(path.join(tmpdir(), "edutools-browser-scorm-test-"));
 let template;
+let authorBuildRoot;
 try {
   template = await buildTemplate(workRoot);
+  authorBuildRoot = path.join(workRoot, "author-pages");
+  await buildVocabularyTrainer(AUTHOR_PROFILE, {
+    repositoryRoot: ROOT,
+    outputDirectory: authorBuildRoot,
+  });
 } catch (error) {
   await rm(workRoot, { recursive: true, force: true });
   throw error;
@@ -112,7 +153,7 @@ test("eigener 19-Wörter-Kurs erzeugt ein vollständiges SCORM-1.2-ZIP", async (
   const buildInfo = readPackageJson("runtime/build-info.json");
   const buildManifest = readPackageJson("build-manifest.json");
   const packageManifest = readPackageJson("scorm-package-manifest.json");
-  assert.equal(buildInfo.appVersion, "4.0.3");
+  assert.equal(buildInfo.appVersion, "4.0.5");
   assert.equal(buildManifest.appVersion, buildInfo.appVersion);
   assert.equal(packageManifest.appVersion, buildInfo.appVersion);
 
@@ -130,6 +171,63 @@ test("eigener 19-Wörter-Kurs erzeugt ein vollständiges SCORM-1.2-ZIP", async (
   } finally {
     await harness.cleanup();
   }
+});
+
+test("neutraler Kurs mit 6 Lernpaketen und 116 Wörtern erzeugt ein valides ZIP", async () => {
+  const course = largeCourseFixture();
+  const result = await createIndividualScormPackage(course, { template, crypto: webcrypto });
+  assert.equal(result.course.units.length, 6);
+  assert.equal(result.course.units.flatMap((unit) => unit.words).length, 116);
+  const inspected = inspectStoredZip(Buffer.from(result.zip));
+  const paths = inspected.entries.map((entry) => entry.path);
+  assert.equal(paths.includes("imsmanifest.xml"), true);
+  assert.equal(paths.includes("index.html"), true);
+  assert.equal(paths.includes(".nojekyll"), false);
+  assert.equal(new Set(paths).size, paths.length);
+  const manifestSource = inspected.entries.find((entry) => entry.path === "imsmanifest.xml").data.toString("utf8");
+  const manifest = inspectScorm12Manifest(manifestSource);
+  assert.equal(manifest.startFile, "index.html");
+  assert.deepEqual([...manifest.files].sort(), [...paths].sort());
+});
+
+test("Vorlagenbasis berücksichtigt den GitHub-Pages-Unterpfad und Hash-Routen", () => {
+  assert.equal(
+    resolveScormTemplateBaseUrl({ document: { baseURI: "https://majudaschke-max.github.io/edutools/author/#/courses" } }).href,
+    "https://majudaschke-max.github.io/edutools/author/scorm-template/",
+  );
+  assert.equal(
+    resolveScormTemplateBaseUrl({ document: { baseURI: "http://127.0.0.1:8000/dist/pages/author/#/course-builder" } }).href,
+    "http://127.0.0.1:8000/dist/pages/author/scorm-template/",
+  );
+});
+
+test("Author-Pages-Build lädt die Vorlage ohne die nicht auslieferbare .nojekyll-Datei", async () => {
+  const requested = [];
+  const fetchFromBuild = async (input) => {
+    const url = new URL(input);
+    const marker = "/scorm-template/";
+    const relative = decodeURIComponent(url.pathname.slice(url.pathname.indexOf(marker) + marker.length));
+    requested.push(relative);
+    try {
+      const data = await readFile(path.join(authorBuildRoot, "scorm-template", relative));
+      return {
+        ok: true,
+        status: 200,
+        async json() { return JSON.parse(data.toString("utf8")); },
+        async arrayBuffer() { return data.buffer.slice(data.byteOffset, data.byteOffset + data.byteLength); },
+      };
+    } catch {
+      return { ok: false, status: 404 };
+    }
+  };
+  const loaded = await loadScormTemplate({
+    document: { baseURI: "https://majudaschke-max.github.io/edutools/author/#/courses" },
+    fetch: fetchFromBuild,
+  });
+  assert.equal(requested[0], "build-manifest.json");
+  assert.equal(requested.includes(".nojekyll"), false);
+  assert.equal(loaded.entries.some((entry) => entry.path === ".nojekyll"), false);
+  assert.equal(loaded.entries.some((entry) => entry.path === "index.html"), true);
 });
 
 test("Paketidentität, Dateiname und ZIP sind für denselben Kurs stabil", async () => {
@@ -160,20 +258,44 @@ test("ungültige oder mitgelieferte Kurse werden vor dem Download blockiert", as
   assert.equal(validateScormExportCourse(bundled).valid, false);
   await assert.rejects(
     () => createIndividualScormPackage(bundled, { template, crypto: webcrypto }),
-    /dupliziert/u,
+    (error) => error.code === SCORM_EXPORT_ERROR_CODES.COURSE
+      && error.issues.some((issue) => /dupliziert/u.test(issue)),
   );
   const empty = courseFixture();
   empty.units.forEach((unit) => { unit.released = false; });
   await assert.rejects(
     () => createIndividualScormPackage(empty, { template, crypto: webcrypto }),
-    /freig/u,
+    (error) => error.code === SCORM_EXPORT_ERROR_CODES.COURSE
+      && getScormExportUserMessage(error) === "Der Kurs enthält keine freigegebenen Lernpakete.",
   );
 });
 
 test("fehlende Browser-SCORM-Vorlage wird verständlich gemeldet", async () => {
   await assert.rejects(
     () => createIndividualScormPackage(courseFixture(), { template: {}, crypto: webcrypto }),
-    /SCORM-Vorlage/u,
+    (error) => error.code === SCORM_EXPORT_ERROR_CODES.TEMPLATE
+      && getScormExportUserMessage(error) === "Die SCORM-Vorlage konnte nicht geladen werden.",
+  );
+});
+
+test("fehlende Vorlagendatei meldet HTTP-Status und URL nur als technische Details", async () => {
+  const fetchImpl = async (input) => {
+    const url = new URL(input);
+    if (url.pathname.endsWith("build-manifest.json")) {
+      return {
+        ok: true,
+        status: 200,
+        async json() { return template.manifest; },
+      };
+    }
+    return { ok: false, status: 404 };
+  };
+  await assert.rejects(
+    () => loadScormTemplate({ document: { baseURI: "https://example.test/edutools/author/" }, fetch: fetchImpl }),
+    (error) => error.code === SCORM_EXPORT_ERROR_CODES.TEMPLATE
+      && /HTTP 404/u.test(error.details)
+      && /https:\/\/example\.test\/edutools\/author\/scorm-template\//u.test(error.details)
+      && getScormExportUserMessage(error) === "Die SCORM-Vorlage konnte nicht geladen werden.",
   );
 });
 
@@ -189,7 +311,7 @@ test("Browserexport blockiert eine nicht paketrelative Vorlagenreferenz vor dem 
   };
   await assert.rejects(
     () => createIndividualScormPackage(courseFixture(), { template: brokenTemplate, crypto: webcrypto }),
-    (error) => error.message === "Das SCORM-Lernpaket konnte nicht korrekt erstellt werden."
+    (error) => error.code === SCORM_EXPORT_ERROR_CODES.VALIDATION
       && error.issues.some((issue) => /paketrelativ/u.test(issue)),
   );
 });

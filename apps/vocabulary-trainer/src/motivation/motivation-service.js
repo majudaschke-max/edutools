@@ -1,22 +1,22 @@
-import { getLevelFromXp, getLevelProgress } from "./level-system.js?v=4.0.3";
+import { getLevelFromXp, getLevelProgress } from "./level-system.js?v=4.0.5";
 import {
   findNewMilestones,
   getMilestoneDefinition,
-} from "./milestone-system.js?v=4.0.3";
-import { resolveMotivationConfig } from "./motivation-config.js?v=4.0.3";
+} from "./milestone-system.js?v=4.0.5";
+import { resolveMotivationConfig } from "./motivation-config.js?v=4.0.5";
 import {
   normalizeMotivationEvent,
   toLocalDateKey,
-} from "./motivation-events.js?v=4.0.3";
+} from "./motivation-events.js?v=4.0.5";
 import {
   cloneMotivationState,
   createInitialMotivationState,
   validateMotivationState,
-} from "./motivation-state.js?v=4.0.3";
+} from "./motivation-state.js?v=4.0.5";
 import {
   applyQualifiedLearningDay,
   getPreviousLocalDateKey,
-} from "./streak-system.js?v=4.0.3";
+} from "./streak-system.js?v=4.0.5";
 
 function unique(values) {
   return [...new Set(values)];

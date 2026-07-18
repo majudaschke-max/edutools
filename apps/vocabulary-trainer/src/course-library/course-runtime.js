@@ -7,7 +7,10 @@ import {
   JSON_COURSE_IMPORT_MODES,
 } from "../import/json-course-importer.js";
 import { downloadCourseExport } from "../import/course-exporter.js";
-import { downloadIndividualScormPackage } from "../scorm-export/scorm-browser-export.js?v=4.0.3";
+import {
+  downloadIndividualScormPackage,
+  getScormExportUserMessage,
+} from "../scorm-export/scorm-browser-export.js?v=4.0.5";
 import {
   copyImportPromptToClipboard,
   downloadTabularImportTemplate,
@@ -20,7 +23,7 @@ import {
 } from "../languages/language-registry.js";
 import { renderCourseLibraryView } from "../views/course-library-view.js";
 import { renderCourseBuilderView } from "../views/course-builder-view.js";
-import { createAiImportRuntime } from "../ai-import/ai-import-runtime.js?v=4.0.3";
+import { createAiImportRuntime } from "../ai-import/ai-import-runtime.js?v=4.0.5";
 
 const COURSE_ROUTES = new Set(["/courses", "/course-builder"]);
 const EMPTY_LANGUAGE = Object.freeze({ code: "", label: "", speechLocale: "" });
@@ -125,14 +128,7 @@ export function createCourseRuntime(options) {
 
   const aiImportRuntime = createAiImportRuntime({
     appRoot,
-    service,
-    idGenerator,
     onStatus: live,
-    onCourseImported(course) {
-      onCourseUpdated?.(course.id);
-      live(`Kurs „${course.title}“ wurde importiert.`);
-      onNavigate(`/course-builder?course=${encodeURIComponent(course.id)}`);
-    },
   });
 
   function setJsonImportError(message = "") {
@@ -242,11 +238,12 @@ export function createCourseRuntime(options) {
       live("SCORM-Lernpaket wurde erstellt.");
       return result;
     } catch (error) {
-      console.error("SCORM-Lernpaket konnte nicht erstellt werden.", error);
-      const details = Array.isArray(error?.issues) && error.issues.length > 0
-        ? ` ${error.issues.join(" ")}`
-        : " Prüfe Kurs, Freigaben und die lokale SCORM-Vorlage.";
-      const message = `Das SCORM-Lernpaket konnte nicht korrekt erstellt werden.${details}`;
+      console.error("SCORM-Lernpaket konnte nicht erstellt werden.", {
+        code: error?.code ?? "SCORM_UNKNOWN",
+        details: error?.details ?? error?.message ?? "Unbekannter Fehler",
+        error,
+      });
+      const message = getScormExportUserMessage(error);
       if (status) {
         status.className = "session-error course-export-status";
         status.textContent = message;
@@ -263,7 +260,7 @@ export function createCourseRuntime(options) {
     }
   }
 
-  function renderLibrary() {
+  function renderLibrary(query = {}) {
     aiImportRuntime.reset();
     if (importModel?.mode === "new-course") importModel = null;
     renderCourseLibraryView({
@@ -272,6 +269,16 @@ export function createCourseRuntime(options) {
       enabled,
       recovered,
     });
+    if (query.import === "json") {
+      const form = appRoot.querySelector("[data-course-json-import]");
+      const newImport = form?.querySelector("[name='course-json-mode'][value='new']");
+      if (newImport) newImport.checked = true;
+      updateJsonImportMode(form);
+      Promise.resolve().then(() => {
+        appRoot.querySelector("[data-course-json-import-section]")?.scrollIntoView?.({ block: "start" });
+        appRoot.querySelector("#course-json-file")?.focus?.();
+      });
+    }
   }
 
   function renderBuiltInEditor(course) {
@@ -375,7 +382,7 @@ export function createCourseRuntime(options) {
   function renderRoute(route, _metrics, context = {}) {
     if (!COURSE_ROUTES.has(route)) return;
     currentRoute = route;
-    if (route === "/courses") renderLibrary();
+    if (route === "/courses") renderLibrary(context.query ?? {});
     else renderBuilder(context.query ?? {});
   }
 

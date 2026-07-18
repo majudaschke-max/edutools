@@ -2,7 +2,7 @@ import {
   createMotivationSessionId,
   createSessionCompletionEvent,
   createWordPracticeEvent,
-} from "./motivation-events.js?v=4.0.3";
+} from "./motivation-events.js?v=4.0.5";
 
 /** Small non-blocking adapter used by every learning runtime. */
 export function createMotivationController(options = {}) {

@@ -8,7 +8,7 @@ import {
   resolveLearningScopeWords,
   saveLearningScope,
 } from "../core/learning-scope.js";
-import { createQuizController } from "./quiz-controller.js?v=4.0.3";
+import { createQuizController } from "./quiz-controller.js?v=4.0.5";
 import {
   focusQuizTarget,
   getQuizShortcut,

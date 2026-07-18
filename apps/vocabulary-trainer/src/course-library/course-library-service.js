@@ -5,8 +5,8 @@ import {
   createUnit,
   createWord,
   duplicateCourse,
-} from "./course-schema.js?v=4.0.3";
-import { assertValidCourse } from "./course-validator.js?v=4.0.3";
+} from "./course-schema.js?v=4.0.5";
+import { assertValidCourse } from "./course-validator.js?v=4.0.5";
 
 function sortUnits(course) {
   course.units.sort((left, right) => left.order - right.order);

@@ -2,10 +2,14 @@
 
 ## Öffentliche GitHub-Pages-Freigabe
 
-- [ ] Paketmetadaten und produktive Cache-Referenzen nennen einheitlich `4.0.3`.
+- [ ] Paketmetadaten und produktive Cache-Referenzen nennen einheitlich `4.0.5`.
 - [ ] ausschließlich der explizite Pages-Deployment-Satz wird verwendet.
 - [ ] private Kurse, Profile und `dist/private-scorm` fehlen im Artefakt.
 - [ ] JSON-Roundtrip, Tests, Syntax, Profile, Assembly und HTTP-Smoke bestehen.
+- [ ] KI-Vorbereitung enthält keine lokale Bildauswahl und führt direkt zum
+      standardmäßig gewählten JSON-Neuimport.
+- [ ] Browser-SCORM-Export lädt unter `/edutools/author/` alle Paketdateien,
+      ignoriert `.nojekyll` und erzeugt ein validiertes ZIP.
 - [ ] ausschließlich `dist/pages` wird hochgeladen.
 - [ ] ein zweiter Clean Build besitzt denselben strukturellen Release-Hash.
 - [ ] keine absoluten lokalen Pfade, temporären Dateien oder alten Assets enthalten.

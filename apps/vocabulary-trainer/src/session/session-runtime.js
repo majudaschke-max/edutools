@@ -1,6 +1,6 @@
 import { getAvailableWords } from "../core/vocabulary.js";
 import { getMarkedWords } from "../core/scheduler.js";
-import { selectSessionWords } from "../core/session-size.js?v=4.0.3";
+import { selectSessionWords } from "../core/session-size.js?v=4.0.5";
 import {
   createLearningScopeOptions,
   formatLearningScope,
@@ -9,17 +9,17 @@ import {
   resolveLearningScopeWords,
   saveLearningScope,
 } from "../core/learning-scope.js";
-import { createSessionController } from "./session-controller.js?v=4.0.3";
-import { renderLearnView } from "../views/learn-view.js?v=4.0.3";
-import { renderMarkedView } from "../views/marked-view.js?v=4.0.3";
-import { renderReviewView } from "../views/review-view.js?v=4.0.3";
+import { createSessionController } from "./session-controller.js?v=4.0.5";
+import { renderLearnView } from "../views/learn-view.js?v=4.0.5";
+import { renderMarkedView } from "../views/marked-view.js?v=4.0.5";
+import { renderReviewView } from "../views/review-view.js?v=4.0.5";
 import {
   announceSession,
   focusSessionTarget,
   getSessionShortcut,
   updateFlashcardSizeFieldset,
   updateFlashcardSizeSummary,
-} from "../views/session-view.js?v=4.0.3";
+} from "../views/session-view.js?v=4.0.5";
 import {
   readLearningScopeSelection,
   syncLearningScopePackageControls,

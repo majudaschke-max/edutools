@@ -2,7 +2,7 @@ import {
   createFlashcardDirectionFieldset,
   createFlashcardSizeFieldset,
   renderSessionView,
-} from "./session-view.js?v=4.0.3";
+} from "./session-view.js?v=4.0.5";
 import { createLearningScopeFieldsets } from "./learning-scope-view.js";
 import {
   appendViewError,

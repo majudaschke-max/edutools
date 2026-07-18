@@ -1,12 +1,12 @@
-import { loadCourseConfig } from "../core/course.js?v=4.0.3";
+import { loadCourseConfig } from "../core/course.js?v=4.0.5";
 import {
   assertMatchingCourseIds,
   loadVocabularyData,
-} from "../core/vocabulary.js?v=4.0.3";
+} from "../core/vocabulary.js?v=4.0.5";
 import {
   COURSE_SOURCE_TYPES,
   createBuiltInCourse,
-} from "./course-schema.js?v=4.0.3";
+} from "./course-schema.js?v=4.0.5";
 
 /**
  * Loads the two authoritative bundled resources through the same path used by

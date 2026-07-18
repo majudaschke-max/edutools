@@ -4,6 +4,33 @@ Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei dokument
 
 ## [Unreleased]
 
+## [4.0.5] - 2026-07-18
+
+### Fixed
+
+- Der browserbasierte SCORM-Export ignoriert die reine Pages-Steuerdatei
+  `.nojekyll` beim Laden und Paketieren der eingebetteten Learner-Vorlage. Die
+  Vorlagenbasis wird relativ zur tatsächlichen Author-URL aufgelöst und
+  funktioniert damit auch unter `/edutools/author/`.
+- SCORM-Fehler unterscheiden jetzt Kurs-, Vorlagen-, Erzeugungs- und
+  Paketvalidierungsprobleme; technische HTTP- und Pfaddetails bleiben im
+  Entwicklungslog, während die Oberfläche eine kurze verständliche Meldung
+  zeigt.
+
+### Changed
+
+- Die KI-Vorbereitung enthält keine lokale Bildauswahl, Bildliste oder
+  Bildtyp-Hinweise mehr. Kursname und Sprachen erzeugen den Prompt weiterhin
+  ausschließlich über die versionierte lokale Prompt-Engine.
+- Sechs knappe Schritte erklären den tatsächlichen externen Ablauf. Der letzte
+  Schritt führt direkt zum vorhandenen JSON-Neuimport; der Backup-Restore
+  bleibt davon getrennt.
+
+### Security
+
+- EduTools erhält, liest und überträgt im KI-Workflow weiterhin keine Bilder.
+  Learner und SCORM bleiben frei von Prompt- und Authoring-Modulen.
+
 ## [4.0.3] - 2026-07-17
 
 ### Added

@@ -20,7 +20,7 @@ import {
   updateSpeedPairOptions,
   updateSpeedTimerDisplay,
 } from "../views/speed-view.js";
-import { createSpeedController } from "./speed-controller.js?v=4.0.3";
+import { createSpeedController } from "./speed-controller.js?v=4.0.5";
 import { getSpeedEligibleWordCount } from "./speed-generator.js";
 import { createSpeedTimer } from "./speed-timer.js";
 import { notifyLearningSessionCompleted } from "../delivery/learning-session-events.js";

@@ -19,7 +19,6 @@ import {
   getSmallLearningPackageWarnings,
   normalizeImportedLearningPackages,
 } from "../src/import/core/learning-package-normalizer.js";
-import { validateAiImportImageFiles } from "../src/ai-import/ai-import-controller.js";
 
 const tests = [];
 function test(name, callback) { tests.push({ name, callback }); }
@@ -91,10 +90,14 @@ test("technische Fragmente werden zusammengeführt, semantische Kleingruppen nur
   assert.ok(manyTechnicalWords.packages.every((entry) => /^Lernpaket \d+$/u.test(entry.title)));
 });
 
-test("HEIC und HEIF werden ausschließlich anhand der Dateimetadaten akzeptiert", () => {
-  const heic = { name: "IMG_1234.HEIC", type: "image/heic" };
-  const heif = { name: "IMG_1235.heif", type: "image/heif" };
-  assert.equal(validateAiImportImageFiles([heic, heif]).valid, true);
+test("KI-Vorbereitung besitzt keine lokale Bildauswahl mehr", async () => {
+  const [controller, runtime, view] = await Promise.all([
+    readFile(new URL("../src/ai-import/ai-import-controller.js", import.meta.url), "utf8"),
+    readFile(new URL("../src/ai-import/ai-import-runtime.js", import.meta.url), "utf8"),
+    readFile(new URL("../src/views/ai-import-view.js", import.meta.url), "utf8"),
+  ]);
+  assert.doesNotMatch(`${controller}\n${runtime}\n${view}`, /validateAiImportImageFiles|setImageFiles|selectedImages|imageStatus/u);
+  assert.doesNotMatch(view, /HEIC|HEIF|JPG|JPEG|PNG|WEBP/u);
 });
 
 test("produktive Präsentation verwendet für interne Teilbereiche Lernpaket", async () => {

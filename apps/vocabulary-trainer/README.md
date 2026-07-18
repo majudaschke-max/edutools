@@ -59,6 +59,13 @@ eine oder mehrere herunterladbare JSON-Dateien erzeugen lassen und diese lokal
 in EduTools auswählen. EduTools liest keine Bilder und sendet keine Daten.
 Zusammengehörige Dateiteile werden vollständig geprüft, deterministisch zu
 einem Kurs zusammengeführt und erst nach Vorschau und Bestätigung gespeichert.
+Release `4.0.5` entfernt die irreführende lokale Bildauswahl aus dieser
+Vorbereitung. Lehrkräfte legen nur Kursname und Sprachen fest, kopieren den
+versionierten Prompt, laden ihre Vorlagen selbst im gewählten KI-Chat hoch und
+wechseln anschließend direkt zum getrennten JSON-Neuimport. EduTools erhält
+weiterhin keine Bilder. Der browserbasierte SCORM-Export überspringt reine
+Pages-Steuerdateien der eingebetteten Learner-Vorlage und löst deren Pfad auch
+unter dem GitHub-Pages-Unterpfad zuverlässig auf.
 Sprint 4.1.1 führt intern den flüchtigen `ImportDraft`, Source-Adapter und den
 gemeinsamen Import-Orchestrator ein, ohne Austauschformate oder Oberfläche zu
 verändern. Sprint 4.1.2 lagert den bestehenden Prompt als versionierte lokale

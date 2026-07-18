@@ -6,8 +6,8 @@ import {
 } from "../../course-library/course-schema.js";
 import { COURSE_FIELD_LIMITS } from "../../course-library/course-validator.js";
 import { resolveLanguageDefinition } from "../../languages/language-registry.js";
-import { createImportDraft } from "../core/import-draft.js?v=4.0.3";
-import { createExactWordKey, normalizeExactDuplicatePart } from "../core/import-duplicate-key.js?v=4.0.3";
+import { createImportDraft } from "../core/import-draft.js?v=4.0.5";
+import { createExactWordKey, normalizeExactDuplicatePart } from "../core/import-duplicate-key.js?v=4.0.5";
 import { createImportIssue } from "../core/import-issues.js";
 import {
   getSmallLearningPackageWarnings,

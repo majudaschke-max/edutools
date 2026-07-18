@@ -3,16 +3,16 @@
 import {
   COURSE_APP_TYPE,
   COURSE_SCHEMA_VERSION,
-} from "../course-library/course-schema.js?v=4.0.3";
+} from "../course-library/course-schema.js?v=4.0.5";
 import {
   getLanguageDefinitions,
   resolveLanguageDefinition,
-} from "../languages/language-registry.js?v=4.0.3";
-import { promptLoader } from "./prompt-loader.js?v=4.0.3";
+} from "../languages/language-registry.js?v=4.0.5";
+import { promptLoader } from "./prompt-loader.js?v=4.0.5";
 import {
   DEFAULT_VOCABULARY_IMPORT_PROMPT_VERSION,
   VOCABULARY_IMPORT_PROMPT_TYPE,
-} from "./prompt-registry.js?v=4.0.3";
+} from "./prompt-registry.js?v=4.0.5";
 import { renderPromptTemplate } from "./template-engine.js";
 
 /**

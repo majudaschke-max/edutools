@@ -28,7 +28,7 @@ test("Sprint 3.9 behält die experimentelle OCR-Quelle ohne produktive Aktivieru
     read(new URL("ocr/ocr-import-runtime.js", appRoot)),
   ]);
   const metadata = JSON.parse(packageJson);
-  assert.equal(metadata.version, "4.0.3");
+  assert.equal(metadata.version, "4.0.5");
   assert.equal(metadata.dependencies, undefined);
   assert.deepEqual(Object.keys(metadata.devDependencies).sort(), [
     "@tesseract.js-data/deu", "@tesseract.js-data/eng", "@tesseract.js-data/fra",
@@ -37,7 +37,7 @@ test("Sprint 3.9 behält die experimentelle OCR-Quelle ohne produktive Aktivieru
   assert.match(ocr, /importMode: "quick"/);
 });
 
-test("alle produktiven Source-Referenzen verwenden einheitlich Version 4.0.3", async () => {
+test("alle produktiven Source-Referenzen verwenden einheitlich Version 4.0.5", async () => {
   async function walk(directory) {
     const entries = await readdir(directory, { withFileTypes: true });
     const files = [];
@@ -55,9 +55,9 @@ test("alle produktiven Source-Referenzen verwenden einheitlich Version 4.0.3", a
     versions.push(...[...source.matchAll(/\?v=(\d+\.\d+\.\d+)/g)].map((match) => match[1]));
   }
   assert.ok(versions.length > 0);
-  assert.deepEqual([...new Set(versions)], ["4.0.3"]);
+  assert.deepEqual([...new Set(versions)], ["4.0.5"]);
   const appVersion = await read(new URL("runtime/app-version.js", appRoot));
-  assert.match(appVersion, /APP_VERSION = "4\.0\.3"/u);
+  assert.match(appVersion, /APP_VERSION = "4\.0\.5"/u);
 });
 
 test("Footer enthält nur EduTools und das MJ-Signet ohne Werbeclaim", async () => {

@@ -14,7 +14,7 @@ import {
   renderWritingView,
   updateWritingLimitHint,
 } from "../views/writing-view.js";
-import { createWritingController } from "./writing-controller.js?v=4.0.3";
+import { createWritingController } from "./writing-controller.js?v=4.0.5";
 import { notifyLearningSessionCompleted } from "../delivery/learning-session-events.js";
 import {
   readLearningScopeSelection,

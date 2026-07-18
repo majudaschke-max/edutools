@@ -19,7 +19,7 @@ const DEFINITIONS = Object.freeze([
     type: VOCABULARY_IMPORT_PROMPT_TYPE,
     version: DEFAULT_VOCABULARY_IMPORT_PROMPT_VERSION,
     default: true,
-    resource: new URL("./vocabulary/import-v1.txt?v=4.0.3", import.meta.url),
+    resource: new URL("./vocabulary/import-v1.txt?v=4.0.5", import.meta.url),
     integrity: "sha256-e5685603a4f02153e2cebdb721b791e54a9b920fbc77e0e6891f85ce07bcc751",
     requiredPlaceholders: Object.freeze([
       "COURSE_NAME",

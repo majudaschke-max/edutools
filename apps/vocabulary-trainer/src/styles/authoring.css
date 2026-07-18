@@ -140,10 +140,7 @@
   max-width: var(--content-width-form);
 }
 
-.ai-import-step,
-.ai-import-preview,
-.ai-import-duplicates,
-.ai-import-issues {
+.ai-import-step {
   display: grid;
   gap: var(--space-3);
   min-width: 0;
@@ -154,25 +151,13 @@
 }
 
 .ai-import-step h3,
-.ai-import-step h4,
-.ai-import-step h5,
-.ai-import-step p,
-.ai-import-preview dl,
-.ai-import-duplicates ul,
-.ai-import-issues h4,
-.ai-import-issues ul {
+.ai-import-step p {
   margin: 0;
 }
 
 .ai-import-step > * {
   min-inline-size: 0;
   max-inline-size: 100%;
-}
-
-.ai-import-files-form,
-.ai-import-issues__list {
-  display: grid;
-  gap: var(--space-3);
 }
 
 .ai-import-step__title {
@@ -201,27 +186,12 @@
   justify-self: start;
 }
 
-.ai-import-assistant .button,
-.ai-import-assistant input[type="file"] {
+.ai-import-assistant .button {
   min-height: 48px !important;
   min-block-size: 48px !important;
 }
 
-.ai-import-issues {
-  color: var(--color-text-primary);
-  background: var(--color-error-soft);
-  border-color: var(--color-error);
-}
-
-.ai-import-issues__list {
-  padding-inline-start: var(--space-5);
-}
-
-.ai-import-issues__item span {
-  color: var(--color-text-secondary);
-}
-
-.ai-import-files__list {
+.ai-import-sequence {
   display: grid;
   gap: var(--space-2);
   min-width: 0;
@@ -229,40 +199,8 @@
   padding-inline-start: var(--space-5);
 }
 
-.ai-import-files__list li {
+.ai-import-sequence li {
   overflow-wrap: anywhere;
-}
-
-.ai-import-file {
-  display: flex;
-  min-width: 0;
-  gap: var(--space-3);
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--space-3);
-  background: var(--color-bg-surface);
-  border: var(--border-width) solid var(--color-border-default);
-  border-radius: var(--radius-md);
-}
-
-.ai-import-file__name {
-  min-width: 0;
-  overflow-wrap: anywhere;
-}
-
-.ai-import-file-count {
-  color: var(--color-text-secondary);
-  font-weight: var(--font-weight-semibold);
-}
-
-.ai-import-preview {
-  background: var(--color-bg-surface);
-}
-
-.ai-import-duplicates__list {
-  display: grid;
-  gap: var(--space-2);
-  padding-inline-start: var(--space-5);
 }
 
 .ai-import-dialog__prompt {

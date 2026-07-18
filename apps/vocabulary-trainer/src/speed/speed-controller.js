@@ -17,7 +17,7 @@ import {
   selectSpeedItem,
   setSpeedPaused,
   updateSpeedTime,
-} from "./speed-state.js?v=4.0.3";
+} from "./speed-state.js?v=4.0.5";
 
 const MINIMUM_PAIR_COUNT = 4;
 const INSUFFICIENT_WORDS_MESSAGE = "Für die Speed Challenge werden mindestens vier Wörter benötigt.";

@@ -3,7 +3,7 @@ import {
   COURSE_APP_TYPE,
   COURSE_SCHEMA_VERSION,
   COURSE_SOURCE_TYPES,
-} from "./course-schema.js?v=4.0.3";
+} from "./course-schema.js?v=4.0.5";
 
 const COURSE_SOURCE_TYPE_VALUES = new Set(Object.values(COURSE_SOURCE_TYPES));
 

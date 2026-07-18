@@ -10,8 +10,8 @@ import {
 } from "../../course-library/course-schema.js";
 import { assertValidCourse } from "../../course-library/course-validator.js";
 import { createCourseLanguage } from "../../languages/language-registry.js";
-import { normalizeImportComparisonKey } from "./import-normalizer.js?v=4.0.3";
-import { createExactWordKey } from "./import-duplicate-key.js?v=4.0.3";
+import { normalizeImportComparisonKey } from "./import-normalizer.js?v=4.0.5";
+import { createExactWordKey } from "./import-duplicate-key.js?v=4.0.5";
 
 export const DUPLICATE_STRATEGIES = Object.freeze(["skip", "merge", "replace", "add"]);
 

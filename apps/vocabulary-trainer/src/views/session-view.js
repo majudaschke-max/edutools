@@ -2,13 +2,13 @@ import {
   FLASHCARD_DIRECTIONS,
   getCurrentSessionCardDirection,
   getSessionProgress,
-} from "../session/session-state.js?v=4.0.3";
+} from "../session/session-state.js?v=4.0.5";
 import {
   formatSessionSizeSelection,
   getDefaultSessionSize,
   getSessionSizeOptions,
-} from "../core/session-size.js?v=4.0.3";
-import { isSnapshotWordMarked } from "../session/session-controller.js?v=4.0.3";
+} from "../core/session-size.js?v=4.0.5";
+import { isSnapshotWordMarked } from "../session/session-controller.js?v=4.0.5";
 import {
   appendViewError,
   createActionButton,

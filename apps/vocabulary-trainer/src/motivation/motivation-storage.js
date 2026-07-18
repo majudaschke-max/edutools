@@ -8,7 +8,7 @@ import {
   createInitialMotivationState,
   migrateMotivationState,
   validateMotivationState,
-} from "./motivation-state.js?v=4.0.3";
+} from "./motivation-state.js?v=4.0.5";
 
 const MOTIVATION_STORAGE_AREA = "motivation-state";
 

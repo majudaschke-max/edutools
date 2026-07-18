@@ -4,19 +4,19 @@ import {
   loadLearningState,
   saveLearningState,
 } from "./core/learning-state.js";
-import { createRouter, navigateTo, startRouter } from "./core/router.js?v=4.0.3";
+import { createRouter, navigateTo, startRouter } from "./core/router.js?v=4.0.5";
 import { configureStorageNamespace } from "./core/storage.js";
-import { createQuizRuntime } from "./quiz/quiz-runtime.js?v=4.0.3";
-import { createSessionRuntime } from "./session/session-runtime.js?v=4.0.3";
-import { createWritingRuntime } from "./writing/writing-runtime.js?v=4.0.3";
+import { createQuizRuntime } from "./quiz/quiz-runtime.js?v=4.0.5";
+import { createSessionRuntime } from "./session/session-runtime.js?v=4.0.5";
+import { createWritingRuntime } from "./writing/writing-runtime.js?v=4.0.5";
 import {
   calculateDashboardMetrics,
   renderDashboard,
-} from "./views/dashboard-view.js?v=4.0.3";
+} from "./views/dashboard-view.js?v=4.0.5";
 import {
   calculateAcademicProgress,
   renderProgressView,
-} from "./views/progress-view.js?v=4.0.3";
+} from "./views/progress-view.js?v=4.0.5";
 import { renderUnits } from "./views/units-view.js";
 import { createDeploymentCapabilities } from "./runtime/deployment-capabilities.js";
 import {
@@ -183,7 +183,7 @@ export async function initializeApp(appRoot = document.querySelector("[data-voca
       pronunciation: runtimeState.pronunciation,
     });
     if (capabilities.hasSpeedChallenge()) {
-      const { createSpeedRuntime } = await import("./speed/speed-runtime.js?v=4.0.3");
+      const { createSpeedRuntime } = await import("./speed/speed-runtime.js?v=4.0.5");
       runtimeState.speedRuntime = createSpeedRuntime({
         appRoot,
         courseConfig,
@@ -231,7 +231,7 @@ export async function initializeApp(appRoot = document.querySelector("[data-voca
 
 async function loadDeploymentCourseContext(profile, capabilities) {
   if (capabilities.canManageCourses()) {
-    const { initializeAuthoring } = await import("./runtime/authoring-entry.js?v=4.0.3");
+    const { initializeAuthoring } = await import("./runtime/authoring-entry.js?v=4.0.5");
     return initializeAuthoring({
       courseConfigUrl: COURSE_CONFIG_URL,
       vocabularyDataUrl: VOCABULARY_DATA_URL,
@@ -243,10 +243,10 @@ async function loadDeploymentCourseContext(profile, capabilities) {
 
 async function createDeploymentMotivation(courseConfig) {
   const [configModule, controllerModule, serviceModule, storageModule] = await Promise.all([
-    import("./motivation/motivation-config.js?v=4.0.3"),
-    import("./motivation/motivation-controller.js?v=4.0.3"),
-    import("./motivation/motivation-service.js?v=4.0.3"),
-    import("./motivation/motivation-storage.js?v=4.0.3"),
+    import("./motivation/motivation-config.js?v=4.0.5"),
+    import("./motivation/motivation-controller.js?v=4.0.5"),
+    import("./motivation/motivation-service.js?v=4.0.5"),
+    import("./motivation/motivation-storage.js?v=4.0.5"),
   ]);
   const motivationConfig = configModule.resolveMotivationConfig(courseConfig);
   const motivationState = storageModule.loadMotivationState(courseConfig.courseId, {
@@ -447,7 +447,7 @@ function presentPendingLevelUps() {
   if (!runtimeState?.motivationSummary?.enabled) return;
   const [notification] = runtimeState.motivation.consumePendingNotifications();
   if (notification) {
-    import("./components/level-up-notice.js?v=4.0.3")
+    import("./components/level-up-notice.js?v=4.0.5")
       .then(({ showLevelUpNotice }) => {
         showLevelUpNotice(runtimeState.appRoot.ownerDocument, notification);
       });

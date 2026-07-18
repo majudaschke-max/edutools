@@ -13,7 +13,7 @@ import {
   recordSessionResult,
   revealSessionSolution,
   setSessionMarkedResult,
-} from "./session-state.js?v=4.0.3";
+} from "./session-state.js?v=4.0.5";
 
 const STORAGE_ERROR_MESSAGE = "Dein Lernstand konnte nicht gespeichert werden. Bitte versuche es erneut.";
 const MISSING_WORD_MESSAGE = "Ein Wort dieser Lerneinheit ist nicht mehr verfügbar. Bitte starte die Einheit erneut.";

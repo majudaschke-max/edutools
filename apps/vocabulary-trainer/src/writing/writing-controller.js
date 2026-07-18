@@ -17,7 +17,7 @@ import {
   revealWritingHint,
   setWritingAnswer,
   WRITING_DIRECTIONS,
-} from "./writing-state.js?v=4.0.3";
+} from "./writing-state.js?v=4.0.5";
 
 const CONCRETE_DIRECTIONS = new Set([
   WRITING_DIRECTIONS.SOURCE_TO_TARGET,

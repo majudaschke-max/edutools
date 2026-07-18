@@ -1,8 +1,8 @@
-import { createRuntimeCourseContext } from "../course-library/course-schema.js?v=4.0.3";
-import { loadBuiltInCourseContext } from "../course-library/built-in-course.js?v=4.0.3";
-import { createCourseLibraryStorage } from "../course-library/course-library-storage.js?v=4.0.3";
-import { createCourseLibraryService } from "../course-library/course-library-service.js?v=4.0.3";
-import { createCourseRuntime } from "../course-library/course-runtime.js?v=4.0.3";
+import { createRuntimeCourseContext } from "../course-library/course-schema.js?v=4.0.5";
+import { loadBuiltInCourseContext } from "../course-library/built-in-course.js?v=4.0.5";
+import { createCourseLibraryStorage } from "../course-library/course-library-storage.js?v=4.0.5";
+import { createCourseLibraryService } from "../course-library/course-library-service.js?v=4.0.5";
+import { createCourseRuntime } from "../course-library/course-runtime.js?v=4.0.5";
 import { migrateLegacyAuthorStorage } from "../core/storage.js";
 
 /** Author-only bootstrap. Learner builds omit this module and all descendants. */

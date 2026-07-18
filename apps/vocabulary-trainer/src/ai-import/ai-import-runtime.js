@@ -1,29 +1,22 @@
 // @ts-check
 
-import { createAiImportController } from "./ai-import-controller.js?v=4.0.3";
-import { renderAiImportView } from "../views/ai-import-view.js?v=4.0.3";
+import { createAiImportController } from "./ai-import-controller.js?v=4.0.5";
+import { renderAiImportView } from "../views/ai-import-view.js?v=4.0.5";
 
 /**
- * Binds the Author-only guided workflow. Images and external chat content never
- * enter this runtime; it reads only JSON files explicitly selected by users.
+ * Binds the Author-only prompt preparation. Images are selected and uploaded
+ * only in the external KI chat; EduTools never receives them.
  * @param {{
  *   appRoot: HTMLElement,
  *   onStatus?: (message: string) => void,
- *   onCourseImported?: (course: object) => void,
- *   service?: object,
- *   idGenerator?: Function,
  *   controller?: ReturnType<typeof createAiImportController>,
  * }=} options
  */
 export function createAiImportRuntime(options = {}) {
-  if (!options.appRoot) throw new TypeError("Der ChatGPT-Import benötigt die Author-App als Wurzelelement.");
+  if (!options.appRoot) throw new TypeError("Der KI-Importprompt benötigt die Author-App als Wurzelelement.");
   const { appRoot } = options;
-  const controller = options.controller ?? createAiImportController({
-    service: options.service,
-    idGenerator: options.idGenerator,
-  });
+  const controller = options.controller ?? createAiImportController();
   const onStatus = options.onStatus ?? (() => {});
-  const onCourseImported = options.onCourseImported ?? (() => {});
   /** @type {HTMLElement | null} */
   let viewContainer = null;
   /** @type {HTMLElement | null} */
@@ -69,8 +62,7 @@ export function createAiImportRuntime(options = {}) {
 
   function setBusy(value) {
     busy = value;
-    appRoot.querySelectorAll("[data-ai-import-form], [data-ai-import-files-form], [data-ai-import-response-form]")
-      .forEach((form) => form.setAttribute("aria-busy", String(value)));
+    appRoot.querySelector("[data-ai-import-form]")?.setAttribute("aria-busy", String(value));
     appRoot.querySelectorAll("[data-ai-import-action]")
       .forEach((control) => { control.disabled = value; });
   }
@@ -93,10 +85,6 @@ export function createAiImportRuntime(options = {}) {
   /** @param {Event} event */
   function handleInput(event) {
     const target = /** @type {HTMLInputElement | HTMLSelectElement | null} */ (event.target);
-    if (target?.matches?.("[data-ai-import-response]")) {
-      controller.setResponseText(target.value);
-      return;
-    }
     const field = target?.dataset?.aiImportField;
     if (!field || !appRoot.contains(target)) return;
     controller.setField(field, target.value);
@@ -113,66 +101,12 @@ export function createAiImportRuntime(options = {}) {
     }
   }
 
-  /** @param {Event} event */
-  async function handleChange(event) {
-    const target = /** @type {HTMLInputElement | null} */ (event.target);
-    if (!target || !appRoot.contains(target)) return;
-    if (target.matches?.("[data-ai-import-duplicate-choice]")) {
-      controller.setDuplicateChoice(target.value);
-      return;
-    }
-    if (target.matches?.("[data-ai-import-images]")) {
-      controller.setImageFiles(target.files);
-      render();
-      onStatus(controller.getSnapshot().imageStatus);
-      return;
-    }
-    if (!target.matches?.("[data-ai-import-json-files]") || busy) return;
-    const operation = generation;
-    setBusy(true);
-    const result = await controller.setJsonFiles(target.files);
-    if (operation !== generation || !viewContainer) return;
-    busy = false;
-    render();
-    onStatus(controller.getSnapshot().importStatus);
-    const focusTarget = !result.ok
-      ? appRoot.querySelector("[data-ai-import-issues]")
-      : appRoot.querySelector("[data-ai-import-preview]");
-    focusTarget?.focus?.();
-    if (result.error) console.error("JSON-Dateien konnten nicht geprüft werden.", result.error);
-  }
-
   /** @param {SubmitEvent} event */
   async function handleSubmit(event) {
     const form = /** @type {HTMLFormElement | null} */ (event.target);
-    if (!form || !appRoot.contains(form)) return;
+    if (!form?.matches?.("[data-ai-import-form]") || !appRoot.contains(form)) return;
     event.preventDefault();
     if (busy) return;
-    if (form.matches("[data-ai-import-files-form]")) {
-      const result = controller.importJsonFiles();
-      onStatus(controller.getSnapshot().importStatus);
-      if (!result.ok) {
-        render();
-        appRoot.querySelector("[data-ai-import-issues]")?.focus?.();
-        if (result.error) console.error("JSON-Mehrfachimport konnte nicht gespeichert werden.", result.error);
-        return;
-      }
-      onCourseImported(result.course);
-      return;
-    }
-    if (form.matches("[data-ai-import-response-form]")) {
-      const result = controller.importResponse();
-      onStatus(controller.getSnapshot().responseStatus);
-      if (!result.ok) {
-        render();
-        appRoot.querySelector("[data-ai-import-response-status]")?.focus?.();
-        if (result.error) console.error("ChatGPT-Antwort konnte nicht importiert werden.", result.error);
-        return;
-      }
-      onCourseImported(result.course);
-      return;
-    }
-    if (!form.matches("[data-ai-import-form]")) return;
     const operation = generation;
     setBusy(true);
     const result = await controller.copyPrompt();
@@ -192,14 +126,6 @@ export function createAiImportRuntime(options = {}) {
     const action = control.dataset.aiImportAction;
     if (action === "close-prompt") {
       closePromptDialog();
-      return;
-    }
-    if (action === "prepare-response") {
-      const result = controller.prepareResponse();
-      render();
-      onStatus(controller.getSnapshot().responseStatus);
-      appRoot.querySelector(result.ok ? "[data-ai-import-response-status]" : "[data-ai-import-issues]")?.focus?.();
-      if (result.error) console.error("ChatGPT-Antwort konnte nicht geprüft werden.", result.error);
       return;
     }
     if (action !== "show-prompt" || busy) return;
@@ -248,14 +174,12 @@ export function createAiImportRuntime(options = {}) {
   function destroy() {
     reset();
     appRoot.removeEventListener("input", handleInput);
-    appRoot.removeEventListener("change", handleChange);
     appRoot.removeEventListener("submit", handleSubmit);
     appRoot.removeEventListener("click", handleClick);
     appRoot.removeEventListener("cancel", handleCancel, true);
   }
 
   appRoot.addEventListener("input", handleInput);
-  appRoot.addEventListener("change", handleChange);
   appRoot.addEventListener("submit", handleSubmit);
   appRoot.addEventListener("click", handleClick);
   appRoot.addEventListener("cancel", handleCancel, true);

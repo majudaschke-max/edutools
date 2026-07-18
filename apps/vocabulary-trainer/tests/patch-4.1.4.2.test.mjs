@@ -50,10 +50,6 @@ function findNodes(root, predicate, result = []) {
   return result;
 }
 
-function hasDescendant(root, predicate) {
-  return root.children.some((child) => predicate(child) || hasDescendant(child, predicate));
-}
-
 function aiViewModel(overrides = {}) {
   return {
     courseName: "Testkurs",
@@ -62,20 +58,6 @@ function aiViewModel(overrides = {}) {
     errors: {},
     prompt: "",
     status: "",
-    selectedFiles: [],
-    importIssues: [],
-    importStatus: "",
-    preview: null,
-    duplicateChoice: "keep",
-    duplicates: [],
-    canImport: false,
-    selectedImages: [],
-    imageStatus: "",
-    responseText: "",
-    responseIssues: [],
-    responseStatus: "",
-    responsePreview: null,
-    canImportResponse: false,
     ...overrides,
   };
 }
@@ -133,23 +115,22 @@ test("drei Importwege bleiben in der Author-Oberfläche klar getrennt", () => {
 
   const ai = documentRoot.createElement("div");
   renderAiImportView({ container: ai, model: aiViewModel() });
-  const jsonInput = findNodes(ai, (node) => Object.hasOwn(node.dataset, "aiImportJsonFiles"))[0];
-  assert.equal(jsonInput.attributes.get("accept"), ".json,application/json");
-  const fallback = findNodes(ai, (node) => node.tagName === "details" && /KI-Antwort als Text/.test(node.textContent))[0];
-  assert.ok(fallback);
-  assert.equal(hasDescendant(fallback, (node) => Object.hasOwn(node.dataset, "aiImportResponse")), true);
-  assert.equal(hasDescendant(fallback, (node) => Object.hasOwn(node.dataset, "aiImportJsonFiles")), false);
+  assert.equal(findNodes(ai, (node) => node.attributes.get("type") === "file").length, 0);
+  assert.equal(findNodes(ai, (node) => node.tagName === "textarea").length, 0);
+  const jsonLink = findNodes(ai, (node) => Object.hasOwn(node.dataset, "aiImportJsonLink"))[0];
+  assert.equal(jsonLink.attributes.get("href"), "#/courses?import=json");
 });
 
-test("KI-Hilfen folgen primär dem realen JSON-Dateiweg und halten Text nur als Fallback", () => {
+test("KI-Hilfen führen ohne eingebetteten Datei- oder Textimport zum realen JSON-Neuimport", () => {
   const documentRoot = new MiniDocument();
   const ai = documentRoot.createElement("div");
   renderAiImportView({ container: ai, model: aiViewModel() });
   const numberedSteps = findNodes(ai, (node) => node.tagName === "section" && node.className === "ai-import-step");
   assert.equal(numberedSteps.length, 6);
-  assert.match(numberedSteps[4].textContent, /EduTools-JSON-Dateien speichern/);
-  assert.match(numberedSteps[5].textContent, /Kurs aus JSON importieren/);
-  assert.doesNotMatch(numberedSteps.map((node) => node.textContent).join(" "), /ChatGPT-Antwort kopieren/);
+  assert.match(numberedSteps[3].textContent, /direkt im KI-Chat hoch/);
+  assert.match(numberedSteps[4].textContent, /Prompt.*selben Chat/s);
+  assert.match(numberedSteps[5].textContent, /JSON-Datei importieren/);
+  assert.doesNotMatch(numberedSteps.map((node) => node.textContent).join(" "), /Datei auswählen|Antwort in EduTools einfügen/u);
 
   const tabular = documentRoot.createElement("div");
   renderNewCourseImportView(tabular, {
@@ -201,45 +182,20 @@ test("JSON-Restore meldet Syntax, fremde Struktur, Beschädigung und Version kon
   assert.throws(() => parseJsonCourse(JSON.stringify(unsupported)), /schemaVersion muss 1 sein/);
 });
 
-test("bestehender KI-Textadapter und JSON-Dateiadapter bleiben beide funktionsfähig", async () => {
+test("Prompt-Controller bleibt von JSON-Neuimport und Backup-Restore getrennt", async () => {
   const controller = createAiImportController({
-    service: { addCourse(course) { return course; }, updateCourse(course) { return course; } },
-    idGenerator: (() => { let id = 0; return () => `patch-json-${++id}`; })(),
-    now: "2026-07-17T12:00:00.000Z",
+    generator: { async generate() { return "ENGINE-PROMPT"; } },
+    clipboard: { async writeText() {} },
   });
   controller.setField("courseName", "KI-Testkurs");
   controller.setField("sourceLanguage", "en");
   controller.setField("targetLanguage", "de");
-  controller.setResponseText(JSON.stringify({
-    units: [{ title: "Lernpaket 1", words: [{ source: "island", targets: ["Insel"] }] }],
-  }));
-  assert.equal(controller.prepareResponse().ok, true);
-
-  const generated = {
-    schemaVersion: 1,
-    appType: "vocabulary",
-    title: "KI-Testkurs",
-    subtitle: "",
-    description: "",
-    schoolType: "",
-    gradeLevel: "",
-    languages: {
-      source: { code: "en", label: "Englisch", speechLocale: "en-GB" },
-      target: { code: "de", label: "Deutsch", speechLocale: "de-DE" },
-    },
-    units: [{
-      title: "Lernpaket 1", description: "", order: 1, released: true, current: true, archived: false,
-      words: [{ source: "island", targets: ["Insel"], phonetic: "", hint: "", example: "", tags: [], archived: false }],
-    }],
-  };
-  const fileText = JSON.stringify(generated);
-  const selected = await controller.setJsonFiles([{
-    name: "edutools-vocabulary-ki-testkurs.json",
-    type: "application/json",
-    size: fileText.length,
-    async text() { return fileText; },
-  }]);
-  assert.equal(selected.ok, true);
+  assert.equal((await controller.generatePrompt()).ok, true);
+  assert.equal("setJsonFiles" in controller, false);
+  assert.equal("setResponseText" in controller, false);
+  const runtime = await readFile(new URL("../src/course-library/course-runtime.js", import.meta.url), "utf8");
+  assert.match(runtime, /importJsonCoursesAsNew\(\{ service, files: inputs, idGenerator \}\)/u);
+  assert.match(runtime, /importJsonCourse\(\{ service, text: await files\[0\]\.text\(\), conflict, idGenerator \}\)/u);
 });
 
 test("Patch führt keine neue Abhängigkeit oder Netzwerkübertragung ein", async () => {
