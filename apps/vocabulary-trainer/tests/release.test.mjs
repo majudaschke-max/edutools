@@ -148,7 +148,7 @@ test("Release-Manifest besitzt sortierte Profile und Dateien", async () => {
   assert.deepEqual(manifest.profiles[0].courseIds, [
     "neutral-language-course",
     "neutral-english-advanced-course",
-    "neutral-latin-foundations-course",
+    "course-1d831a5b-7075-4784-bba3-94c922777e8b",
   ]);
 });
 
