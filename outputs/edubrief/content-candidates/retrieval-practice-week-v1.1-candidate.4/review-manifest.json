@@ -1,0 +1,67 @@
+{
+  "candidateId": "edutools.edubrief.retrieval-practice-week-v1.1-candidate.4",
+  "candidateVersion": "1.1.0-candidate.4",
+  "status": "review-candidate",
+  "basedOnPackageId": "edutools.edubrief.retrieval-practice-week",
+  "basedOnContentVersion": "1.0.0",
+  "supersedesCandidateVersion": "1.1.0-candidate.3",
+  "createdAt": "2026-07-22T00:00:00Z",
+  "publicationStatus": "not-assigned",
+  "reviewState": {
+    "scientificReview": "pending-external-delta-check",
+    "editorialReview": "pending-external-delta-check",
+    "releaseApproval": "not-requested"
+  },
+  "hashAlgorithm": "sha-256",
+  "files": [
+    {
+      "path": "retrieval-practice-week.content.json",
+      "bytes": 32663,
+      "sha256": "c060705e903a462207a47e3609d441d2f989e3cf1485caee603696cf44976caa"
+    },
+    {
+      "path": "schema-validation-report.md",
+      "bytes": 766,
+      "sha256": "854ac853f60dead867d70b7f77c63a94a2a3620227eb45596ae1624142d5beec"
+    },
+    {
+      "path": "plain-language-review.md",
+      "bytes": 8357,
+      "sha256": "1156ed165c92c330b1c1203fafb22b7c40455d13d25d33fa831730623758ba78"
+    },
+    {
+      "path": "implementation-quality-review.md",
+      "bytes": 2456,
+      "sha256": "c454c88bb208470a7d3334c5f343c8efd0748f777e06e19ba99d548b8e18fa95"
+    },
+    {
+      "path": "applicability-review.md",
+      "bytes": 504,
+      "sha256": "de16c91b35925af93f3748148f5b67eec011b5cffda95ab3e8dd2e9a5f40d65a"
+    },
+    {
+      "path": "personal-state-migration-report.md",
+      "bytes": 488,
+      "sha256": "3363beabc587ce21143788f0faed991b384b4fa4dd788605a4a2fdaf1e7b80d1"
+    },
+    {
+      "path": "content-delta-report.md",
+      "bytes": 21614,
+      "sha256": "cfccf69cb4ee62ce6a00b06943554e4617966860b5aa93e8c5a2293fafee70a5"
+    },
+    {
+      "path": "release-readiness-report.md",
+      "bytes": 648,
+      "sha256": "2a1c218b85d5bd50779bc61af2f8381d8fba32c456dbe4960e31229276d269c9"
+    }
+  ],
+  "counts": {
+    "cards": 5,
+    "implementations": 15,
+    "generalImplementations": 5,
+    "englishImplementations": 5,
+    "bwrImplementations": 5,
+    "changedVisibleTextFields": 54
+  },
+  "distributionEligible": false
+}

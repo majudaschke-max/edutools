@@ -1,0 +1,638 @@
+{
+  "locale": "de-DE",
+  "sources": [
+    {
+      "sourceId": "source.rp-01",
+      "fundusSourceId": "RP-01",
+      "citation": "Roediger, H. L. & Karpicke, J. D. (2006). Test-Enhanced Learning: Taking Memory Tests Improves Long-Term Retention. Psychological Science, 17, 249–255.",
+      "verificationStatus": "verified",
+      "verificationScope": "full-check"
+    },
+    {
+      "sourceId": "source.rp-02",
+      "fundusSourceId": "RP-02",
+      "citation": "Rowland, C. A. (2014). The Effect of Testing Versus Restudy on Retention: A Meta-Analytic Review of the Testing Effect. Psychological Bulletin, 140, 1432–1463.",
+      "verificationStatus": "verified",
+      "verificationScope": "full-text"
+    },
+    {
+      "sourceId": "source.rp-03",
+      "fundusSourceId": "RP-03",
+      "citation": "Pan, S. C. & Rickard, T. C. (2018). Transfer of Test-Enhanced Learning: Meta-Analytic Review and Synthesis. Psychological Bulletin, 144, 710–756.",
+      "verificationStatus": "verified",
+      "verificationScope": "full-text"
+    },
+    {
+      "sourceId": "source.rp-04",
+      "fundusSourceId": "RP-04",
+      "citation": "Agarwal, P. K., Nunes, L. D. & Blunt, J. R. (2021). Retrieval Practice Consistently Benefits Student Learning: A Systematic Review of Applied Research in Schools and Classrooms. Educational Psychology Review, 33, 1409–1453.",
+      "verificationStatus": "verified",
+      "verificationScope": "article-and-method-data"
+    },
+    {
+      "sourceId": "source.rp-05",
+      "fundusSourceId": "RP-05",
+      "citation": "Yang, C., Luo, L., Vadillo, M. A., Yu, R. & Shanks, D. R. (2021). Testing (Quizzing) Boosts Classroom Learning: A Systematic and Meta-Analytic Review. Psychological Bulletin, 147, 399–435.",
+      "verificationStatus": "verified",
+      "verificationScope": "abstract-and-key-statistics"
+    }
+  ],
+  "topics": [
+    {
+      "topicId": "topic.retrieval-practice",
+      "title": "Retrieval Practice",
+      "summary": "Aktiver Abruf als kurze, fehlerfreundliche Lernhandlung: Wissen ohne vollständige Vorlage rekonstruieren, Antworten fachlich prüfen, korrigieren und später variabel erneut aufgreifen."
+    }
+  ],
+  "themeWeeks": [
+    {
+      "weekId": "week.retrieval-practice-01",
+      "topicId": "topic.retrieval-practice",
+      "title": "Aktiver Abruf ohne Prüfungsdruck",
+      "weekQuestion": "Wie kann aktiver Abruf in den Unterricht eingebaut werden, ohne dass daraus zusätzlicher Prüfungsdruck entsteht?",
+      "dayIds": [
+        "card.retrieval-practice-01",
+        "card.retrieval-practice-02",
+        "card.retrieval-practice-03",
+        "card.retrieval-practice-04",
+        "card.retrieval-practice-05"
+      ],
+      "nextTopicCrossReference": null
+    }
+  ],
+  "cards": [
+    {
+      "id": "card.retrieval-practice-01",
+      "contentRevision": 2,
+      "topicId": "topic.retrieval-practice",
+      "themeWeekId": "week.retrieval-practice-01",
+      "sequence": 1,
+      "dayRole": "research-and-orientation",
+      "title": "Abruf ist auch eine Lernhandlung",
+      "guidingQuestion": "Woran erkenne ich, ob eine Abrufaufgabe dem Lernen dient und nicht nur Leistung kontrolliert?",
+      "shortAnswer": "Lernorientierter Abruf ist kurz, niedrigschwellig und fehlerfreundlich. Lernende rekonstruieren bereits aufgebautes Wissen, gleichen ihre Antwort ab und dürfen sie korrigieren.",
+      "takeaway": "Abrufen kann Lernen sein – auch ohne Note, Punktzahl oder öffentlichen Vergleich.",
+      "estimatedMinutes": 7,
+      "researchStatement": {
+        "primaryFundusStatementId": "GW-02-A08",
+        "supportingFundusStatementIds": [
+          "GW-02-A03"
+        ],
+        "dossierId": "GW-02",
+        "statementType": "professional-interpretation",
+        "evidenceLevel": "E3",
+        "robustCore": "Der Testing Effect begründet niedrigschwellige Abrufgelegenheiten. Aktiver Abruf kann Lernen unterstützen, wenn bereits Wissen aufgebaut wurde und die Antwort fachlich ausgewertet wird.",
+        "didacticInterpretation": "Die Trennung von Lern- und Bewertungsfunktion sowie die druckarme Gestaltung sind professionelle Gestaltungsentscheidungen für EduBrief und Unterricht.",
+        "conditionsAndLimits": [
+          "Der Abruf baut auf bereits aufgebautem Wissen auf.",
+          "Antworten werden fachlich abgeglichen und können korrigiert werden.",
+          "Die konkrete Ausgestaltung muss zur Lerngruppe und Aufgabe passen."
+        ],
+        "doesNotFollow": [
+          "Bewertung ist grundsätzlich lernschädlich.",
+          "Jedes Quiz ist automatisch lernwirksam.",
+          "Jede Unterrichtsstunde benötigt eine Abrufaufgabe."
+        ],
+        "sourceRefs": [
+          "source.rp-01",
+          "source.rp-02",
+          "source.rp-04",
+          "source.rp-05"
+        ]
+      },
+      "reflectionPrompts": [
+        {
+          "reflectionPromptId": "reflection.rp-01",
+          "prompt": "Woran würden deine Lernenden heute erkennen, dass der Abruf dem Lernen dient und nicht benotet oder öffentlich verglichen wird?"
+        }
+      ],
+      "crossReferences": [
+        {
+          "targetContentId": "card.retrieval-practice-02",
+          "relation": "continues-with",
+          "label": "Nächster Schritt: Abruf von Wiedererkennen unterscheiden"
+        }
+      ],
+      "reviewState": {
+        "lifecycleStatus": "approved",
+        "publicationStatus": "P3",
+        "editorialVersion": 2,
+        "reviewedSourceRefs": [
+          "source.rp-01",
+          "source.rp-02",
+          "source.rp-04",
+          "source.rp-05"
+        ],
+        "contentAuthorId": "edutools-editorial-process",
+        "scientificReviewerId": "external-scientific-review-2026-07-22",
+        "editorialReviewerId": "external-editorial-review-2026-07-22",
+        "releaseApproverId": "edubrief-project-owner",
+        "approvedAt": "2026-07-22T00:00:00Z",
+        "reviewApprovalRef": "external-content-approval-retrieval-practice-v0.2"
+      },
+      "implementations": [
+        {
+          "implementationId": "practice-idea.rp-01-concept-map",
+          "editorialOrder": 10,
+          "applicability": {
+            "type": "general"
+          },
+          "title": "Mini-Begriffsnetz aus dem Gedächtnis",
+          "learningAction": "Nenne drei bereits eingeführte Schlüsselbegriffe. Die Lernenden zeichnen ohne Unterlagen zwei fachliche Verbindungen zwischen ihnen und gleichen ihr Netz anschließend mit einer kurzen Referenz ab.",
+          "observationPrompt": "Achte darauf, welche Beziehungen eigenständig rekonstruiert werden und an welcher Verbindung beim Abgleich eine fachliche Korrektur nötig wird.",
+          "transferStatus": "didactic-transfer",
+          "reviewStatus": "approved",
+          "fundusStatementId": "GW-02-A08"
+        },
+        {
+          "implementationId": "impulse.rp-01-english",
+          "editorialOrder": 20,
+          "applicability": {
+            "type": "subjects",
+            "subjectIds": [
+              "english"
+            ]
+          },
+          "title": "Englische Form vor der Vorlage produzieren",
+          "learningAction": "Lass eine bereits eingeführte Wendung oder Regel zunächst einzeln aus dem Gedächtnis formulieren. Erst danach wird ein korrektes Beispiel geöffnet und die eigene Formulierung überarbeitet.",
+          "observationPrompt": "Achte darauf, ob Lernende die Form selbst erzeugen oder erst beim Beispiel wiedererkennen.",
+          "transferStatus": "didactic-transfer",
+          "reviewStatus": "approved",
+          "fundusStatementId": "GW-02-A08"
+        },
+        {
+          "implementationId": "impulse.rp-01-bwr",
+          "editorialOrder": 30,
+          "applicability": {
+            "type": "subjects",
+            "subjectIds": [
+              "bwr"
+            ]
+          },
+          "title": "Buchungssatz ohne Muster beginnen",
+          "learningAction": "Gib einen vertrauten Geschäftsfall. Lernende bilden zuerst einzeln einen Buchungssatz und gleichen ihn anschließend mit einem begründeten Muster ab.",
+          "observationPrompt": "Achte darauf, ob Kontoentscheidung und Soll-Haben-Zuordnung begründet werden können.",
+          "transferStatus": "didactic-transfer",
+          "reviewStatus": "approved",
+          "fundusStatementId": "GW-02-A08"
+        }
+      ]
+    },
+    {
+      "id": "card.retrieval-practice-02",
+      "contentRevision": 2,
+      "topicId": "topic.retrieval-practice",
+      "themeWeekId": "week.retrieval-practice-01",
+      "sequence": 2,
+      "dayRole": "observe-and-diagnose",
+      "title": "Erst erinnern, dann wiedererkennen",
+      "guidingQuestion": "Wie kann ich beobachten, ob Lernende wirklich abrufen oder nur wiedererkennen?",
+      "shortAnswer": "Lass eine eigene Antwort entstehen, bevor Heft oder Muster sichtbar werden. Der anschließende Vergleich bleibt wichtig, ersetzt aber nicht den ersten Abrufversuch.",
+      "takeaway": "Eigene Antwort vor Vorlage: So wird Abruf von bloßer Vertrautheit unterscheidbar.",
+      "estimatedMinutes": 7,
+      "researchStatement": {
+        "primaryFundusStatementId": "GW-02-A01",
+        "supportingFundusStatementIds": [],
+        "dossierId": "GW-02",
+        "statementType": "empirical-finding",
+        "evidenceLevel": "E4",
+        "robustCore": "Aktiver Abruf kann langfristiges Behalten stärker fördern als bloßes Wiederlesen. Freie oder hinweisgestützte Produktion fordert meist mehr Rekonstruktion als reine Wiedererkennung.",
+        "conditionsAndLimits": [
+          "Wiederlesen kann für Wissensaufbau oder Klärung nötig sein.",
+          "Der Vergleich mit einer fachlich korrekten Referenz bleibt für Klärung und Korrektur wichtig.",
+          "Die Wirkung hängt nicht allein am sichtbaren Aufgabenformat."
+        ],
+        "doesNotFollow": [
+          "Freie Antwortformate sind in jeder Situation überlegen.",
+          "Wiedererkennen ist niemals eine Abrufleistung.",
+          "Wiederlesen ist grundsätzlich nutzlos."
+        ],
+        "sourceRefs": [
+          "source.rp-01",
+          "source.rp-02",
+          "source.rp-04",
+          "source.rp-05"
+        ]
+      },
+      "reflectionPrompts": [
+        {
+          "reflectionPromptId": "reflection.rp-02",
+          "prompt": "Bei welcher typischen Aufgabe in deinem Unterricht sehen Lernende die Vorlage zu früh, um eine eigene Antwort zu erzeugen?"
+        }
+      ],
+      "crossReferences": [
+        {
+          "targetContentId": "card.retrieval-practice-03",
+          "relation": "continues-with",
+          "label": "Nächster Schritt: Abruf angemessen unterstützen"
+        }
+      ],
+      "reviewState": {
+        "lifecycleStatus": "approved",
+        "publicationStatus": "P3",
+        "editorialVersion": 2,
+        "reviewedSourceRefs": [
+          "source.rp-01",
+          "source.rp-02",
+          "source.rp-04",
+          "source.rp-05"
+        ],
+        "contentAuthorId": "edutools-editorial-process",
+        "scientificReviewerId": "external-scientific-review-2026-07-22",
+        "editorialReviewerId": "external-editorial-review-2026-07-22",
+        "releaseApproverId": "edubrief-project-owner",
+        "approvedAt": "2026-07-22T00:00:00Z",
+        "reviewApprovalRef": "external-content-approval-retrieval-practice-v0.2"
+      },
+      "implementations": [
+        {
+          "implementationId": "practice-idea.rp-02-sketch-first",
+          "editorialOrder": 10,
+          "applicability": {
+            "type": "general"
+          },
+          "title": "Skizze vor der Textvorlage",
+          "learningAction": "Bitte die Lernenden, einen bekannten Ablauf, Zusammenhang oder Aufbau zunächst als einfache Skizze ohne Unterlagen darzustellen. Erst danach öffnen sie die Text- oder Bildvorlage und ergänzen fehlende Elemente.",
+          "observationPrompt": "Beobachte, welche Strukturelemente schon vor der Vorlage vorhanden sind und welche erst durch Wiedererkennen ergänzt werden.",
+          "transferStatus": "didactic-transfer",
+          "reviewStatus": "approved",
+          "fundusStatementId": "GW-02-A01"
+        },
+        {
+          "implementationId": "impulse.rp-02-english",
+          "editorialOrder": 20,
+          "applicability": {
+            "type": "subjects",
+            "subjectIds": [
+              "english"
+            ]
+          },
+          "title": "Wort oder Wendung vor der Wortbank",
+          "learningAction": "Lass Lernende ein bekanntes Wort, eine Wendung oder eine passende sprachliche Form zunächst ohne Wortbank produzieren. Öffne die Wortbank erst danach für Vergleich und Korrektur.",
+          "observationPrompt": "Achte darauf, was selbst produziert und was erst beim Blick auf die Wortbank wiedererkannt wird.",
+          "transferStatus": "didactic-transfer",
+          "reviewStatus": "approved",
+          "fundusStatementId": "GW-02-A01"
+        },
+        {
+          "implementationId": "impulse.rp-02-bwr",
+          "editorialOrder": 30,
+          "applicability": {
+            "type": "subjects",
+            "subjectIds": [
+              "bwr"
+            ]
+          },
+          "title": "Konten vor dem Muster",
+          "learningAction": "Lass zu einem bekannten Geschäftsfall zunächst passende Konten und Buchungsrichtung notieren. Zeige erst danach das begründete Muster.",
+          "observationPrompt": "Achte darauf, ob die Entscheidung fachlich hergeleitet oder erst am Muster erkannt wird.",
+          "transferStatus": "didactic-transfer",
+          "reviewStatus": "approved",
+          "fundusStatementId": "GW-02-A01"
+        }
+      ]
+    },
+    {
+      "id": "card.retrieval-practice-03",
+      "contentRevision": 2,
+      "topicId": "topic.retrieval-practice",
+      "themeWeekId": "week.retrieval-practice-01",
+      "sequence": 3,
+      "dayRole": "small-experiment",
+      "title": "Anspruchsvoll, aber nicht aussichtslos",
+      "guidingQuestion": "Wie kann ich Hilfe geben, ohne den Abrufversuch durch eine vollständige Vorlage zu ersetzen?",
+      "shortAnswer": "Starte mit einer offenen Frage und biete bei Bedarf abgestufte Hilfen. Danach folgt immer Abgleich und Korrektur.",
+      "takeaway": "So viel eigene Rekonstruktion wie möglich, so viel fachliche Hilfe wie nötig.",
+      "estimatedMinutes": 8,
+      "researchStatement": {
+        "primaryFundusStatementId": "GW-02-A07",
+        "supportingFundusStatementIds": [],
+        "dossierId": "GW-02",
+        "statementType": "didactic-consequence",
+        "evidenceLevel": "E3",
+        "robustCore": "Retrieval Practice sollte auf einem ersten Wissensaufbau aufbauen und herausfordernd, aber nicht aussichtslos sein. Bei sehr geringer Abrufleistung sind Hinweise und anschließendes Feedback bedeutsam.",
+        "didacticInterpretation": "Das konkrete dreistufige Hilfenschema Richtung, Schlüsselbegriff und Teilstruktur ist ein redaktionelles Scaffolding für die praktische Erprobung.",
+        "conditionsAndLimits": [
+          "Die angemessene Unterstützung hängt von Aufgabe und Lernenden ab.",
+          "Hilfen sollen den eigenen Denkweg öffnen und nicht die vollständige Antwort vorwegnehmen.",
+          "Nach dem Versuch folgt ein fachlicher Abgleich."
+        ],
+        "doesNotFollow": [
+          "Je schwieriger der Abruf, desto größer der Lerneffekt.",
+          "Lernende sollten möglichst häufig scheitern.",
+          "Das dreistufige Hilfenschema ist ein empirisch geprüftes universelles Standardverfahren."
+        ],
+        "sourceRefs": [
+          "source.rp-02",
+          "source.rp-04",
+          "source.rp-05"
+        ]
+      },
+      "reflectionPrompts": [
+        {
+          "reflectionPromptId": "reflection.rp-03",
+          "prompt": "Welche deiner Hilfen erhält den eigenen Denkweg – und welche zeigt die Lösung so früh, dass kaum noch Abruf nötig ist?"
+        }
+      ],
+      "crossReferences": [
+        {
+          "targetContentId": "card.retrieval-practice-04",
+          "relation": "continues-with",
+          "label": "Nächster Schritt: Abruf mit Feedback überarbeiten"
+        }
+      ],
+      "reviewState": {
+        "lifecycleStatus": "approved",
+        "publicationStatus": "P3",
+        "editorialVersion": 2,
+        "reviewedSourceRefs": [
+          "source.rp-02",
+          "source.rp-04",
+          "source.rp-05"
+        ],
+        "contentAuthorId": "edutools-editorial-process",
+        "scientificReviewerId": "external-scientific-review-2026-07-22",
+        "editorialReviewerId": "external-editorial-review-2026-07-22",
+        "releaseApproverId": "edubrief-project-owner",
+        "approvedAt": "2026-07-22T00:00:00Z",
+        "reviewApprovalRef": "external-content-approval-retrieval-practice-v0.2"
+      },
+      "implementations": [
+        {
+          "implementationId": "practice-idea.rp-03-single-cue",
+          "editorialOrder": 10,
+          "applicability": {
+            "type": "general"
+          },
+          "title": "Ein Hinweis, dann neuer Versuch",
+          "learningAction": "Stelle eine bekannte Frage zunächst ohne Hilfe. Wer nicht weiterkommt, erhält genau einen vorbereiteten Schlüsselbegriff und startet einen zweiten eigenen Versuch, bevor die fachliche Referenz geöffnet wird.",
+          "observationPrompt": "Achte darauf, ob der einzelne Hinweis einen eigenen Denkweg eröffnet oder ob für die nächste Planung eine anders abgestufte Hilfe nötig ist.",
+          "transferStatus": "didactic-transfer",
+          "reviewStatus": "approved",
+          "fundusStatementId": "GW-02-A07"
+        },
+        {
+          "implementationId": "impulse.rp-03-english",
+          "editorialOrder": 20,
+          "applicability": {
+            "type": "subjects",
+            "subjectIds": [
+              "english"
+            ]
+          },
+          "title": "Sprachliche Hilfen stufen",
+          "learningAction": "Lass eine bekannte Zielform produzieren und biete bei Bedarf Kontext, Anfangsbuchstaben und Wortfamilie an. Zeige die korrekte Form erst beim Abgleich.",
+          "observationPrompt": "Achte darauf, welche Hilfe Produktion ermöglicht und wann nur noch Wiedererkennen stattfindet.",
+          "transferStatus": "didactic-transfer",
+          "reviewStatus": "approved",
+          "fundusStatementId": "GW-02-A07"
+        },
+        {
+          "implementationId": "impulse.rp-03-bwr",
+          "editorialOrder": 30,
+          "applicability": {
+            "type": "subjects",
+            "subjectIds": [
+              "bwr"
+            ]
+          },
+          "title": "Buchungshilfen stufen",
+          "learningAction": "Gib einen bekannten Geschäftsfall. Öffne bei Bedarf nacheinander Kontenart, Soll-Haben-Leitfrage und Teilbuchung; erst danach das Muster.",
+          "observationPrompt": "Achte darauf, an welcher fachlichen Entscheidung die Lernenden blockieren.",
+          "transferStatus": "didactic-transfer",
+          "reviewStatus": "approved",
+          "fundusStatementId": "GW-02-A07"
+        }
+      ]
+    },
+    {
+      "id": "card.retrieval-practice-04",
+      "contentRevision": 2,
+      "topicId": "topic.retrieval-practice",
+      "themeWeekId": "week.retrieval-practice-01",
+      "sequence": 4,
+      "dayRole": "vary-and-connect",
+      "title": "Abruf braucht Klärung und Überarbeitung",
+      "guidingQuestion": "Wie wird aus einer Rückmeldung nach dem Abruf eine konkrete Lernhandlung?",
+      "shortAnswer": "Lass zuerst abrufen. Danach wird mit einer fachlich korrekten Referenz verglichen und mindestens eine Stelle sichtbar überarbeitet.",
+      "takeaway": "Feedback endet nicht bei einer Markierung; es öffnet eine fachlich begründete Korrektur.",
+      "estimatedMinutes": 8,
+      "researchStatement": {
+        "primaryFundusStatementId": "GW-02-A02",
+        "supportingFundusStatementIds": [],
+        "dossierId": "GW-02",
+        "statementType": "design-condition",
+        "evidenceLevel": "E3",
+        "robustCore": "Feedback ist besonders wichtig, wenn Abrufantworten falsch oder unsicher sind. Der fundusbasierte Kern verlangt fachliche Klärung nach dem Abruf; eine bloße Markierung kann dafür zu wenig sein.",
+        "didacticInterpretation": "Mindestens eine sichtbare Überarbeitung nach dem Vergleich ist die redaktionelle Übertragung dieses Kerns in eine beobachtbare Lernhandlung.",
+        "conditionsAndLimits": [
+          "Feedback ist nicht in jeder Form oder zu jedem Zeitpunkt gleich wirksam.",
+          "Die Rückmeldung muss fachlich klären, was ergänzt oder korrigiert werden soll.",
+          "Die sichtbare Überarbeitung ist eine didaktische Operationalisierung."
+        ],
+        "doesNotFollow": [
+          "Jede Antwort benötigt einen ausführlichen individuellen Kommentar.",
+          "Sichtbares Überarbeiten garantiert tiefes Verständnis.",
+          "Die konkrete Überarbeitungsroutine ist als isolierter Wirkmechanismus nachgewiesen."
+        ],
+        "sourceRefs": [
+          "source.rp-02",
+          "source.rp-04",
+          "source.rp-05"
+        ]
+      },
+      "reflectionPrompts": [
+        {
+          "reflectionPromptId": "reflection.rp-04",
+          "prompt": "Welche kleine Überarbeitung könnte in deiner nächsten Abrufaufgabe zeigen, dass Feedback tatsächlich verarbeitet wurde?"
+        }
+      ],
+      "crossReferences": [
+        {
+          "targetContentId": "card.retrieval-practice-05",
+          "relation": "continues-with",
+          "label": "Nächster Schritt: mit Abstand und verändertem Kontext abrufen"
+        }
+      ],
+      "reviewState": {
+        "lifecycleStatus": "approved",
+        "publicationStatus": "P3",
+        "editorialVersion": 2,
+        "reviewedSourceRefs": [
+          "source.rp-02",
+          "source.rp-04",
+          "source.rp-05"
+        ],
+        "contentAuthorId": "edutools-editorial-process",
+        "scientificReviewerId": "external-scientific-review-2026-07-22",
+        "editorialReviewerId": "external-editorial-review-2026-07-22",
+        "releaseApproverId": "edubrief-project-owner",
+        "approvedAt": "2026-07-22T00:00:00Z",
+        "reviewApprovalRef": "external-content-approval-retrieval-practice-v0.2"
+      },
+      "implementations": [
+        {
+          "implementationId": "practice-idea.rp-04-repair-reasoning",
+          "editorialOrder": 10,
+          "applicability": {
+            "type": "general"
+          },
+          "title": "Eine Begründung gezielt reparieren",
+          "learningAction": "Lass eine bekannte Regel oder Erklärung zunächst ohne Unterlagen rekonstruieren. Nach dem Vergleich mit einer fachlich korrekten Referenz überarbeiten die Lernenden genau eine unklare oder fehlerhafte Stelle ihrer eigenen Begründung und markieren die Änderung.",
+          "observationPrompt": "Beobachte, ob die Änderung die fachliche Lücke schließt und begründet werden kann.",
+          "transferStatus": "didactic-transfer",
+          "reviewStatus": "approved",
+          "fundusStatementId": "GW-02-A02"
+        },
+        {
+          "implementationId": "impulse.rp-04-english",
+          "editorialOrder": 20,
+          "applicability": {
+            "type": "subjects",
+            "subjectIds": [
+              "english"
+            ]
+          },
+          "title": "Eigene sprachliche Antwort sichtbar überarbeiten",
+          "learningAction": "Lass eine bekannte sprachliche Form oder kurze Erklärung zunächst selbst formulieren. Nach dem Vergleich mit einem korrekten Beispiel überarbeiten die Lernenden eine konkrete Stelle ihrer eigenen Antwort und begründen die Änderung knapp.",
+          "observationPrompt": "Achte darauf, ob die Überarbeitung fachlich-sprachlich begründet oder nur abgeschrieben wird.",
+          "transferStatus": "didactic-transfer",
+          "reviewStatus": "approved",
+          "fundusStatementId": "GW-02-A02"
+        },
+        {
+          "implementationId": "impulse.rp-04-bwr",
+          "editorialOrder": 30,
+          "applicability": {
+            "type": "subjects",
+            "subjectIds": [
+              "bwr"
+            ]
+          },
+          "title": "Buchungsentscheidung überarbeiten",
+          "learningAction": "Lass einen bekannten Geschäftsfall buchen und danach eine Konten- oder Soll-Haben-Entscheidung anhand des Musters begründet überarbeiten.",
+          "observationPrompt": "Achte darauf, ob die Korrektur nur übernommen oder fachlich erklärt wird.",
+          "transferStatus": "didactic-transfer",
+          "reviewStatus": "approved",
+          "fundusStatementId": "GW-02-A02"
+        }
+      ]
+    },
+    {
+      "id": "card.retrieval-practice-05",
+      "contentRevision": 2,
+      "topicId": "topic.retrieval-practice",
+      "themeWeekId": "week.retrieval-practice-01",
+      "sequence": 5,
+      "dayRole": "retrieve-evaluate-and-consolidate",
+      "title": "Mit Abstand und verändertem Kontext sichern",
+      "guidingQuestion": "Wie kann aus einem einmaligen Abruf eine kleine, flexible Routine werden?",
+      "shortAnswer": "Greife eine frühere Kernfrage nach Abstand erneut auf und verändere Beispiel oder Anwendungskontext. Vergleiche, korrigiere und entscheide erst danach, ob die Routine für später vorgemerkt wird.",
+      "takeaway": "Später und leicht verändert abrufen – nicht nur dieselbe Frage sofort wiederholen.",
+      "estimatedMinutes": 9,
+      "researchStatement": {
+        "primaryFundusStatementId": "GW-02-A06",
+        "supportingFundusStatementIds": [
+          "GW-02-A01"
+        ],
+        "dossierId": "GW-02",
+        "statementType": "empirical-finding",
+        "evidenceLevel": "E2",
+        "robustCore": "Transfer von Retrieval Practice ist im Mittel möglich, aber stärker bedingt als der Vorteil bei identischen oder ähnlichen Abrufaufgaben.",
+        "didacticInterpretation": "Variable Anwendung und zeitlich versetzte Abrufgelegenheiten werden als vorsichtige Gestaltungsoption in die Wochenroutine aufgenommen.",
+        "conditionsAndLimits": [
+          "Transfer hängt unter anderem von der Passung zwischen Übungs- und Zielhandlung ab.",
+          "Ausgangsabruf, Feedback und Kontext beeinflussen die Übertragbarkeit.",
+          "Zeitlicher Abstand und Transfer sind getrennte Gestaltungsfragen."
+        ],
+        "doesNotFollow": [
+          "Es gibt ein universelles optimales Wiederholungsintervall.",
+          "Transfer entsteht automatisch durch jeden Abruf.",
+          "Bloßes Faktenabrufen ohne Vernetzung erzeugt automatisch flexibles Verständnis."
+        ],
+        "sourceRefs": [
+          "source.rp-03",
+          "source.rp-04",
+          "source.rp-05"
+        ]
+      },
+      "reflectionPrompts": [
+        {
+          "reflectionPromptId": "reflection.rp-05",
+          "prompt": "Welche eine kurze Abrufroutine möchtest du freiwillig für später vormerken – und welche Grenze musst du dabei beachten?"
+        }
+      ],
+      "crossReferences": [
+        {
+          "targetContentId": "card.retrieval-practice-01",
+          "relation": "builds-on",
+          "label": "Wochenfrage erneut prüfen: Abruf als Lernhandlung ohne Prüfungsdruck"
+        }
+      ],
+      "reviewState": {
+        "lifecycleStatus": "approved",
+        "publicationStatus": "P3",
+        "editorialVersion": 2,
+        "reviewedSourceRefs": [
+          "source.rp-03",
+          "source.rp-04",
+          "source.rp-05"
+        ],
+        "contentAuthorId": "edutools-editorial-process",
+        "scientificReviewerId": "external-scientific-review-2026-07-22",
+        "editorialReviewerId": "external-editorial-review-2026-07-22",
+        "releaseApproverId": "edubrief-project-owner",
+        "approvedAt": "2026-07-22T00:00:00Z",
+        "reviewApprovalRef": "external-content-approval-retrieval-practice-v0.2"
+      },
+      "implementations": [
+        {
+          "implementationId": "practice-idea.rp-05-two-moments",
+          "editorialOrder": 10,
+          "applicability": {
+            "type": "general"
+          },
+          "title": "Zwei Abrufmomente verbinden",
+          "learningAction": "Greife eine frühere Kernfrage in einer späteren Unterrichtssituation erneut ohne Vorlage auf. Verändere Beispiel oder Anwendungskontext und lass die Lernenden anschließend markieren, welche fachliche Verbindung oder Korrektur nötig ist.",
+          "observationPrompt": "Achte darauf, ob das zugrunde liegende Prinzip im veränderten Kontext erkannt und seine Grenze benannt wird.",
+          "transferStatus": "didactic-transfer",
+          "reviewStatus": "approved",
+          "fundusStatementId": "GW-02-A06"
+        },
+        {
+          "implementationId": "impulse.rp-05-english",
+          "editorialOrder": 20,
+          "applicability": {
+            "type": "subjects",
+            "subjectIds": [
+              "english"
+            ]
+          },
+          "title": "Bekannte Form im neuen Kontext",
+          "learningAction": "Lass eine ältere Wendung oder Regel in einem neuen Satz oder Dialog produzieren, bevor Beispiele geöffnet werden.",
+          "observationPrompt": "Achte darauf, ob die Form nur wiederholt oder passend an den neuen Kontext angepasst wird.",
+          "transferStatus": "didactic-transfer",
+          "reviewStatus": "approved",
+          "fundusStatementId": "GW-02-A06"
+        },
+        {
+          "implementationId": "impulse.rp-05-bwr",
+          "editorialOrder": 30,
+          "applicability": {
+            "type": "subjects",
+            "subjectIds": [
+              "bwr"
+            ]
+          },
+          "title": "Prinzip im veränderten Geschäftsfall",
+          "learningAction": "Gib einen neuen Geschäftsfall, der ein bekanntes Prinzip erfordert. Lernende leiten die Entscheidung ohne Muster her und vergleichen danach.",
+          "observationPrompt": "Achte darauf, ob das zugrunde liegende Prinzip erkannt und begründet übertragen wird.",
+          "transferStatus": "didactic-transfer",
+          "reviewStatus": "approved",
+          "fundusStatementId": "GW-02-A06"
+        }
+      ]
+    }
+  ],
+  "tombstones": []
+}

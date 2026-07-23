@@ -1,0 +1,61 @@
+{
+  "candidateId": "edutools.edubrief.retrieval-practice-week-v1.1-candidate.3",
+  "candidateVersion": "1.1.0-candidate.3",
+  "status": "review-candidate",
+  "basedOnPackageId": "edutools.edubrief.retrieval-practice-week",
+  "basedOnContentVersion": "1.0.0",
+  "supersedesCandidateVersion": "1.1.0-candidate.2",
+  "createdAt": "2026-07-22T00:00:00Z",
+  "publicationStatus": "not-assigned",
+  "reviewState": {
+    "scientificReview": "pending-external-delta-check",
+    "editorialReview": "pending-external-delta-check",
+    "releaseApproval": "not-requested"
+  },
+  "hashAlgorithm": "sha-256",
+  "files": [
+    {
+      "path": "retrieval-practice-week.content.json",
+      "bytes": 30403,
+      "sha256": "0616ad474a60dc19583ba778c2ec27b9bdb0d30d6fc728809005c8323d0641ec"
+    },
+    {
+      "path": "schema-validation-report.md",
+      "bytes": 1099,
+      "sha256": "9607e3dce21c9a1984aacf5bcbd0523f58cf0ad882163d60dca6258810c31aaf"
+    },
+    {
+      "path": "implementation-quality-review.md",
+      "bytes": 6841,
+      "sha256": "0e65a6ecccde4004411babaa73b5dd8ffd8d547b12b2669b24784a5f20f6b3a4"
+    },
+    {
+      "path": "applicability-review.md",
+      "bytes": 648,
+      "sha256": "c0afd0447a591005eccdaeb07f57b916a3e9bf3362fcb073f6cf10703a99cbcb"
+    },
+    {
+      "path": "personal-state-migration-report.md",
+      "bytes": 760,
+      "sha256": "9a404feb3d32eadb54b64f66659bb1e25a0fd7ddbbde8e8aeea45dff34e47e93"
+    },
+    {
+      "path": "content-delta-report.md",
+      "bytes": 1704,
+      "sha256": "f1f1210683e0f91894afcddf3bc9fb3539409a00a3c5b4118c41a7ed840e6ab1"
+    },
+    {
+      "path": "release-readiness-report.md",
+      "bytes": 712,
+      "sha256": "8cb5862eb9d6ba9dc769958dc980281cabc36b11c3ca1b6d05bb00d2f3f7da8d"
+    }
+  ],
+  "counts": {
+    "cards": 5,
+    "implementations": 15,
+    "generalImplementations": 5,
+    "englishImplementations": 5,
+    "bwrImplementations": 5
+  },
+  "distributionEligible": false
+}

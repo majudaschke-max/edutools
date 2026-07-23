@@ -1,0 +1,48 @@
+{
+  "candidateId": "edutools.edubrief.retrieval-practice-week-v1.1",
+  "candidateVersion": "1.1.0-candidate",
+  "status": "review-candidate",
+  "basedOnPackageId": "edutools.edubrief.retrieval-practice-week",
+  "basedOnContentVersion": "1.0.0",
+  "createdAt": "2026-07-22T00:00:00Z",
+  "publicationStatus": "not-assigned",
+  "reviewState": {
+    "scientificReview": "pending-external-review",
+    "editorialReview": "pending-external-review",
+    "releaseApproval": "not-requested"
+  },
+  "hashAlgorithm": "sha-256",
+  "files": [
+    {
+      "path": "retrieval-practice-week.content.json",
+      "bytes": 40153,
+      "sha256": "a3c145f6b11dd0a31675beeb6dc88db61fe69d6a55a1b374abbbfea61a03073c"
+    },
+    {
+      "path": "content-delta-report.md",
+      "bytes": 3670,
+      "sha256": "217f92f5d67ba682ea563a3beb6cd5da2924bcd5fd763f0e1f7ea5259c78b7ae"
+    },
+    {
+      "path": "practice-variant-review.md",
+      "bytes": 1962,
+      "sha256": "d7b2bcce97671614edd36c372adae72acce839fa1882ff972deb925e83bac388"
+    },
+    {
+      "path": "content-validation-report.md",
+      "bytes": 1164,
+      "sha256": "1e237ff37e8bde9313ab0bf24f69c99f27e9223f9084908e2d583e246960f5b1"
+    },
+    {
+      "path": "release-readiness-report.md",
+      "bytes": 1024,
+      "sha256": "64752e0d1d8ba665303ad33e6efbc1cae662c80047ad535433ea65f31989f1d3"
+    }
+  ],
+  "counts": {
+    "cards": 5,
+    "additionalPracticeIdeas": 5,
+    "newTeacherEducationIdeas": 0
+  },
+  "distributionEligible": false
+}

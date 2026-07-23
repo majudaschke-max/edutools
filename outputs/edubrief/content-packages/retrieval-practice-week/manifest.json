@@ -1,0 +1,37 @@
+{
+  "packageId": "edutools.edubrief.retrieval-practice-week",
+  "publisherId": "edutools",
+  "packagePurpose": "distribution",
+  "schemaVersion": "2.0.0-distribution",
+  "contentVersion": "1.0.0",
+  "createdByAppVersion": "1.0.0",
+  "minimumAppVersion": "1.0.0",
+  "createdAt": "2026-07-22T00:00:00Z",
+  "releasedAt": "2026-07-22T00:00:00Z",
+  "releaseStatus": "published",
+  "publicationStatus": "P3",
+  "locale": "de-DE",
+  "hashAlgorithm": "sha-256",
+  "canonicalization": "edubrief-canonical-json-v1",
+  "files": [
+    {
+      "path": "retrieval-practice-week.content.json",
+      "mediaType": "application/json",
+      "bytes": 34869,
+      "sha256": "d796fb45f16c90e002d4c99ad196e301d34374316474b4e971d5521932130c51"
+    }
+  ],
+  "counts": {
+    "sources": 5,
+    "topics": 1,
+    "themeWeeks": 1,
+    "cards": 5,
+    "practiceVariants": 19,
+    "tombstones": 0
+  },
+  "contentAuthorId": "edutools-editorial-process",
+  "scientificReviewerId": "external-scientific-review-2026-07-22",
+  "editorialReviewerId": "external-editorial-review-2026-07-22",
+  "releaseApproverId": "edubrief-project-owner",
+  "manifestHash": "e67292e0af2ae4be0a1036d0387b3ff819c0aebe8035134fc475ec650f88f8f6"
+}

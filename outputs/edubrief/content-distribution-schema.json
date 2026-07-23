@@ -1,0 +1,820 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://edutools.example.invalid/schemas/edubrief-content-distribution/2.0.0",
+  "title": "EduBrief Content Distribution Schema",
+  "description": "Nur runtimefähige, vollständig freigegebene P3-Inhalte. review-candidate und interne Reviewberichte sind unzulässig.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "manifest",
+    "content"
+  ],
+  "properties": {
+    "manifest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "packageId",
+        "publisherId",
+        "packagePurpose",
+        "schemaVersion",
+        "contentVersion",
+        "createdByAppVersion",
+        "minimumAppVersion",
+        "createdAt",
+        "releasedAt",
+        "releaseStatus",
+        "publicationStatus",
+        "locale",
+        "hashAlgorithm",
+        "canonicalization",
+        "files",
+        "counts",
+        "contentAuthorId",
+        "scientificReviewerId",
+        "editorialReviewerId",
+        "releaseApproverId",
+        "manifestHash"
+      ],
+      "properties": {
+        "packageId": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9._-]+$"
+        },
+        "publisherId": {
+          "const": "edutools"
+        },
+        "packagePurpose": {
+          "const": "distribution"
+        },
+        "schemaVersion": {
+          "const": "2.0.0-distribution"
+        },
+        "contentVersion": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+        },
+        "createdByAppVersion": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+        },
+        "minimumAppVersion": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+        },
+        "createdAt": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "releasedAt": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "releaseStatus": {
+          "const": "published"
+        },
+        "publicationStatus": {
+          "const": "P3"
+        },
+        "locale": {
+          "const": "de-DE"
+        },
+        "hashAlgorithm": {
+          "const": "sha-256"
+        },
+        "canonicalization": {
+          "const": "edubrief-canonical-json-v1"
+        },
+        "files": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 20,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "path",
+              "mediaType",
+              "bytes",
+              "sha256"
+            ],
+            "properties": {
+              "path": {
+                "type": "string",
+                "pattern": "^[a-z0-9][a-z0-9._/-]+$"
+              },
+              "mediaType": {
+                "const": "application/json"
+              },
+              "bytes": {
+                "type": "integer",
+                "minimum": 2
+              },
+              "sha256": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              }
+            }
+          }
+        },
+        "counts": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "sources",
+            "topics",
+            "themeWeeks",
+            "cards",
+            "practiceVariants",
+            "tombstones"
+          ],
+          "properties": {
+            "sources": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "topics": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "themeWeeks": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "cards": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "practiceVariants": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "tombstones": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "contentAuthorId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "scientificReviewerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "editorialReviewerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "releaseApproverId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "manifestHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    },
+    "content": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "locale",
+        "sources",
+        "topics",
+        "themeWeeks",
+        "cards",
+        "tombstones"
+      ],
+      "properties": {
+        "locale": {
+          "const": "de-DE"
+        },
+        "sources": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 500,
+          "items": {
+            "$ref": "#/$defs/source"
+          }
+        },
+        "topics": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 100,
+          "items": {
+            "$ref": "#/$defs/topic"
+          }
+        },
+        "themeWeeks": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 100,
+          "items": {
+            "$ref": "#/$defs/themeWeek"
+          }
+        },
+        "cards": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 1000,
+          "items": {
+            "$ref": "#/$defs/card"
+          }
+        },
+        "tombstones": {
+          "type": "array",
+          "maxItems": 1000,
+          "items": {
+            "$ref": "#/$defs/tombstone"
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "cardId": {
+      "type": "string",
+      "pattern": "^card\\.[a-z0-9][a-z0-9._-]+$",
+      "maxLength": 128
+    },
+    "topicId": {
+      "type": "string",
+      "pattern": "^topic\\.[a-z0-9][a-z0-9._-]+$",
+      "maxLength": 128
+    },
+    "weekId": {
+      "type": "string",
+      "pattern": "^week\\.[a-z0-9][a-z0-9._-]+$",
+      "maxLength": 128
+    },
+    "impulseId": {
+      "type": "string",
+      "pattern": "^impulse\\.[a-z0-9][a-z0-9._-]+$",
+      "maxLength": 128
+    },
+    "reflectionId": {
+      "type": "string",
+      "pattern": "^reflection\\.[a-z0-9][a-z0-9._-]+$",
+      "maxLength": 128
+    },
+    "sourceId": {
+      "type": "string",
+      "pattern": "^source\\.[a-z0-9][a-z0-9._-]+$",
+      "maxLength": 128
+    },
+    "fundusStatementId": {
+      "type": "string",
+      "pattern": "^[A-Z]{2,4}-[0-9]{2}-A[0-9]{2}$"
+    },
+    "dossierId": {
+      "type": "string",
+      "pattern": "^[A-Z]{2,4}-[0-9]{2}$"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "shortText": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500
+    },
+    "longText": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 6000
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sourceId",
+        "fundusSourceId",
+        "citation",
+        "verificationStatus",
+        "verificationScope"
+      ],
+      "properties": {
+        "sourceId": {
+          "$ref": "#/$defs/sourceId"
+        },
+        "fundusSourceId": {
+          "type": "string",
+          "pattern": "^RP-[0-9]{2}$"
+        },
+        "citation": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https://"
+        },
+        "verificationStatus": {
+          "const": "verified"
+        },
+        "verificationScope": {
+          "enum": [
+            "full-check",
+            "full-text",
+            "article-and-method-data",
+            "abstract-and-key-statistics"
+          ]
+        }
+      }
+    },
+    "topic": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "topicId",
+        "title",
+        "summary"
+      ],
+      "properties": {
+        "topicId": {
+          "$ref": "#/$defs/topicId"
+        },
+        "title": {
+          "$ref": "#/$defs/shortText"
+        },
+        "summary": {
+          "$ref": "#/$defs/longText"
+        }
+      }
+    },
+    "themeWeek": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "weekId",
+        "topicId",
+        "title",
+        "weekQuestion",
+        "dayIds",
+        "nextTopicCrossReference"
+      ],
+      "properties": {
+        "weekId": {
+          "$ref": "#/$defs/weekId"
+        },
+        "topicId": {
+          "$ref": "#/$defs/topicId"
+        },
+        "title": {
+          "$ref": "#/$defs/shortText"
+        },
+        "weekQuestion": {
+          "$ref": "#/$defs/longText"
+        },
+        "dayIds": {
+          "type": "array",
+          "minItems": 5,
+          "maxItems": 5,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/cardId"
+          }
+        },
+        "nextTopicCrossReference": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/cardId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "researchStatement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "primaryFundusStatementId",
+        "supportingFundusStatementIds",
+        "dossierId",
+        "statementType",
+        "evidenceLevel",
+        "robustCore",
+        "conditionsAndLimits",
+        "doesNotFollow",
+        "sourceRefs"
+      ],
+      "properties": {
+        "primaryFundusStatementId": {
+          "$ref": "#/$defs/fundusStatementId"
+        },
+        "supportingFundusStatementIds": {
+          "type": "array",
+          "maxItems": 8,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/fundusStatementId"
+          }
+        },
+        "dossierId": {
+          "$ref": "#/$defs/dossierId"
+        },
+        "statementType": {
+          "enum": [
+            "empirical-finding",
+            "design-condition",
+            "conceptual-clarification",
+            "didactic-consequence",
+            "professional-interpretation"
+          ]
+        },
+        "evidenceLevel": {
+          "enum": [
+            "E0",
+            "E1",
+            "E2",
+            "E3",
+            "E4"
+          ]
+        },
+        "robustCore": {
+          "$ref": "#/$defs/longText"
+        },
+        "didacticInterpretation": {
+          "$ref": "#/$defs/longText"
+        },
+        "conditionsAndLimits": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 10,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/shortText"
+          }
+        },
+        "doesNotFollow": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 10,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/shortText"
+          }
+        },
+        "sourceRefs": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 10,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/sourceId"
+          }
+        }
+      }
+    },
+    "practiceImpulse": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "impulseId",
+        "variantType",
+        "title",
+        "learningAction",
+        "observationFocus",
+        "preparationMinutesMin",
+        "preparationMinutesMax",
+        "classroomMinutesMin",
+        "classroomMinutesMax",
+        "fallbackAction",
+        "transferStatus"
+      ],
+      "properties": {
+        "impulseId": {
+          "$ref": "#/$defs/impulseId"
+        },
+        "variantType": {
+          "enum": [
+            "general",
+            "subject",
+            "role"
+          ]
+        },
+        "audienceCriteria": {
+          "type": "object",
+          "additionalProperties": false,
+          "minProperties": 1,
+          "properties": {
+            "subjects": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 5,
+              "uniqueItems": true,
+              "items": {
+                "$ref": "#/$defs/shortText"
+              }
+            },
+            "role": {
+              "$ref": "#/$defs/shortText"
+            }
+          }
+        },
+        "title": {
+          "$ref": "#/$defs/shortText"
+        },
+        "learningAction": {
+          "$ref": "#/$defs/longText"
+        },
+        "observationFocus": {
+          "$ref": "#/$defs/longText"
+        },
+        "preparationMinutesMin": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10
+        },
+        "preparationMinutesMax": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10
+        },
+        "classroomMinutesMin": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 15
+        },
+        "classroomMinutesMax": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 15
+        },
+        "fallbackAction": {
+          "$ref": "#/$defs/longText"
+        },
+        "timingNote": {
+          "$ref": "#/$defs/shortText"
+        },
+        "transferStatus": {
+          "const": "didactic-transfer"
+        }
+      }
+    },
+    "reflectionPrompt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "reflectionPromptId",
+        "prompt"
+      ],
+      "properties": {
+        "reflectionPromptId": {
+          "$ref": "#/$defs/reflectionId"
+        },
+        "prompt": {
+          "$ref": "#/$defs/longText"
+        }
+      }
+    },
+    "crossReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "targetContentId",
+        "relation",
+        "label"
+      ],
+      "properties": {
+        "targetContentId": {
+          "$ref": "#/$defs/cardId"
+        },
+        "relation": {
+          "enum": [
+            "builds-on",
+            "contrasts-with",
+            "applies",
+            "continues-with"
+          ]
+        },
+        "label": {
+          "$ref": "#/$defs/shortText"
+        }
+      }
+    },
+    "reviewState": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "lifecycleStatus",
+        "publicationStatus",
+        "editorialVersion",
+        "reviewedSourceRefs",
+        "contentAuthorId",
+        "scientificReviewerId",
+        "editorialReviewerId",
+        "releaseApproverId",
+        "approvedAt",
+        "reviewApprovalRef"
+      ],
+      "properties": {
+        "lifecycleStatus": {
+          "enum": [
+            "approved",
+            "corrected"
+          ]
+        },
+        "publicationStatus": {
+          "const": "P3"
+        },
+        "editorialVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "reviewedSourceRefs": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 10,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/sourceId"
+          }
+        },
+        "contentAuthorId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "scientificReviewerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "editorialReviewerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "releaseApproverId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "approvedAt": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "reviewApprovalRef": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9._-]+$",
+          "maxLength": 160
+        },
+        "correctedAt": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "correctionSummary": {
+          "$ref": "#/$defs/shortText"
+        }
+      }
+    },
+    "card": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "contentRevision",
+        "topicId",
+        "themeWeekId",
+        "sequence",
+        "dayRole",
+        "title",
+        "guidingQuestion",
+        "shortAnswer",
+        "takeaway",
+        "estimatedMinutes",
+        "researchStatement",
+        "practiceImpulses",
+        "reflectionPrompts",
+        "crossReferences",
+        "reviewState"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/cardId"
+        },
+        "contentRevision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "topicId": {
+          "$ref": "#/$defs/topicId"
+        },
+        "themeWeekId": {
+          "$ref": "#/$defs/weekId"
+        },
+        "sequence": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5
+        },
+        "dayRole": {
+          "enum": [
+            "research-and-orientation",
+            "observe-and-diagnose",
+            "small-experiment",
+            "vary-and-connect",
+            "retrieve-evaluate-and-consolidate"
+          ]
+        },
+        "title": {
+          "$ref": "#/$defs/shortText"
+        },
+        "guidingQuestion": {
+          "$ref": "#/$defs/longText"
+        },
+        "shortAnswer": {
+          "$ref": "#/$defs/longText"
+        },
+        "takeaway": {
+          "$ref": "#/$defs/longText"
+        },
+        "estimatedMinutes": {
+          "type": "integer",
+          "minimum": 2,
+          "maximum": 15
+        },
+        "researchStatement": {
+          "$ref": "#/$defs/researchStatement"
+        },
+        "practiceImpulses": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 8,
+          "items": {
+            "$ref": "#/$defs/practiceImpulse"
+          }
+        },
+        "reflectionPrompts": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 2,
+          "items": {
+            "$ref": "#/$defs/reflectionPrompt"
+          }
+        },
+        "crossReferences": {
+          "type": "array",
+          "maxItems": 8,
+          "items": {
+            "$ref": "#/$defs/crossReference"
+          }
+        },
+        "reviewState": {
+          "$ref": "#/$defs/reviewState"
+        }
+      }
+    },
+    "tombstone": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "contentId",
+        "withdrawnAt",
+        "reasonCode",
+        "sourcePackageId",
+        "sourcePackageVersion",
+        "recordedAt"
+      ],
+      "properties": {
+        "contentId": {
+          "$ref": "#/$defs/cardId"
+        },
+        "withdrawnAt": {
+          "type": "string",
+          "format": "date"
+        },
+        "reasonCode": {
+          "$ref": "#/$defs/shortText"
+        },
+        "sourcePackageId": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9._-]+$"
+        },
+        "sourcePackageVersion": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+        },
+        "recordedAt": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "replacementContentId": {
+          "$ref": "#/$defs/cardId"
+        },
+        "userNotice": {
+          "$ref": "#/$defs/shortText"
+        }
+      }
+    }
+  }
+}
