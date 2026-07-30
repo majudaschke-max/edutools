@@ -18,6 +18,13 @@ import {
 } from "./db.mjs";
 import { ContentPackageError, loadPublishedPackage } from "./content-loader.mjs";
 import {
+  showRoute,
+  showThemeWeek,
+  showWeekCoffee,
+  showWeekOverview,
+  themeWeekEntries,
+} from "./navigation.mjs";
+import {
   buildSubjectProfiles,
   createMissingAssignments,
   dateOnlyInTimeZone,
@@ -45,6 +52,7 @@ const state = {
   implementationStates: {},
   savedImplementations: [],
   collectionTarget: null,
+  weekSelection: null,
   weekTarget: null,
   restDayTarget: null,
   route: "today",
@@ -316,55 +324,72 @@ function routeMarkup() {
 }
 
 function weekMarkup() {
+  const entries = themeWeekEntries(state.package.content.themeWeeks, state.package.content.cards);
+
   if (state.weekTarget) {
     const card = state.package.content.cards.find((item) => item.id === state.weekTarget);
     const week = card ? state.package.content.themeWeeks.find((item) => item.weekId === card.themeWeekId) : null;
     const topic = card ? state.package.content.topics.find((item) => item.topicId === card.topicId) : null;
     if (card && week && topic) {
-      return `<div class="week-origin-bar"><button class="button button--text" type="button" data-action="close-week-coffee">Zurück zur Themenwoche</button></div>${eduCoffeeMarkup(card, week, topic)}`;
+      return `<div class="week-origin-bar"><button class="button button--text" type="button" data-action="show-week-overview">Zurück zu allen Themenwochen</button></div>${eduCoffeeMarkup(card, week, topic)}`;
     }
     state.weekTarget = null;
   }
 
-  const today = currentDateOnly();
-  const progressByContent = new Map(state.progress.map((record) => [record.contentId, record]));
-  const weekGroups = state.package.content.themeWeeks.map((week, weekIndex) => {
-    const topic = state.package.content.topics.find((item) => item.topicId === week.topicId);
-    const cards = state.package.content.cards
-      .filter((card) => card.themeWeekId === week.weekId)
-      .sort((a, b) => a.sequence - b.sequence);
-    const items = cards.map((card, cardIndex) => {
-      const record = progressByContent.get(card.id);
-      const isToday = record?.scheduledActiveDate === today;
-      const status = isToday ? "Heute" : record?.firstOpenedAt ? "Bereits angesehen" : "Noch nicht angesehen";
-      const scheduledDate = record?.scheduledActiveDate ? formatLocalDate(record.scheduledActiveDate) : "Noch nicht zugewiesen";
-      const headingId = `week-${weekIndex + 1}-card-${cardIndex + 1}-title`;
-      return `<article class="card week-card" aria-labelledby="${headingId}">
-        <div class="week-card__meta">
-          <span class="status-badge${isToday ? " status-badge--success" : ""}">Schritt ${card.sequence} von 5</span>
-          <span>${escapeHtml(DAY_ROLE_LABELS[card.dayRole])}</span>
-        </div>
-        <h3 class="card__title" id="${headingId}">${escapeHtml(card.title)}</h3>
-        <p class="card__description">${escapeHtml(card.guidingQuestion)}</p>
-        <p class="week-card__status"><strong>${escapeHtml(status)}</strong><span aria-hidden="true"> · </span><span>${escapeHtml(scheduledDate)}</span></p>
+  const selectedEntry = entries.find(({ week }) => week.weekId === state.weekSelection);
+  if (!selectedEntry) {
+    state.weekSelection = null;
+    const choices = entries.map(({ week, cards }, weekIndex) => {
+      const topic = state.package.content.topics.find((item) => item.topicId === week.topicId);
+      return `<article class="card week-overview-card" aria-labelledby="week-choice-${weekIndex + 1}-heading">
+        <p class="section-kicker">Themenwoche ${weekIndex + 1} von ${entries.length}</p>
+        <h2 class="card__title" id="week-choice-${weekIndex + 1}-heading">${escapeHtml(week.title)}</h2>
+        <p class="card__description">${escapeHtml(topic?.summary ?? week.weekQuestion)}</p>
+        <p class="week-card__status"><strong>${cards.length} EduCoffees</strong></p>
         <div class="week-card__actions">
-          <button class="button button--secondary" type="button" data-action="open-week-coffee" data-content-id="${escapeHtml(card.id)}">${record?.firstOpenedAt ? "Erneut ansehen" : "EduCoffee ansehen"}</button>
+          <button class="button button--secondary" type="button" data-action="open-theme-week" data-week-id="${escapeHtml(week.weekId)}">Themenwoche öffnen</button>
         </div>
       </article>`;
     }).join("");
-    return `<section class="week-group" aria-labelledby="week-${weekIndex + 1}-heading">
-      <p class="section-kicker">${escapeHtml(topic?.title ?? "EduBrief")}</p>
-      <h2 class="section-heading" id="week-${weekIndex + 1}-heading">${escapeHtml(week.title)}</h2>
-      <p class="week-focus">${escapeHtml(topic?.summary ?? week.weekQuestion)}</p>
-      <div class="week-list">${items}</div>
+
+    return `<section class="week-view" aria-labelledby="week-heading">
+      <p class="section-kicker">Freie Auswahl</p>
+      <h1 id="week-heading" tabindex="-1">Alle Themenwochen</h1>
+      <p class="intro">Wähle eine der ${entries.length} Themenwochen. Dein Tagesrhythmus und die geplanten Termine bleiben dabei unverändert.</p>
+      <div class="week-overview">${choices}</div>
     </section>`;
+  }
+
+  const today = currentDateOnly();
+  const progressByContent = new Map(state.progress.map((record) => [record.contentId, record]));
+  const { index: weekIndex, week, cards } = selectedEntry;
+  const topic = state.package.content.topics.find((item) => item.topicId === week.topicId);
+  const items = cards.map((card, cardIndex) => {
+    const record = progressByContent.get(card.id);
+    const isToday = record?.scheduledActiveDate === today;
+    const status = isToday ? "Heute" : record?.firstOpenedAt ? "Bereits angesehen" : "Noch nicht angesehen";
+    const scheduledDate = record?.scheduledActiveDate ? formatLocalDate(record.scheduledActiveDate) : "Noch nicht zugewiesen";
+    const headingId = `week-${weekIndex + 1}-card-${cardIndex + 1}-title`;
+    return `<article class="card week-card" aria-labelledby="${headingId}">
+      <div class="week-card__meta">
+        <span class="status-badge${isToday ? " status-badge--success" : ""}">Schritt ${card.sequence} von 5</span>
+        <span>${escapeHtml(DAY_ROLE_LABELS[card.dayRole])}</span>
+      </div>
+      <h2 class="card__title" id="${headingId}">${escapeHtml(card.title)}</h2>
+      <p class="card__description">${escapeHtml(card.guidingQuestion)}</p>
+      <p class="week-card__status"><strong>${escapeHtml(status)}</strong><span aria-hidden="true"> · </span><span>${escapeHtml(scheduledDate)}</span></p>
+      <div class="week-card__actions">
+        <button class="button button--secondary" type="button" data-action="open-week-coffee" data-content-id="${escapeHtml(card.id)}">${record?.firstOpenedAt ? "Erneut ansehen" : "EduCoffee ansehen"}</button>
+      </div>
+    </article>`;
   }).join("");
 
   return `<section class="week-view" aria-labelledby="week-heading">
-    <p class="section-kicker">Dein Lernpfad</p>
-    <h1 id="week-heading" tabindex="-1">Themenwochen</h1>
-    <p class="intro">Du kannst deinem Tagesrhythmus folgen oder einzelne EduCoffees direkt betrachten. Die geplanten Tage bleiben dabei erhalten.</p>
-    <div class="week-groups">${weekGroups}</div>
+    <div class="week-origin-bar"><button class="button button--text" type="button" data-action="show-week-overview">Zurück zu allen Themenwochen</button></div>
+    <p class="section-kicker">Themenwoche ${weekIndex + 1} von ${entries.length}</p>
+    <h1 id="week-heading" tabindex="-1">${escapeHtml(week.title)}</h1>
+    <p class="intro">${escapeHtml(topic?.summary ?? week.weekQuestion)}</p>
+    <div class="week-list">${items}</div>
   </section>`;
 }
 
@@ -646,11 +671,7 @@ async function handleClick(event) {
   const action = target.dataset.action;
   if (action === "show-week-overview") {
     event.preventDefault();
-    state.weekTarget = null;
-    state.collectionTarget = null;
-    state.restDayTarget = null;
-    state.notice = "";
-    state.route = "week";
+    showWeekOverview(state);
     if (routeFromHash() === "week") renderShell({ focusHeading: true });
     else location.hash = "week";
     return;
@@ -683,13 +704,22 @@ async function handleClick(event) {
     renderOnboarding();
     return;
   }
+  if (action === "open-theme-week") {
+    const week = showThemeWeek(state, state.package.content.themeWeeks, target.dataset.weekId);
+    if (!week) {
+      state.notice = "Die Themenwoche konnte nicht geöffnet werden. Bitte erneut versuchen.";
+      renderShell();
+      return;
+    }
+    renderShell({ focusHeading: true });
+    return;
+  }
   if (action === "open-week-coffee") {
     const contentId = target.dataset.contentId;
     try {
       await openEduCoffee(state.database, state.profile.profileId, contentId, new Date().toISOString());
       await refreshPersonalState(contentId);
-      state.weekTarget = contentId;
-      state.notice = "";
+      showWeekCoffee(state, state.package.content.cards, contentId);
       renderShell();
       document.querySelector("#coffee-title")?.focus();
     } catch (error) {
@@ -697,12 +727,6 @@ async function handleClick(event) {
       renderShell();
       console.error(error);
     }
-    return;
-  }
-  if (action === "close-week-coffee") {
-    state.weekTarget = null;
-    state.notice = "";
-    renderShell({ focusHeading: true });
     return;
   }
   if (action === "open-coffee") {
@@ -972,11 +996,7 @@ app.addEventListener("input", handleInput);
 document.addEventListener("keydown", handleKeydown);
 window.addEventListener("hashchange", () => {
   if (state.onboarding || !state.profile) return;
-  state.route = routeFromHash();
-  if (state.route !== "today") state.collectionTarget = null;
-  if (state.route !== "week") state.weekTarget = null;
-  if (state.route !== "today") state.restDayTarget = null;
-  state.notice = "";
+  showRoute(state, routeFromHash());
   renderShell({ focusHeading: true });
 });
 

@@ -1,4 +1,4 @@
-const CACHE_NAME = "edubrief-shell-v1.2.0-foundation-collection";
+const CACHE_NAME = "edubrief-shell-v1.2.1-theme-week-navigation";
 const APP_BASE = new URL("./", self.location.href);
 const CONTENT_BASE = new URL("../../outputs/edubrief/content-packages/foundation-weeks/", APP_BASE);
 const PRECACHE_URLS = [
@@ -9,6 +9,7 @@ const PRECACHE_URLS = [
   new URL("./db.mjs", APP_BASE).href,
   new URL("./domain.mjs", APP_BASE).href,
   new URL("./content-loader.mjs", APP_BASE).href,
+  new URL("./navigation.mjs", APP_BASE).href,
   new URL("manifest.json", CONTENT_BASE).href,
   new URL("edubrief-foundation-weeks.content.json", CONTENT_BASE).href,
 ];

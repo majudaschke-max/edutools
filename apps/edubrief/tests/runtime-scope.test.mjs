@@ -31,20 +31,21 @@ test("runtime package path points only to the published distribution directory",
 });
 
 test("service worker precaches only app-shell and published package URLs", () => {
-  assert.match(serviceWorker, /edubrief-shell-v1\.2\.0-foundation-collection/);
+  assert.match(serviceWorker, /edubrief-shell-v1\.2\.1-theme-week-navigation/);
+  assert.match(serviceWorker, /navigation\.mjs/);
   assert.match(serviceWorker, /content-packages\/foundation-weeks/);
   assert.doesNotMatch(serviceWorker, /content-candidates|review-bundle|fundus|node_modules/i);
   assert.doesNotMatch(serviceWorker, /background sync|pushManager|periodicSync/i);
 });
 
-test("theme-week overview groups cards by week and its navigation closes an opened card", () => {
-  assert.match(script, /state\.package\.content\.themeWeeks\.map\(\(week, weekIndex\)/);
-  assert.match(script, /filter\(\(card\) => card\.themeWeekId === week\.weekId\)/);
-  assert.match(script, /class="week-group"/);
-  assert.match(script, /class="week-groups"/);
+test("theme-week navigation exposes selectable weeks, a five-card detail, and a direct overview return", () => {
+  assert.match(script, /themeWeekEntries\(state\.package\.content\.themeWeeks, state\.package\.content\.cards\)/);
+  assert.match(script, /class="week-overview"/);
+  assert.match(script, /data-action="open-theme-week"/);
+  assert.match(script, /data-week-id=/);
   assert.match(script, /data-action="show-week-overview"/);
-  assert.match(script, /state\.weekTarget = null/);
-  assert.match(script, /data-action="close-week-coffee"/);
+  assert.match(script, /Zurück zu allen Themenwochen/);
+  assert.match(script, /data-action="open-week-coffee"/);
 });
 
 test("rest days expose only a voluntary opening action and preserve the scheduled assignment", () => {
