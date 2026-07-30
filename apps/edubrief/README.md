@@ -1,6 +1,8 @@
-# EduBrief Sprint-1.0.1-Preview
+# EduBrief – erste vollständige Themenwochensammlung
 
-Dependency-freier Browser-Slice mit HTML, CSS, ES-Modulen, IndexedDB und Service Worker.
+Dependency-freie, local-first nutzbare Browser-App mit HTML, CSS, ES-Modulen,
+IndexedDB und Service Worker. Das aktive Grundlagenpaket umfasst 16
+Themenwochen mit 80 EduCoffees und 240 fachunabhängigen möglichen Umsetzungen.
 
 ## Lokal starten
 
@@ -26,6 +28,9 @@ node --test apps/edubrief/tests/*.test.mjs
 
 Die Parameter werden nicht persistiert und sind außerhalb lokaler Hosts wirkungslos.
 
-## Isolierter Distribution-V2-Preview
+## Inhalt
 
-`http://127.0.0.1:4173/apps/edubrief-qa/qa-preview-v2.html` validiert ausschließlich lokal das Staging-Paket `1.1.0-rc.1` über den expliziten Preview-Loader. Der QA-Ordner liegt bewusst außerhalb des Service-Worker-Scopes der App. Normaler App-Start, Service Worker und aktiver Paketpfad bleiben auf dem veröffentlichten v1-Paket `1.0.0`. Die QA-Seite installiert oder aktiviert keine Contentdaten.
+Das aktive, versionierte Grundlagenpaket liegt unter
+`outputs/edubrief/content-packages/foundation-weeks/`. Es wird deterministisch
+aus den 16 redaktionellen Masterdateien erzeugt. Das frühere veröffentlichte
+Retrieval-Paket bleibt unverändert als historisches Artefakt erhalten.

@@ -3,6 +3,7 @@ import {
   deriveSavedState,
   IMPLEMENTATION_MARK_FIELDS,
   normalizeContextCode,
+  normalizeImplementations,
   PERSONAL_MARK_FIELDS,
   selectPracticeVariant,
   subjectSelectionFromProfile,
@@ -12,8 +13,8 @@ import {
 
 export const DB_NAME = "edubrief";
 export const DB_VERSION = 1;
-export const PERSONAL_SCHEMA_VERSION = "1.0.2-sprint-1";
-export const CONTENT_SCHEMA_VERSION = "2.0.0-distribution";
+export const PERSONAL_SCHEMA_VERSION = "1.2.0-foundation-collection";
+export const CONTENT_SCHEMA_VERSION = "3.0.0-distribution";
 
 export const CONTENT_STORES = ["contentPackages", "contentItems", "contentTombstones", "contentMeta"];
 export const PERSONAL_STORES = [
@@ -208,7 +209,7 @@ export async function installContentPackage(database, manifest, content, validat
     highestInstalledPackageId: manifest.packageId,
     highestInstalledContentVersion: manifest.contentVersion,
     activePublisherId: manifest.publisherId,
-    schemaVersion: CONTENT_SCHEMA_VERSION,
+    schemaVersion: manifest.schemaVersion ?? CONTENT_SCHEMA_VERSION,
     lastSuccessfulValidationAt: validatedAt,
   });
   await completion;
@@ -278,7 +279,28 @@ export async function getProgressForProfile(database, profileId) {
   const transaction = database.transaction("eduCoffeeProgress", "readonly");
   const records = await requestToPromise(transaction.objectStore("eduCoffeeProgress").index("profileId").getAll(profileId));
   await transactionToPromise(transaction);
-  return records.sort((a, b) => a.sequence - b.sequence);
+  return records.sort(
+    (a, b) => String(a.scheduledActiveDate).localeCompare(String(b.scheduledActiveDate))
+      || String(a.contentId).localeCompare(String(b.contentId)),
+  );
+}
+
+export async function appendProgressAssignments(database, assignments) {
+  if (!assignments.length) return 0;
+  const transaction = database.transaction("eduCoffeeProgress", "readwrite");
+  const completion = transactionToPromise(transaction);
+  const store = transaction.objectStore("eduCoffeeProgress");
+  let added = 0;
+  for (const assignment of assignments) {
+    const key = [assignment.profileId, assignment.eduCoffeeDayId];
+    const existing = await requestToPromise(store.get(key));
+    if (!existing) {
+      store.put(assignment);
+      added += 1;
+    }
+  }
+  await completion;
+  return added;
 }
 
 export async function openEduCoffee(database, profileId, contentId, now) {
@@ -441,6 +463,99 @@ export async function migrateUnifiedImplementationMarks(database, profileId, now
   });
   await completion;
   return { migrated: true, migratedFromTried: migration.migratedFromTried, deduplicated: migration.deduplicated };
+}
+
+export function planImplementationAliasMigration(plans, cards, profileId, now = new Date().toISOString()) {
+  const aliasTargets = new Map();
+  for (const card of cards) {
+    for (const implementation of normalizeImplementations(card)) {
+      for (const legacyId of implementation.legacyImplementationIds ?? []) {
+        if (aliasTargets.has(legacyId)) throw new Error(`Doppelte Legacy-Umsetzungs-ID: ${legacyId}.`);
+        aliasTargets.set(legacyId, {
+          contentId: card.id,
+          implementationId: implementation.implementationId,
+        });
+      }
+    }
+  }
+
+  const relevant = plans.filter((plan) => plan.profileId === profileId && plan.implementationId);
+  const byPlanId = new Map(relevant.map((plan) => [plan.planId, plan]));
+  const puts = new Map();
+  const deletePlanIds = new Set();
+  let migratedRecords = 0;
+  let deduplicatedRecords = 0;
+
+  for (const plan of relevant) {
+    const target = aliasTargets.get(plan.implementationId);
+    if (!target) continue;
+    const targetPlanId = `${profileId}::${target.implementationId}`;
+    const existing = puts.get(targetPlanId) ?? byPlanId.get(targetPlanId);
+    const savedCandidates = [
+      existing?.wantToTryAt,
+      existing?.savedAt,
+      existing?.createdAt,
+      plan.wantToTryAt,
+      plan.savedAt,
+      plan.createdAt,
+    ].filter(Boolean).sort();
+    const createdCandidates = [existing?.createdAt, plan.createdAt, savedCandidates[0]].filter(Boolean).sort();
+    puts.set(targetPlanId, {
+      ...(plan ?? {}),
+      ...(existing ?? {}),
+      planId: targetPlanId,
+      profileId,
+      contentId: target.contentId,
+      implementationId: target.implementationId,
+      wantToTryAt: savedCandidates[0] ?? now,
+      status: "planned",
+      createdAt: createdCandidates[0] ?? now,
+      updatedAt: now,
+      migratedFrom: "legacyImplementationIds",
+    });
+    deletePlanIds.add(plan.planId);
+    migratedRecords += 1;
+    if (existing) deduplicatedRecords += 1;
+  }
+
+  for (const planId of puts.keys()) deletePlanIds.delete(planId);
+  return {
+    puts: [...puts.values()],
+    deletePlanIds: [...deletePlanIds],
+    migratedRecords,
+    deduplicatedRecords,
+  };
+}
+
+export async function migrateImplementationAliases(database, profileId, cards, now = new Date().toISOString()) {
+  const markerKey = `migration::implementation-aliases::1.2.0::${profileId}`;
+  const transaction = database.transaction(["practicePlans", "personalMeta"], "readwrite");
+  const completion = transactionToPromise(transaction);
+  const meta = transaction.objectStore("personalMeta");
+  if (await requestToPromise(meta.get(markerKey))) {
+    transaction.abort();
+    try { await completion; } catch { /* erwarteter Abbruch ohne Schreibzugriff */ }
+    return { migrated: false, migratedRecords: 0, deduplicatedRecords: 0 };
+  }
+
+  const plansStore = transaction.objectStore("practicePlans");
+  const plans = await requestToPromise(plansStore.index("profileId").getAll(profileId));
+  const migration = planImplementationAliasMigration(plans, cards, profileId, now);
+  for (const planId of migration.deletePlanIds) plansStore.delete(planId);
+  for (const plan of migration.puts) plansStore.put(plan);
+  meta.put({
+    key: markerKey,
+    completedAt: now,
+    migratedRecords: migration.migratedRecords,
+    deduplicatedRecords: migration.deduplicatedRecords,
+  });
+  meta.put({ key: "personal-schema", schemaVersion: PERSONAL_SCHEMA_VERSION, updatedAt: now });
+  await completion;
+  return {
+    migrated: true,
+    migratedRecords: migration.migratedRecords,
+    deduplicatedRecords: migration.deduplicatedRecords,
+  };
 }
 
 export async function setImplementationMark(database, { profileId, contentId, implementationId, field, enabled, now }) {

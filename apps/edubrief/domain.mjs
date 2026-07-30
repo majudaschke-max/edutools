@@ -1,7 +1,8 @@
-export const APP_VERSION = "1.0.2";
+export const APP_VERSION = "1.2.0";
 export const PACKAGE_ID = "edutools.edubrief.retrieval-practice-week";
+export const FOUNDATION_PACKAGE_ID = "edutools.edubrief.foundation-weeks";
 export const CONTENT_VERSION = "1.0.0";
-export const PACKAGE_BASE = "../../outputs/edubrief/content-packages/retrieval-practice-week";
+export const PACKAGE_BASE = "../../outputs/edubrief/content-packages/foundation-weeks";
 export const MANIFEST_HASH = "e67292e0af2ae4be0a1036d0387b3ff819c0aebe8035134fc475ec650f88f8f6";
 export const CONTENT_HASH = "d796fb45f16c90e002d4c99ad196e301d34374316474b4e971d5521932130c51";
 
@@ -184,7 +185,8 @@ export function nextActiveDates(startDate, activeWeekdays, count = 5) {
 
   const dates = [];
   let candidate = startDate;
-  for (let offset = 0; dates.length < count && offset < 370; offset += 1) {
+  const maximumCalendarDays = Math.max(370, count * 8);
+  for (let offset = 0; dates.length < count && offset < maximumCalendarDays; offset += 1) {
     if (normalized.includes(isoWeekday(candidate))) dates.push(candidate);
     candidate = addDays(candidate, 1);
   }
@@ -192,21 +194,136 @@ export function nextActiveDates(startDate, activeWeekdays, count = 5) {
   return dates;
 }
 
-export function createAssignments({ profileId, cards, startDate, activeWeekdays, assignedAt }) {
-  const orderedCards = [...cards].sort((a, b) => a.sequence - b.sequence);
-  if (orderedCards.length !== 5) throw new Error("Die Themenwoche muss genau fünf Karten enthalten.");
-  const dates = nextActiveDates(startDate, activeWeekdays, orderedCards.length);
-  return orderedCards.map((card, index) => ({
+export function orderCardsByThemeWeeks(themeWeeks, cards) {
+  if (!Array.isArray(themeWeeks) || themeWeeks.length < 1) {
+    throw new Error("Mindestens eine Themenwoche ist erforderlich.");
+  }
+  if (!Array.isArray(cards)) throw new Error("Die EduCoffee-Karten fehlen.");
+
+  const weekIds = new Set();
+  const cardIds = new Set();
+  for (const card of cards) {
+    if (!card?.id || cardIds.has(card.id)) throw new Error(`Doppelte oder fehlende Content-ID: ${card?.id ?? "(fehlt)"}.`);
+    cardIds.add(card.id);
+  }
+
+  const orderedCards = [];
+  themeWeeks.forEach((week, weekIndex) => {
+    if (!week?.weekId || weekIds.has(week.weekId)) {
+      throw new Error(`Doppelte oder fehlende Themenwochen-ID an Position ${weekIndex + 1}.`);
+    }
+    weekIds.add(week.weekId);
+    if (!Array.isArray(week.dayIds) || week.dayIds.length !== 5 || new Set(week.dayIds).size !== 5) {
+      throw new Error(`Die Themenwoche ${week.weekId} muss genau fünf eindeutige Karten enthalten.`);
+    }
+
+    const weekCards = cards.filter((card) => card.themeWeekId === week.weekId);
+    if (weekCards.length !== 5) {
+      throw new Error(`Die Themenwoche ${week.weekId} muss genau fünf Karten enthalten.`);
+    }
+    const orderedWeekCards = [...weekCards].sort((a, b) => a.sequence - b.sequence);
+    orderedWeekCards.forEach((card, cardIndex) => {
+      const expectedSequence = cardIndex + 1;
+      if (card.sequence !== expectedSequence) {
+        throw new Error(`Die Themenwoche ${week.weekId} benötigt die Sequenzen 1 bis 5 genau einmal.`);
+      }
+      if (week.dayIds[cardIndex] !== card.id) {
+        throw new Error(`Die Kartenreihenfolge der Themenwoche ${week.weekId} ist bei Schritt ${expectedSequence} inkonsistent.`);
+      }
+    });
+    orderedCards.push(...orderedWeekCards);
+  });
+
+  if (orderedCards.length !== cards.length) {
+    const unknown = cards.find((card) => !weekIds.has(card.themeWeekId));
+    throw new Error(`Karte verweist auf eine unbekannte Themenwoche: ${unknown?.id ?? "(unbekannt)"}.`);
+  }
+  return orderedCards;
+}
+
+function assignmentFromCard({ profileId, card, scheduledActiveDate, assignedAt, contentOrder, themeWeekOrder }) {
+  return {
     profileId,
     eduCoffeeDayId: card.id,
     contentId: card.id,
     contentRevision: card.contentRevision,
     weekId: card.themeWeekId,
     sequence: card.sequence,
-    scheduledActiveDate: dates[index],
+    contentOrder,
+    themeWeekOrder,
+    scheduledActiveDate,
     assignedAt,
     updatedAt: assignedAt,
+  };
+}
+
+export function createAssignments({ profileId, themeWeeks, cards, startDate, activeWeekdays, assignedAt }) {
+  const orderedCards = orderCardsByThemeWeeks(themeWeeks, cards);
+  const dates = nextActiveDates(startDate, activeWeekdays, orderedCards.length);
+  const weekOrder = new Map(themeWeeks.map((week, index) => [week.weekId, index + 1]));
+  return orderedCards.map((card, index) => assignmentFromCard({
+    profileId,
+    card,
+    scheduledActiveDate: dates[index],
+    assignedAt,
+    contentOrder: index + 1,
+    themeWeekOrder: weekOrder.get(card.themeWeekId),
   }));
+}
+
+export function createMissingAssignments({
+  profileId,
+  themeWeeks,
+  cards,
+  existingAssignments = [],
+  startDate,
+  activeWeekdays,
+  assignedAt,
+}) {
+  const orderedCards = orderCardsByThemeWeeks(themeWeeks, cards);
+  const existingIds = new Set();
+  for (const assignment of existingAssignments) {
+    if (!assignment?.contentId || existingIds.has(assignment.contentId)) {
+      throw new Error(`Doppelte oder fehlende bestehende Content-ID: ${assignment?.contentId ?? "(fehlt)"}.`);
+    }
+    existingIds.add(assignment.contentId);
+  }
+
+  const missingCards = orderedCards.filter((card) => !existingIds.has(card.id));
+  if (!missingCards.length) return [];
+
+  let firstCandidate = startDate;
+  if (existingAssignments.length) {
+    const scheduledDates = existingAssignments.map((assignment) => assignment.scheduledActiveDate);
+    if (scheduledDates.some((date) => !isDateOnly(date))) {
+      throw new Error("Eine bestehende Tageszuweisung besitzt kein gültiges Datum.");
+    }
+    firstCandidate = addDays(scheduledDates.toSorted().at(-1), 1);
+  }
+
+  const dates = nextActiveDates(firstCandidate, activeWeekdays, missingCards.length);
+  const contentOrder = new Map(orderedCards.map((card, index) => [card.id, index + 1]));
+  const weekOrder = new Map(themeWeeks.map((week, index) => [week.weekId, index + 1]));
+  return missingCards.map((card, index) => assignmentFromCard({
+    profileId,
+    card,
+    scheduledActiveDate: dates[index],
+    assignedAt,
+    contentOrder: contentOrder.get(card.id),
+    themeWeekOrder: weekOrder.get(card.themeWeekId),
+  }));
+}
+
+export function resolveTodaySchedule(progress, today) {
+  if (!isDateOnly(today)) throw new TypeError("Ungültiges Tagesdatum.");
+  const ordered = [...progress].sort(
+    (a, b) => String(a.scheduledActiveDate).localeCompare(String(b.scheduledActiveDate))
+      || String(a.contentId).localeCompare(String(b.contentId)),
+  );
+  return {
+    exact: ordered.find((record) => record.scheduledActiveDate === today) ?? null,
+    next: ordered.find((record) => record.scheduledActiveDate > today) ?? null,
+  };
 }
 
 export function selectPracticeVariant(card, contextCode) {

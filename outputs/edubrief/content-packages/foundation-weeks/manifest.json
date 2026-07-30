@@ -1,0 +1,39 @@
+{
+  "packageId": "edutools.edubrief.foundation-weeks",
+  "publisherId": "edutools",
+  "packagePurpose": "distribution",
+  "schemaVersion": "3.0.0-distribution",
+  "contentVersion": "1.0.0",
+  "createdByAppVersion": "1.2.0",
+  "minimumAppVersion": "1.2.0",
+  "createdAt": "2026-07-30T00:00:00Z",
+  "releasedAt": "2026-07-30T00:00:00Z",
+  "releaseStatus": "published",
+  "publicationStatus": "P3",
+  "locale": "de-DE",
+  "hashAlgorithm": "sha-256",
+  "canonicalization": "edubrief-canonical-json-v1",
+  "files": [
+    {
+      "path": "edubrief-foundation-weeks.content.json",
+      "mediaType": "application/json",
+      "bytes": 1185956,
+      "sha256": "e03edf811c7e61f0dc2722987b9bdf6d8db308613b3a2cf59440f538ec60c149"
+    }
+  ],
+  "counts": {
+    "sources": 528,
+    "topics": 16,
+    "themeWeeks": 16,
+    "cards": 80,
+    "implementations": 240,
+    "tombstones": 0
+  },
+  "contentAuthorId": "edubrief-editorial-master-process",
+  "scientificReviewerId": "edubrief-fundus-review-process",
+  "editorialReviewerId": "edubrief-editorial-master-process",
+  "contentGateApprovalRef": "editorial-master-collection-16-weeks",
+  "contentGateApprovalSha256": "452f234d610c7eec239bdd66fc532dcda61a9f053a3dcf759ef2e9bbb14a5653",
+  "releaseApproverId": "edubrief-project-owner",
+  "manifestHash": "9d465afbb7577b81211da80756fe51dc4ae87fe15d8373772d6f3d375f948415"
+}

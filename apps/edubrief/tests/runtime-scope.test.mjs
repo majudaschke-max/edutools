@@ -26,14 +26,40 @@ test("content and personal object stores are separated", () => {
 });
 
 test("runtime package path points only to the published distribution directory", () => {
-  assert.equal(PACKAGE_BASE, "../../outputs/edubrief/content-packages/retrieval-practice-week");
+  assert.equal(PACKAGE_BASE, "../../outputs/edubrief/content-packages/foundation-weeks");
   assert.doesNotMatch(PACKAGE_BASE, /content-candidates|review|fundus|arbeitsarchiv/i);
 });
 
 test("service worker precaches only app-shell and published package URLs", () => {
-  assert.match(serviceWorker, /content-packages\/retrieval-practice-week/);
+  assert.match(serviceWorker, /edubrief-shell-v1\.2\.0-foundation-collection/);
+  assert.match(serviceWorker, /content-packages\/foundation-weeks/);
   assert.doesNotMatch(serviceWorker, /content-candidates|review-bundle|fundus|node_modules/i);
   assert.doesNotMatch(serviceWorker, /background sync|pushManager|periodicSync/i);
+});
+
+test("theme-week overview groups cards by week and its navigation closes an opened card", () => {
+  assert.match(script, /state\.package\.content\.themeWeeks\.map\(\(week, weekIndex\)/);
+  assert.match(script, /filter\(\(card\) => card\.themeWeekId === week\.weekId\)/);
+  assert.match(script, /class="week-group"/);
+  assert.match(script, /class="week-groups"/);
+  assert.match(script, /data-action="show-week-overview"/);
+  assert.match(script, /state\.weekTarget = null/);
+  assert.match(script, /data-action="close-week-coffee"/);
+});
+
+test("rest days expose only a voluntary opening action and preserve the scheduled assignment", () => {
+  assert.match(script, /Ein ruhiger Tag/);
+  assert.match(script, /data-action="open-next-coffee"/);
+  assert.match(script, /Nächsten EduCoffee öffnen/);
+  assert.match(script, /Sein geplanter Termin bleibt/);
+  assert.doesNotMatch(script, /scheduledActiveDate\s*=(?!=)/);
+  assert.doesNotMatch(script, /Nachholen|Aufholen|Streak|Belohnung/);
+});
+
+test("existing profiles synchronize only missing content assignments", () => {
+  assert.match(script, /createMissingAssignments/);
+  assert.match(script, /appendProgressAssignments/);
+  assert.match(script, /if \(missingAssignments\.length\)/);
 });
 
 test("app contains no quiz, answer, scoring, or self-assessment controls", () => {

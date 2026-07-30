@@ -1,4 +1,5 @@
 import {
+  appendProgressAssignments,
   completeOnboarding,
   getSavedImplementations,
   getImplementationStates,
@@ -7,6 +8,7 @@ import {
   installContentPackage,
   loadInstalledPackage,
   migrateCardPracticeMarks,
+  migrateImplementationAliases,
   migrateSubjectProfile,
   migrateUnifiedImplementationMarks,
   openDatabase,
@@ -17,7 +19,7 @@ import {
 import { ContentPackageError, loadPublishedPackage } from "./content-loader.mjs";
 import {
   buildSubjectProfiles,
-  createAssignments,
+  createMissingAssignments,
   dateOnlyInTimeZone,
   DAY_ROLE_LABELS,
   formatLocalDate,
@@ -25,6 +27,7 @@ import {
   normalizeImplementations,
   qaDateFromLocation,
   qaFlag,
+  resolveTodaySchedule,
   selectImplementations,
   subjectSelectionFromProfile,
   SUBJECT_GROUPS,
@@ -43,6 +46,7 @@ const state = {
   savedImplementations: [],
   collectionTarget: null,
   weekTarget: null,
+  restDayTarget: null,
   route: "today",
   onboarding: false,
   onboardingStep: 1,
@@ -78,27 +82,6 @@ function browserTimeZone() {
 
 function currentDateOnly() {
   return qaDateFromLocation(location) ?? dateOnlyInTimeZone(new Date(), state.calendar?.timeZone ?? browserTimeZone());
-}
-
-const LOCAL_CONTENT_PREVIEW_URL = new URL(
-  "../../outputs/edubrief/content-preview/retrieval-practice-week/retrieval-practice-week.content.json",
-  import.meta.url,
-);
-
-async function applyLocalContentPreview(basePackage) {
-  try {
-    const response = await fetch(LOCAL_CONTENT_PREVIEW_URL, { cache: "no-store" });
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    const content = await response.json();
-    return {
-      ...basePackage,
-      content,
-      localPreview: true,
-    };
-  } catch (error) {
-    console.warn("Lokale Contentvorschau konnte nicht geladen werden; das veröffentlichte Paket bleibt aktiv.", error);
-    return basePackage;
-  }
 }
 
 function routeFromHash() {
@@ -258,12 +241,18 @@ function onboardingStepMarkup() {
   const subjectLabels = state.onboardingDraft.subjectSelectionMode === "general"
     ? "Fachübergreifend / keine Schwerpunktsetzung"
     : state.onboardingDraft.subjectIds.map((id) => SUBJECTS[id].label).join(", ");
+  const themeWeekCount = state.package?.content.themeWeeks.length ?? 0;
+  const cardCount = state.package?.content.cards.length ?? 0;
+  const themeWeekLabel = themeWeekCount === 1 ? "die veröffentlichte Themenwoche" : `die ${themeWeekCount} veröffentlichten Themenwochen`;
+  const assignmentCopy = themeWeekCount === 1
+    ? `Mit dem Start wird ${themeWeekLabel} auf deine nächsten ${cardCount} aktiven Tage verteilt.`
+    : `Mit dem Start werden ${themeWeekLabel} auf deine nächsten ${cardCount} aktiven Tage verteilt.`;
   return `
     <form class="onboarding__form" data-onboarding-form="confirm">
       <div>
         <p class="section-kicker">Schritt 4 von 4</p>
         <h1 tabindex="-1">Prüfen und starten</h1>
-        <p>Mit dem Start wird die veröffentlichte Themenwoche auf deine nächsten fünf aktiven Tage verteilt.</p>
+        <p>${assignmentCopy}</p>
       </div>
       ${state.onboardingError ? `<div class="feedback feedback--error" id="onboarding-error" role="alert" tabindex="-1"><p>${escapeHtml(state.onboardingError)}</p></div>` : ""}
       <div class="card">
@@ -274,7 +263,7 @@ function onboardingStepMarkup() {
         </dl>
       </div>
       <div class="button-row">
-        <button class="button button--primary" type="submit">Themenwoche starten</button>
+        <button class="button button--primary" type="submit">${themeWeekCount === 1 ? "Themenwoche" : "Themenwochen"} starten</button>
         <button class="button button--secondary" type="button" data-action="onboarding-back">Zurück</button>
       </div>
     </form>`;
@@ -291,7 +280,7 @@ function renderShell({ focusHeading = false } = {}) {
         </a>
         <nav class="desktop-nav" aria-label="Hauptnavigation">
           <a class="desktop-nav__link" href="#today"${activeAttribute("today")}>Heute – EduCoffee</a>
-          <a class="desktop-nav__link" href="#week"${activeAttribute("week")}>Themenwoche</a>
+          <a class="desktop-nav__link" href="#week" data-action="show-week-overview"${activeAttribute("week")}>Themenwoche</a>
           <a class="desktop-nav__link" href="#collection"${activeAttribute("collection")}>Meine Sammlung</a>
           <a class="desktop-nav__link" href="#settings"${activeAttribute("settings")}>Einstellungen</a>
         </nav>
@@ -300,7 +289,7 @@ function renderShell({ focusHeading = false } = {}) {
     <main id="main-content" class="app-main route-view" tabindex="-1">${routeMarkup()}</main>
     <nav class="mobile-nav" aria-label="Hauptnavigation">
       <a class="mobile-nav__link" href="#today" aria-label="Heute – EduCoffee"${activeAttribute("today")}>Heute</a>
-      <a class="mobile-nav__link" href="#week" aria-label="Themenwoche"${activeAttribute("week")}>Themenwoche</a>
+      <a class="mobile-nav__link" href="#week" aria-label="Themenwoche" data-action="show-week-overview"${activeAttribute("week")}>Themenwoche</a>
       <a class="mobile-nav__link" href="#collection" aria-label="Meine Sammlung"${activeAttribute("collection")}>Sammlung</a>
       <a class="mobile-nav__link" href="#settings" aria-label="Einstellungen"${activeAttribute("settings")}>Einstellungen</a>
     </nav>`;
@@ -338,34 +327,44 @@ function weekMarkup() {
   }
 
   const today = currentDateOnly();
-  const cards = [...state.package.content.cards].sort((a, b) => a.sequence - b.sequence);
   const progressByContent = new Map(state.progress.map((record) => [record.contentId, record]));
-  const week = state.package.content.themeWeeks.find((item) => item.weekId === cards[0]?.themeWeekId);
-  const topic = state.package.content.topics.find((item) => item.topicId === cards[0]?.topicId);
-  const items = cards.map((card) => {
-    const record = progressByContent.get(card.id);
-    const isToday = record?.scheduledActiveDate === today;
-    const status = isToday ? "Heute" : record?.firstOpenedAt ? "Bereits angesehen" : "Noch nicht angesehen";
-    const scheduledDate = record?.scheduledActiveDate ? formatLocalDate(record.scheduledActiveDate) : "Noch nicht zugewiesen";
-    return `<article class="card week-card" aria-labelledby="week-card-${card.sequence}-title">
-      <div class="week-card__meta">
-        <span class="status-badge${isToday ? " status-badge--success" : ""}">Schritt ${card.sequence} von 5</span>
-        <span>${escapeHtml(DAY_ROLE_LABELS[card.dayRole])}</span>
-      </div>
-      <h2 class="card__title" id="week-card-${card.sequence}-title">${escapeHtml(card.title)}</h2>
-      <p class="card__description">${escapeHtml(card.guidingQuestion)}</p>
-      <p class="week-card__status"><strong>${escapeHtml(status)}</strong><span aria-hidden="true"> · </span><span>${escapeHtml(scheduledDate)}</span></p>
-      <div class="week-card__actions">
-        <button class="button button--secondary" type="button" data-action="open-week-coffee" data-content-id="${escapeHtml(card.id)}">${record?.firstOpenedAt ? "Erneut ansehen" : "EduCoffee ansehen"}</button>
-      </div>
-    </article>`;
+  const weekGroups = state.package.content.themeWeeks.map((week, weekIndex) => {
+    const topic = state.package.content.topics.find((item) => item.topicId === week.topicId);
+    const cards = state.package.content.cards
+      .filter((card) => card.themeWeekId === week.weekId)
+      .sort((a, b) => a.sequence - b.sequence);
+    const items = cards.map((card, cardIndex) => {
+      const record = progressByContent.get(card.id);
+      const isToday = record?.scheduledActiveDate === today;
+      const status = isToday ? "Heute" : record?.firstOpenedAt ? "Bereits angesehen" : "Noch nicht angesehen";
+      const scheduledDate = record?.scheduledActiveDate ? formatLocalDate(record.scheduledActiveDate) : "Noch nicht zugewiesen";
+      const headingId = `week-${weekIndex + 1}-card-${cardIndex + 1}-title`;
+      return `<article class="card week-card" aria-labelledby="${headingId}">
+        <div class="week-card__meta">
+          <span class="status-badge${isToday ? " status-badge--success" : ""}">Schritt ${card.sequence} von 5</span>
+          <span>${escapeHtml(DAY_ROLE_LABELS[card.dayRole])}</span>
+        </div>
+        <h3 class="card__title" id="${headingId}">${escapeHtml(card.title)}</h3>
+        <p class="card__description">${escapeHtml(card.guidingQuestion)}</p>
+        <p class="week-card__status"><strong>${escapeHtml(status)}</strong><span aria-hidden="true"> · </span><span>${escapeHtml(scheduledDate)}</span></p>
+        <div class="week-card__actions">
+          <button class="button button--secondary" type="button" data-action="open-week-coffee" data-content-id="${escapeHtml(card.id)}">${record?.firstOpenedAt ? "Erneut ansehen" : "EduCoffee ansehen"}</button>
+        </div>
+      </article>`;
+    }).join("");
+    return `<section class="week-group" aria-labelledby="week-${weekIndex + 1}-heading">
+      <p class="section-kicker">${escapeHtml(topic?.title ?? "EduBrief")}</p>
+      <h2 class="section-heading" id="week-${weekIndex + 1}-heading">${escapeHtml(week.title)}</h2>
+      <p class="week-focus">${escapeHtml(topic?.summary ?? week.weekQuestion)}</p>
+      <div class="week-list">${items}</div>
+    </section>`;
   }).join("");
 
   return `<section class="week-view" aria-labelledby="week-heading">
-    <p class="section-kicker">${escapeHtml(topic?.title ?? "EduBrief")}</p>
-    <h1 id="week-heading" tabindex="-1">${escapeHtml(week?.title ?? "Themenwoche")}</h1>
-    <p class="intro">Du kannst deinem Tagesrhythmus folgen oder die fünf EduCoffees direkt nacheinander betrachten. Die geplanten Tage bleiben dabei erhalten.</p>
-    <div class="week-list">${items}</div>
+    <p class="section-kicker">Dein Lernpfad</p>
+    <h1 id="week-heading" tabindex="-1">Themenwochen</h1>
+    <p class="intro">Du kannst deinem Tagesrhythmus folgen oder einzelne EduCoffees direkt betrachten. Die geplanten Tage bleiben dabei erhalten.</p>
+    <div class="week-groups">${weekGroups}</div>
   </section>`;
 }
 
@@ -430,21 +429,28 @@ function todayMarkup() {
     state.collectionTarget = null;
   }
   const today = currentDateOnly();
-  const exact = state.progress.find((record) => record.scheduledActiveDate === today);
-  const next = state.progress.find((record) => record.scheduledActiveDate > today && !record.completedAt);
+  const { exact, next } = resolveTodaySchedule(state.progress, today);
   const assignment = exact ?? next;
   if (!assignment) {
     return `
       <section class="card">
-        <p class="section-kicker">Themenwoche</p>
+        <p class="section-kicker">Themenwochen</p>
         <h1 tabindex="-1">Heute</h1>
-        <p>Alle fünf EduCoffees dieser Themenwoche sind zugewiesen. Es entsteht daraus keine Pflicht oder Serie.</p>
+        <p>Für heute und die kommenden aktiven Tage ist kein weiterer EduCoffee eingeplant. Frühere EduCoffees findest du unter Themenwoche.</p>
       </section>`;
   }
 
   const card = state.package.content.cards.find((item) => item.id === assignment.contentId);
   const week = state.package.content.themeWeeks.find((item) => item.weekId === card.themeWeekId);
   const topic = state.package.content.topics.find((item) => item.topicId === card.topicId);
+  if (!exact && state.restDayTarget === assignment.contentId) {
+    return `
+      <div class="feedback rest-day-context" role="status">
+        <p><strong>Ein ruhiger Tag.</strong> Du hast den nächsten EduCoffee freiwillig geöffnet. Sein geplanter Termin bleibt ${escapeHtml(formatLocalDate(assignment.scheduledActiveDate))}.</p>
+      </div>
+      ${eduCoffeeMarkup(card, week, topic)}`;
+  }
+
   if (!exact) {
     return `
       <section>
@@ -456,6 +462,7 @@ function todayMarkup() {
         <p class="week-context"><span class="status-badge">Nächster aktiver Tag</span><time datetime="${escapeHtml(assignment.scheduledActiveDate)}">${escapeHtml(formatLocalDate(assignment.scheduledActiveDate))}</time></p>
         <h2 class="card__title">${escapeHtml(card.title)}</h2>
         <p class="card__description">${escapeHtml(week.title)} · Schritt ${card.sequence} von 5</p>
+        <button class="button button--primary" type="button" data-action="open-next-coffee" data-content-id="${escapeHtml(card.id)}">Nächsten EduCoffee öffnen</button>
       </section>`;
   }
 
@@ -534,6 +541,7 @@ function eduCoffeeMarkup(card, week, topic, { focusImplementationId = null } = {
             <h3 class="science-subheading">Wissenschaftlicher Kern</h3>
             <p>${escapeHtml(card.researchStatement.robustCore)}</p>
             <p><span class="status-badge">Evidenz ${escapeHtml(card.researchStatement.evidenceLevel)}</span></p>
+            ${card.researchStatement.evidenceSummary ? `<p class="evidence-summary">${escapeHtml(card.researchStatement.evidenceSummary)}</p>` : ""}
           </div>
           <div class="science-section">
             <h3 class="science-subheading">Bedingungen und Grenzen</h3>
@@ -612,15 +620,15 @@ async function finishOnboarding() {
   };
   const existingProgress = state.profile ? await getProgressForProfile(state.database, profileId) : [];
   const startDate = qaDateFromLocation(location) ?? dateOnlyInTimeZone(new Date(), calendar.timeZone);
-  const assignments = existingProgress.length
-    ? []
-    : createAssignments({
-        profileId,
-        cards: state.package.content.cards,
-        startDate,
-        activeWeekdays: calendar.activeWeekdays,
-        assignedAt: now,
-      });
+  const assignments = createMissingAssignments({
+    profileId,
+    themeWeeks: state.package.content.themeWeeks,
+    cards: state.package.content.cards,
+    existingAssignments: existingProgress,
+    startDate,
+    activeWeekdays: calendar.activeWeekdays,
+    assignedAt: now,
+  });
   await completeOnboarding(state.database, profile, calendar, assignments);
   state.profile = profile;
   state.calendar = calendar;
@@ -636,6 +644,17 @@ async function handleClick(event) {
   const target = event.target.closest("[data-action]");
   if (!target) return;
   const action = target.dataset.action;
+  if (action === "show-week-overview") {
+    event.preventDefault();
+    state.weekTarget = null;
+    state.collectionTarget = null;
+    state.restDayTarget = null;
+    state.notice = "";
+    state.route = "week";
+    if (routeFromHash() === "week") renderShell({ focusHeading: true });
+    else location.hash = "week";
+    return;
+  }
   if (action === "retry-start") {
     location.reload();
     return;
@@ -694,6 +713,21 @@ async function handleClick(event) {
       renderShell({ focusHeading: true });
     } catch (error) {
       state.notice = "Der EduCoffee konnte nicht als geöffnet gespeichert werden. Bitte erneut versuchen.";
+      renderShell();
+      console.error(error);
+    }
+    return;
+  }
+  if (action === "open-next-coffee") {
+    try {
+      const contentId = target.dataset.contentId;
+      await openEduCoffee(state.database, state.profile.profileId, contentId, new Date().toISOString());
+      await refreshPersonalState(contentId);
+      state.restDayTarget = contentId;
+      state.notice = "";
+      renderShell({ focusHeading: true });
+    } catch (error) {
+      state.notice = "Der nächste EduCoffee konnte nicht geöffnet werden. Sein geplanter Termin bleibt unverändert.";
       renderShell();
       console.error(error);
     }
@@ -864,12 +898,12 @@ async function start() {
     if (qaFlag(location, "qaContentError")) throw new ContentPackageError("Absichtlich simulierter Contentfehler.", "QA_CONTENT_ERROR");
     const publishedPackage = await loadPublishedPackage();
     await installContentPackage(state.database, publishedPackage.manifest, publishedPackage.content, publishedPackage.validatedAt);
-    state.package = await applyLocalContentPreview(publishedPackage);
+    state.package = publishedPackage;
   } catch (error) {
     const forcedQaError = error.code === "QA_CONTENT_ERROR";
     const installed = forcedQaError ? null : await loadInstalledPackage(state.database).catch(() => null);
     if (installed) {
-      state.package = await applyLocalContentPreview(installed);
+      state.package = installed;
       state.contentFromLocalStore = true;
     } else {
       renderError({
@@ -896,8 +930,23 @@ async function start() {
     state.profile = profileMigration.profile;
     await migrateCardPracticeMarks(state.database, state.profile, state.package.content.cards, profileMigration.legacyContext);
     await migrateUnifiedImplementationMarks(state.database, state.profile.profileId);
+    await migrateImplementationAliases(state.database, state.profile.profileId, state.package.content.cards);
     state.calendar = active.calendar;
     state.progress = await getProgressForProfile(state.database, state.profile.profileId);
+    const assignmentSyncTime = new Date().toISOString();
+    const missingAssignments = createMissingAssignments({
+      profileId: state.profile.profileId,
+      themeWeeks: state.package.content.themeWeeks,
+      cards: state.package.content.cards,
+      existingAssignments: state.progress,
+      startDate: currentDateOnly(),
+      activeWeekdays: state.calendar.activeWeekdays,
+      assignedAt: assignmentSyncTime,
+    });
+    if (missingAssignments.length) {
+      await appendProgressAssignments(state.database, missingAssignments);
+      state.progress = await getProgressForProfile(state.database, state.profile.profileId);
+    }
     state.savedImplementations = await getSavedImplementations(state.database, state.profile.profileId);
     state.route = routeFromHash();
     const todayAssignment = state.progress.find((record) => record.scheduledActiveDate === currentDateOnly());
@@ -926,6 +975,7 @@ window.addEventListener("hashchange", () => {
   state.route = routeFromHash();
   if (state.route !== "today") state.collectionTarget = null;
   if (state.route !== "week") state.weekTarget = null;
+  if (state.route !== "today") state.restDayTarget = null;
   state.notice = "";
   renderShell({ focusHeading: true });
 });

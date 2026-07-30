@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import {
   addDays,
   createAssignments,
+  createMissingAssignments,
   dateOnlyInTimeZone,
   deriveSavedState,
   isoWeekday,
@@ -11,6 +12,7 @@ import {
   normalizeImplementations,
   implementationFilterOptions,
   qaDateFromLocation,
+  resolveTodaySchedule,
   selectImplementations,
   selectPracticeVariant,
   subjectSelectionFromProfile,
@@ -24,6 +26,7 @@ const cards = Array.from({ length: 5 }, (_, index) => ({
   themeWeekId: "week.1",
   sequence: index + 1,
 }));
+const themeWeeks = [{ weekId: "week.1", dayIds: cards.map((card) => card.id) }];
 
 test("date-only arithmetic crosses month boundaries deterministically", () => {
   assert.equal(addDays("2026-07-31", 1), "2026-08-01");
@@ -50,6 +53,15 @@ test("inactive start date begins on the next active date", () => {
   assert.deepEqual(nextActiveDates("2026-07-25", [1, 3, 5], 3), ["2026-07-27", "2026-07-29", "2026-07-31"]);
 });
 
+test("a single weekly active day can schedule the complete 80-card collection", () => {
+  const dates = nextActiveDates("2026-07-20", [1], 80);
+  assert.equal(dates.length, 80);
+  assert.equal(dates[0], "2026-07-20");
+  assert.equal(dates.at(-1), "2028-01-24");
+  assert.equal(new Set(dates).size, 80);
+  assert.ok(dates.every((date) => isoWeekday(date) === 1));
+});
+
 test("at least one active weekday is required", () => {
   assert.throws(() => nextActiveDates("2026-07-20", [], 5), /Mindestens ein/);
 });
@@ -57,6 +69,7 @@ test("at least one active weekday is required", () => {
 test("five cards receive deterministic date assignments", () => {
   const input = {
     profileId: "p-1",
+    themeWeeks,
     cards,
     startDate: "2026-07-20",
     activeWeekdays: [1, 2, 3, 4, 5],
@@ -75,6 +88,7 @@ test("five cards receive deterministic date assignments", () => {
 test("assignment has assignedAt but no opening timestamp", () => {
   const [assignment] = createAssignments({
     profileId: "p-1",
+    themeWeeks,
     cards,
     startDate: "2026-07-20",
     activeWeekdays: [1, 2, 3, 4, 5],
@@ -83,6 +97,121 @@ test("assignment has assignedAt but no opening timestamp", () => {
   assert.equal(assignment.assignedAt, "2026-07-20T06:00:00.000Z");
   assert.equal(assignment.firstOpenedAt, undefined);
   assert.equal(assignment.lastOpenedAt, undefined);
+});
+
+test("two theme weeks keep week order despite repeated sequences and skip inactive days", () => {
+  const feedbackCards = Array.from({ length: 5 }, (_, index) => ({
+    id: `feedback.${index + 1}`,
+    contentRevision: 1,
+    themeWeekId: "week.feedback",
+    sequence: index + 1,
+  }));
+  const retrievalCards = Array.from({ length: 5 }, (_, index) => ({
+    id: `retrieval.${index + 1}`,
+    contentRevision: 1,
+    themeWeekId: "week.retrieval",
+    sequence: index + 1,
+  }));
+  const weeks = [
+    { weekId: "week.feedback", dayIds: feedbackCards.map((card) => card.id) },
+    { weekId: "week.retrieval", dayIds: retrievalCards.map((card) => card.id) },
+  ];
+  const assignments = createAssignments({
+    profileId: "p-2",
+    themeWeeks: weeks,
+    cards: [...retrievalCards].reverse().concat([...feedbackCards].reverse()),
+    startDate: "2026-07-24",
+    activeWeekdays: [1, 2, 3, 4, 5],
+    assignedAt: "2026-07-24T06:00:00.000Z",
+  });
+  assert.deepEqual(assignments.map((item) => item.contentId), [...feedbackCards, ...retrievalCards].map((card) => card.id));
+  assert.deepEqual(assignments.map((item) => item.sequence), [1, 2, 3, 4, 5, 1, 2, 3, 4, 5]);
+  assert.deepEqual(assignments.map((item) => item.scheduledActiveDate), [
+    "2026-07-24",
+    "2026-07-27",
+    "2026-07-28",
+    "2026-07-29",
+    "2026-07-30",
+    "2026-07-31",
+    "2026-08-03",
+    "2026-08-04",
+    "2026-08-05",
+    "2026-08-06",
+  ]);
+});
+
+test("existing assignments remain unchanged while missing earlier week content is appended idempotently", () => {
+  const feedbackCards = cards.map((card, index) => ({ ...card, id: `feedback.${index + 1}`, themeWeekId: "week.feedback" }));
+  const retrievalCards = cards.map((card, index) => ({ ...card, id: `retrieval.${index + 1}`, themeWeekId: "week.retrieval" }));
+  const weeks = [
+    { weekId: "week.feedback", dayIds: feedbackCards.map((card) => card.id) },
+    { weekId: "week.retrieval", dayIds: retrievalCards.map((card) => card.id) },
+  ];
+  const existing = createAssignments({
+    profileId: "p-existing",
+    themeWeeks: [weeks[1]],
+    cards: retrievalCards,
+    startDate: "2026-07-20",
+    activeWeekdays: [1, 2, 3, 4, 5],
+    assignedAt: "2026-07-20T06:00:00.000Z",
+  });
+  existing[0].firstOpenedAt = "2026-07-20T07:00:00.000Z";
+  const before = structuredClone(existing);
+  const additions = createMissingAssignments({
+    profileId: "p-existing",
+    themeWeeks: weeks,
+    cards: [...feedbackCards, ...retrievalCards],
+    existingAssignments: existing,
+    startDate: "2026-07-20",
+    activeWeekdays: [1, 2, 3, 4, 5],
+    assignedAt: "2026-07-25T06:00:00.000Z",
+  });
+  assert.deepEqual(existing, before);
+  assert.deepEqual(additions.map((item) => item.contentId), feedbackCards.map((card) => card.id));
+  assert.deepEqual(additions.map((item) => item.scheduledActiveDate), [
+    "2026-07-27",
+    "2026-07-28",
+    "2026-07-29",
+    "2026-07-30",
+    "2026-07-31",
+  ]);
+  assert.deepEqual(createMissingAssignments({
+    profileId: "p-existing",
+    themeWeeks: weeks,
+    cards: [...feedbackCards, ...retrievalCards],
+    existingAssignments: [...existing, ...additions],
+    startDate: "2026-07-20",
+    activeWeekdays: [1, 2, 3, 4, 5],
+    assignedAt: "2026-07-26T06:00:00.000Z",
+  }), []);
+});
+
+test("invalid or incomplete theme weeks fail with a clear error", () => {
+  assert.throws(() => createAssignments({
+    profileId: "p-invalid",
+    themeWeeks: [{ weekId: "week.1", dayIds: cards.slice(0, 4).map((card) => card.id) }],
+    cards,
+    startDate: "2026-07-20",
+    activeWeekdays: [1],
+    assignedAt: "2026-07-20T06:00:00.000Z",
+  }), /genau fünf eindeutige Karten/);
+});
+
+test("rest-day schedule resolution exposes the next assignment without changing its date", () => {
+  const progress = createAssignments({
+    profileId: "p-rest",
+    themeWeeks,
+    cards,
+    startDate: "2026-07-20",
+    activeWeekdays: [1, 3, 5],
+    assignedAt: "2026-07-20T06:00:00.000Z",
+  });
+  const before = structuredClone(progress);
+  const schedule = resolveTodaySchedule(progress, "2026-07-21");
+  assert.equal(schedule.exact, null);
+  assert.equal(schedule.next.contentId, "card.2");
+  assert.equal(schedule.next.scheduledActiveDate, "2026-07-22");
+  assert.deepEqual(progress, before);
 });
 
 test("a matching subject variant is preferred", () => {

@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
-import { planUnifiedImplementationMarks } from "../db.mjs";
+import { planImplementationAliasMigration, planUnifiedImplementationMarks } from "../db.mjs";
 import { SUBJECTS } from "../domain.mjs";
 
 const appDirectory = fileURLToPath(new URL("../", import.meta.url));
@@ -63,6 +63,46 @@ test("migration ignores another profile and retains legacy experience records fo
   }], "profile", "2026-02-01T10:00:00.000Z");
   assert.equal(migration.migratedFromTried, 0);
   assert.equal(migration.retainedLegacyExperienceRecords, 0);
+});
+
+test("legacy implementation IDs migrate losslessly and deduplicate against the new stable ID", () => {
+  const cards = [{
+    id: "card.retrieval-practice-01",
+    implementations: [{
+      implementationId: "practice-idea.rp-01",
+      legacyImplementationIds: ["impulse.rp-02-general", "impulse.rp-02-english"],
+      editorialOrder: 10,
+      applicability: { type: "general" },
+      title: "Abrufen",
+      learningAction: "Abrufen lassen.",
+    }],
+  }];
+  const migration = planImplementationAliasMigration([
+    {
+      planId: "profile::impulse.rp-02-general",
+      profileId: "profile",
+      contentId: "card.retrieval-practice-01",
+      implementationId: "impulse.rp-02-general",
+      wantToTryAt: "2026-01-02T10:00:00.000Z",
+      createdAt: "2026-01-02T10:00:00.000Z",
+    },
+    {
+      planId: "profile::practice-idea.rp-01",
+      profileId: "profile",
+      contentId: "card.retrieval-practice-01",
+      implementationId: "practice-idea.rp-01",
+      wantToTryAt: "2026-01-03T10:00:00.000Z",
+      createdAt: "2026-01-03T10:00:00.000Z",
+    },
+  ], cards, "profile", "2026-07-30T10:00:00.000Z");
+
+  assert.equal(migration.migratedRecords, 1);
+  assert.equal(migration.deduplicatedRecords, 1);
+  assert.deepEqual(migration.deletePlanIds, ["profile::impulse.rp-02-general"]);
+  assert.equal(migration.puts.length, 1);
+  assert.equal(migration.puts[0].planId, "profile::practice-idea.rp-01");
+  assert.equal(migration.puts[0].implementationId, "practice-idea.rp-01");
+  assert.equal(migration.puts[0].wantToTryAt, "2026-01-02T10:00:00.000Z");
 });
 
 test("regular app has no QA profile shortcut and keeps collection updates reactive", () => {
